@@ -1,7 +1,12 @@
 import Web3 from 'web3';
 
-const FrozenToken = require('./build/contracts/FrozenToken.json');
+import * as pUtil from '@polkadot/util';
+import * as keyring from '@polkadot/keyring';
+
+import * as fs from 'fs';
+
 const Claims = require('./build/contracts/Claims.json');
+const FrozenToken = require('./build/contracts/FrozenToken.json');
 
 try {
   (async () => {
@@ -17,13 +22,12 @@ Usage:
     const provider = process.argv[2] || 'https://mainnet.infura.io';
     const web3 = new Web3(new Web3.providers.HttpProvider(provider));
 
-    // const accounts = await web3.eth.getAccounts();
-    // console.log(accounts);
+    const netId = (await web3.eth.net.getId()).toString();
 
-    const frozenToken = new web3.eth.Contract(FrozenToken.abi, FrozenToken.networks["5"].address);
-    const claims = new web3.eth.Contract(Claims.abi, Claims.networks["5"].address);
+    const frozenToken = new web3.eth.Contract(FrozenToken.abi, FrozenToken.networks[netId].address);
+    const claims = new web3.eth.Contract(Claims.abi, Claims.networks[netId].address);
 
-    const claimedLength = await claims.methods.claimedLength.call();
+    const claimedLength = await claims.methods.claimedLength().call();
 
     const memory = new Map();
 
@@ -31,7 +35,7 @@ Usage:
       const address = await claims.methods.claimed(i).call(); 
       const claimData = await claims.methods.claims(address).call();
       const balance = await frozenToken.methods.balanceOf(address).call();
-
+      
       const { index, polkadot, vested } = claimData;
 
       if (memory.has(polkadot)) {
@@ -60,16 +64,17 @@ Usage:
     //  - Indices: Vec<Polkadot>
     //  - Vesting: Vec<(Polkadot, Begins, Length)> Begins = 0, Length = 12 months in blocks or something
 
-    let balances = new Map();
+    let balances: any[] = [];
     let indices: any[] = [];
-    let vesting = [];
+    let vesting: any[] = [];
 
     // Just iterate through memory and create these Vecs
     memory.forEach((value, key) => {
-      balances.set(key, value.balance);
-      indices.push({ polkadot: key, index: value.index });
+      const encoded = keyring.encodeAddress(pUtil.hexToU8a(key));
+      balances.push(`("${encoded}", ${value.balance})`);
+      indices.push({ polkadot: encoded, index: value.index });
       if (value.vested) {
-        vesting.push(key);
+        vesting.push(`("${encoded}", 0, 64000)`);
       }
     });
 
@@ -77,12 +82,25 @@ Usage:
       return a.index - b.index;
     })
 
-
-    const text = `
-    vec![
-
+    const indices_text = `
+    ids: vec![
+${indices.map((entry) => '"' + entry.polkadot).join('",\n')}",
     ],
 `;
+
+    const balances_text = `
+    balances: vec![
+${balances.map((bal:any) => bal).join(',\n')},
+    ],
+`;
+
+    const vesting_text = `
+    vesting: vec![
+${vesting.map((tuple: any) => tuple).join(',\n')},
+    ],
+`;
+
+    fs.writeFileSync('res', indices_text + '\n' + balances_text + '\n' + vesting_text);
 
   })();
 } catch (e) { console.error(e); }

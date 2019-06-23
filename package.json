@@ -1,7 +1,26 @@
 {
+  "name": "kusama-scrape",
+  "version": "1.0.0",
+  "description": "Scrape script to generate Kusama genesis.",
+  "main": "index.js",
+  "devDependencies": {},
   "dependencies": {
-    "@polkadot/keyring": "^0.93.1",
-    "@polkadot/util": "^0.93.1",
-    "web3": "1.0.0-beta.55"
-  }
+    "@polkadot/keyring": "0.93.1",
+    "@polkadot/util": "0.93.1",
+    "web3": "1.0.0-beta.34"
+  },
+  "scripts": {
+    "scrape": "ts-node scrape.ts http://localhost:8545",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsaether/kusama-scrape.git"
+  },
+  "author": "Web3 Foundation",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/lsaether/kusama-scrape/issues"
+  },
+  "homepage": "https://github.com/lsaether/kusama-scrape#readme"
 }
