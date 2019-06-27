@@ -73,7 +73,7 @@ Usage:
     // Just iterate through memory and create these Vecs
     memory.forEach((value, key) => {
       const encoded = keyring.encodeAddress(pUtil.hexToU8a(key));
-      balances.push([encoded, value.balance]);
+      balances.push([encoded, Number(value.balance)]);
       // balances.push(`("${encoded}", ${value.balance})`);
       indices.push({ polkadot: encoded, index: value.index });
       if (value.vested) {
@@ -85,9 +85,9 @@ Usage:
       return a.index - b.index;
     })
 
-    Template.indices = indices.map((entry:any) => entry.polkadot);
-    Template.balances = balances;
-    Template.vesting = vesting;
+    Template.genesis.runtime.indices.ids = indices.map((entry:any) => entry.polkadot);
+    Template.genesis.runtime.balances.balances = balances;
+    Template.genesis.runtime.balances.vesting = vesting;
 
     fs.writeFileSync('kusama.json', JSON.stringify(Template, null, 4));
 
