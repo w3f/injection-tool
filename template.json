@@ -1,0 +1,80 @@
+{
+    "name": "Kusama",
+    "id": "kusama",
+    "bootNodes": [
+
+    ],
+    "telemetryEndpoints": [
+
+    ],
+    "protocolId": "ksma",
+    "consensusEngine": null,
+    "properties": {
+        "tokenDecimals": 15,
+        "tokenSymbol": "KSMA"
+    },
+    "genesis": {
+        "system": {
+            "code": "xxxx"
+        },
+        "balances": {
+            "transactionBaseFee": "1000000000000",
+            "transactionByteFee": "10000000000",
+            "balances": [
+
+            ],
+            "existentialDeposit": "100000000000000",
+            "transferFee": "1",
+            "creationFee": "1",
+            "vesting": [
+
+            ]
+        },
+        "indices": {
+            "ids": [
+
+            ]
+        },
+        "session": {
+            "validators": [
+
+            ],
+            "keys": [
+
+            ]
+        },
+        "staking": {
+
+        },
+        "democracy": {
+
+        },
+        "councilSeats": {
+
+        },
+        "timestamp": {
+            "minimumPeriod": 3
+        },
+        "treasury": {
+            "proposalBond": "5000000",
+            "proposalBondMinimum": "1000",
+            "spendPeriod": "100000000",
+            "burn": "50000000"
+        },
+        "sudo": {
+
+        },
+        "grandpa": {
+
+        },
+        "aura": {
+
+        },
+        "parachains": {
+
+        },
+        "curatedGrandpa": {
+            "shufflePeriod": 1024
+        }
+    }
+}

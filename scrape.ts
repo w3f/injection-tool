@@ -8,6 +8,8 @@ import * as fs from 'fs';
 const Claims = require('./build/contracts/Claims.json');
 const FrozenToken = require('./build/contracts/FrozenToken.json');
 
+const Template = require('./template.json')
+
 try {
   (async () => {
     if (process.argv[2] && process.argv[2].indexOf('help') !== -1) {
@@ -71,10 +73,11 @@ Usage:
     // Just iterate through memory and create these Vecs
     memory.forEach((value, key) => {
       const encoded = keyring.encodeAddress(pUtil.hexToU8a(key));
-      balances.push(`("${encoded}", ${value.balance})`);
+      balances.push([encoded, value.balance]);
+      // balances.push(`("${encoded}", ${value.balance})`);
       indices.push({ polkadot: encoded, index: value.index });
       if (value.vested) {
-        vesting.push(`("${encoded}", 0, 64000)`);
+        vesting.push([encoded, 0, 120000000000]);
       }
     });
 
@@ -82,25 +85,11 @@ Usage:
       return a.index - b.index;
     })
 
-    const indices_text = `
-    ids: vec![
-${indices.map((entry) => '"' + entry.polkadot).join('",\n')}",
-    ],
-`;
+    Template.indices = indices.map((entry:any) => entry.polkadot);
+    Template.balances = balances;
+    Template.vesting = vesting;
 
-    const balances_text = `
-    balances: vec![
-${balances.map((bal:any) => bal).join(',\n')},
-    ],
-`;
-
-    const vesting_text = `
-    vesting: vec![
-${vesting.map((tuple: any) => tuple).join(',\n')},
-    ],
-`;
-
-    fs.writeFileSync('res', indices_text + '\n' + balances_text + '\n' + vesting_text);
+    fs.writeFileSync('kusama.json', JSON.stringify(Template, null, 4));
 
   })();
 } catch (e) { console.error(e); }
