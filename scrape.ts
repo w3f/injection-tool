@@ -1,14 +1,18 @@
-import Web3 from 'web3';
-
 import * as pUtil from '@polkadot/util';
 import * as keyring from '@polkadot/keyring';
-
 import * as fs from 'fs';
+import Web3 from 'web3';
 
 const Claims = require('./build/contracts/Claims.json');
 const FrozenToken = require('./build/contracts/FrozenToken.json');
 
 const Template = require('./template.json')
+
+const getAllTokenHolders = async (frozenToken: any) => {
+  return (await frozenToken.getPastEvents('Transfer', {
+    fromBlock: 0,
+  })).map((event: any) => event.returnValues.to);
+};
 
 try {
   (async () => {
@@ -29,12 +33,16 @@ Usage:
     const frozenToken = new web3.eth.Contract(FrozenToken.abi, FrozenToken.networks[netId].address);
     const claims = new web3.eth.Contract(Claims.abi, Claims.networks[netId].address);
 
+    let frozenTokenHolders = await getAllTokenHolders(frozenToken);
+
     const claimedLength = await claims.methods.claimedLength().call();
 
     const memory = new Map();
 
     for (let i = 0; i < claimedLength; i++) {
       const address = await claims.methods.claimed(i).call(); 
+      const indexOf = frozenTokenHolders.indexOf(address);
+      frozenTokenHolders.splice(indexOf, 1);
       const claimData = await claims.methods.claims(address).call();
       const balance = await frozenToken.methods.balanceOf(address).call();
       
@@ -70,11 +78,9 @@ Usage:
     let indices: any[] = [];
     let vesting: any[] = [];
 
-    // Just iterate through memory and create these Vecs
     memory.forEach((value, key) => {
       const encoded = keyring.encodeAddress(pUtil.hexToU8a(key));
       balances.push([encoded, Number(value.balance)]);
-      // balances.push(`("${encoded}", ${value.balance})`);
       indices.push({ polkadot: encoded, index: value.index });
       if (value.vested) {
         vesting.push([encoded, 0, 120000000000]);
@@ -89,7 +95,15 @@ Usage:
     Template.genesis.runtime.balances.balances = balances;
     Template.genesis.runtime.balances.vesting = vesting;
 
-    fs.writeFileSync('kusama.json', JSON.stringify(Template, null, 4));
+    /// Collect all the holders that didn't claim.
+    const stillToBeClaimed = await Promise.all(frozenTokenHolders.map(async (holder: any) => {
+      const bal = await frozenToken.methods.balanceOf(holder).call();
+      return [web3.utils.hexToBytes(holder), Number(bal)];
+    }));
+
+    Template.genesis.runtime.claims.claims = stillToBeClaimed;
+
+    fs.writeFileSync('kusama.json', JSON.stringify(Template, null, 2));
 
   })();
 } catch (e) { console.error(e); }
