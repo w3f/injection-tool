@@ -19,6 +19,7 @@ program
 /** Scrape */
 program
   .command('scrape')
+  .option('--atBlock <number>', 'Scrape the state at block number')
   .option('--claims <address>', 'Supply the address of the Claims contract')
   .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract')
   .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
@@ -30,7 +31,7 @@ program
     const claimsContract = initClaims(cmd.claims, cmd.provider);
     const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
 
-    
+
 
   });
 
