@@ -25,6 +25,7 @@ program
   .option('--atBlock <number>', 'Scrape the state at block number')
   .option('--claims <address>', 'Supply the address of the Claims contract')
   .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract')
+  .option('--output <file>', 'Supply a custom output filename', 'kusama.json')
   .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
   .action(async (cmd: any) => {
     if (!cmd.claims && !cmd.frozenToken) {
@@ -35,10 +36,10 @@ program
     const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
 
     const { memory, stillToClaim } = await getFullDataFromState(claimsContract, frozenTokenContract);
-    // console.log(Template);
+
     const genesis = writeGenesis(memory, Template, stillToClaim);
     fs.writeFileSync(
-      'kusama.json',
+      cmd.output,
       JSON.stringify(
         genesis, null, 2
       )
