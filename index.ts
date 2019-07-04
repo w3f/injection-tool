@@ -10,6 +10,9 @@ import {
   initFrozenToken,
   injectAllocations,
 } from './src/injection';
+import { getFullDataFromState, writeGenesis } from './src/scrape';
+
+const Template = require('./template.json');
 
 program
   .version('0.0.1', '-v --version')
@@ -23,7 +26,7 @@ program
   .option('--claims <address>', 'Supply the address of the Claims contract')
   .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract')
   .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
-  .action((cmd: any) => {
+  .action(async (cmd: any) => {
     if (!cmd.claims && !cmd.frozenToken) {
       throw new Error('Must supply addresses for Claims and FrozenToken!');
     }
@@ -31,8 +34,14 @@ program
     const claimsContract = initClaims(cmd.claims, cmd.provider);
     const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
 
-
-
+    const { memory, stillToClaim } = await getFullDataFromState(claimsContract, frozenTokenContract);
+    const genesis = writeGenesis(memory, Template, stillToClaim);
+    fs.writeFileSync(
+      'kusama.json',
+      JSON.stringify(
+        genesis, null, 2
+      )
+    );
   });
 
 /** Injection */
