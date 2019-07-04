@@ -35,6 +35,7 @@ program
     const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
 
     const { memory, stillToClaim } = await getFullDataFromState(claimsContract, frozenTokenContract);
+    // console.log(Template);
     const genesis = writeGenesis(memory, Template, stillToClaim);
     fs.writeFileSync(
       'kusama.json',

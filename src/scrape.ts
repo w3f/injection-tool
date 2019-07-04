@@ -5,10 +5,10 @@ import Web3 from 'web3';
 
 const utils = (new Web3()).utils;
 
-const Claims = require('./build/contracts/Claims.json');
-const FrozenToken = require('./build/contracts/FrozenToken.json');
+const Claims = require('../build/contracts/Claims.json');
+const FrozenToken = require('../build/contracts/FrozenToken.json');
 
-const Template = require('./template.json')
+const Template = require('../template.json')
 
 type Contract = any;
 type Address = string;
@@ -108,7 +108,7 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
   };
 };
 
-export const writeGenesis = async (memory: Map<any, any>, template: any, stillToClaim: any[]) => {
+export const writeGenesis = (memory: Map<any, any>, template: any, stillToClaim: any[]) => {
   let indices: any[] = [];
 
   memory.forEach((value: any, key: string) => {
@@ -139,7 +139,7 @@ export const writeGenesis = async (memory: Map<any, any>, template: any, stillTo
     return entry.polkadot;
   });
 
-  template.genesis.claims.claims = stillToClaim;
+  template.genesis.runtime.claims.claims = stillToClaim;
 
   return template;
 }
