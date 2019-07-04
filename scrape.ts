@@ -8,9 +8,10 @@ const FrozenToken = require('./build/contracts/FrozenToken.json');
 
 const Template = require('./template.json')
 
-const getAllTokenHolders = async (frozenToken: any) => {
+const getAllTokenHolders = async (frozenToken: any, toBlock: string) => {
   return (await frozenToken.getPastEvents('Transfer', {
     fromBlock: 0,
+    toBlock,
   })).map((event: any) => event.returnValues.to);
 };
 
@@ -33,7 +34,7 @@ Usage:
     const frozenToken = new web3.eth.Contract(FrozenToken.abi, FrozenToken.networks[netId].address);
     const claims = new web3.eth.Contract(Claims.abi, Claims.networks[netId].address);
 
-    let frozenTokenHolders = await getAllTokenHolders(frozenToken);
+    let frozenTokenHolders = await getAllTokenHolders(frozenToken, 'latest');
 
     const claimedLength = await claims.methods.claimedLength().call();
 
