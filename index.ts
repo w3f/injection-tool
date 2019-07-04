@@ -7,22 +7,37 @@ import {
   injectAmends,
   injectIndices,
   injectVesting,
+  initFrozenToken,
+  injectAllocations,
 } from './src/injection';
 
 program
   .version('0.0.1', '-v --version')
 
+/** Claim */
+
 /** Scrape */
 program
   .command('scrape')
+  .option('--claims <address>', 'Supply the address of the Claims contract')
+  .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract')
   .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
   .action((cmd: any) => {
-    console.log(cmd.provider);
+    if (!cmd.claims && !cmd.frozenToken) {
+      throw new Error('Must supply addresses for Claims and FrozenToken!');
+    }
+
+    const claimsContract = initClaims(cmd.claims, cmd.provider);
+    const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
+
+    
+
   });
 
 /** Injection */
 program
   .command('inject')
+  .option('--allocations <file>', 'CSV file of allocations')
   .option('--amends <file>', 'CSV file of amendments')
   .option('--indices <file>', 'CSV file of indices')
   .option('--vesting <file>', 'CSV file of vestings')
@@ -31,6 +46,20 @@ program
   .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
   .action((cmd: any) => {
     const claimsContract = initClaims(cmd.claims, cmd.provider);
+
+    if (cmd.allocations) {
+      if (!cmd.frozenToken) {
+        throw new Error('Must supply the address of FrozenToken if injecting allocations!');
+      }
+      const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
+
+      const csv = fs.readFileSync(cmd.allocations, { encoding: 'utf-8' });
+      const parsed = parse(csv);
+
+      let txParams: any;
+
+      // injectAllocations(frozenTokenContract, addresses, balances, txParams);
+    }
 
     if (cmd.amends) {
       const csv = fs.readFileSync(cmd.amends, { encoding: 'utf-8' });
@@ -48,10 +77,22 @@ program
     }
 
     if (cmd.indices) {
+      const csv = fs.readFileSync(cmd.indices, { encoding: 'utf-8' });
+      const parsed = parse(csv);
 
+      let txParams: any;
+
+      injectIndices(claimsContract, parsed, txParams);
     }
 
+    if (cmd.vesting) {
+      const csv = fs.readFileSync(cmd.vesting, { encoding: 'utf-8' });
+      const parsed = parse(csv);
 
+      let txParams: any;
+
+      injectVesting(claimsContract, parsed, txParams);
+    }
   })
 
 program.parse(process.argv);

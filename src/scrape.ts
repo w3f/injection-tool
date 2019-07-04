@@ -8,11 +8,35 @@ const FrozenToken = require('./build/contracts/FrozenToken.json');
 
 const Template = require('./template.json')
 
-const getAllTokenHolders = async (frozenToken: any, toBlock: string) => {
+type Contract = any;
+type Address = string;
+
+export const getAllTokenHolders = async (frozenToken: Contract, fromBlock: string = '0', toBlock: string = 'latest'): Promise<Address[]> => {
   return (await frozenToken.getPastEvents('Transfer', {
-    fromBlock: 0,
+    fromBlock,
     toBlock,
   })).map((event: any) => event.returnValues.to);
+};
+
+export const getAmended = async (claims: Contract, fromBlock: string = '0', toBlock: string = 'latest') => {
+  return (await claims.getPastEvents('Amended', {
+    fromBlock,
+    toBlock,
+  })).map((event: any) => ({
+    original: event.returnValues.original,
+    amendedTo: event.returnValues.amendedTo,
+  }));
+};
+
+export const getClaimed = async (claims: Contract, fromBlock: string = '0', toBlock: string = 'latest') => {
+  return (await claims.getPastEvents('Claimed', {
+    fromBlock,
+    toBlock,
+  })).map((event: any) => ({
+    eth: event.returnValues.eth,
+    dot: event.returnValue.dot,
+    idx: event.returnValues.idx,
+  }));
 };
 
 try {
