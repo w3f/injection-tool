@@ -15061,12 +15061,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x6886DBb936707f600dceD458819Da9152c750384",
-      "transactionHash": "0x47b82775a4dbace2ed0c52c1524c2a93864570fd27ca0005bab7437ffd47f825"
+      "address": "0x0a373F54aFcDBEFB6050c3b207764c974aB827Ea",
+      "transactionHash": "0xb7f7a807fccad1aaf3a4c23c0a4a0eeb1b89942b4944febc15eb31b91bba69de"
     }
   },
   "schemaVersion": "3.0.9",
-  "updatedAt": "2019-07-05T04:44:49.530Z",
+  "updatedAt": "2019-07-05T08:30:07.406Z",
   "devdoc": {
     "author": "Web3 Foundation",
     "methods": {

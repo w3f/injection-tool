@@ -5921,12 +5921,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0xEB0d3a01FA9700d074f637632594497266C3dD18",
-      "transactionHash": "0x7ed3d1e2c9ca2d37e7aa8c3bda3e46a8bf58b91d04430c2ed492e2fbc5138ba2"
+      "address": "0xFC056BDCdd6d292559B6FfeCEA83E118e2B0E718",
+      "transactionHash": "0x7bb765949132fb983beeb3e9d928340b535e1247ac14b0f8d1f5fddac55af9eb"
     }
   },
   "schemaVersion": "3.0.9",
-  "updatedAt": "2019-07-05T04:44:49.552Z",
+  "updatedAt": "2019-07-05T08:30:07.417Z",
   "devdoc": {
     "methods": {}
   },

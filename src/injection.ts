@@ -35,25 +35,31 @@ export const injectAllocations = async (
   }
 
   let i = 0;
+  let promises = [];
   while (i < addresses.length) {
     if (noisy) {
       console.log(`Sending transfer of ${balances[i]} FrozenToken to ${addresses[i]}`);
     }
 
-    const txResult = frozenToken.methods.transfer(addresses[i], balances[i]).send(txParams);
-    
-    if (!txResult.status) {
-      console.error(`Transaction to ${addresses[i]} FAILED! Hash:
-      ${txResult.transactionHash}`);
-    } else {
-      if (noisy) {
-        console.log(`Transfer to ${addresses[i]} succeeded. Hash:
-        ${txResult.transactionHash}`);
+    const txPromise = frozenToken.methods.transfer(addresses[i], balances[i]).send(txParams)
+    .on('receipt', (receipt: any) => {
+      if (!receipt.status) {
+        console.error(`Transaction to ${receipt.to} FAILED! Hash:
+        ${receipt.transactionHash}`);
+      } else {
+        if (noisy) {
+          console.log(`Transfer to ${receipt.to} succeeded. Hash:
+          ${receipt.transactionHash}`);
+        }
       }
-    }
+    });
+
+    promises.push(txPromise);
 
     i++;
   }
+
+  await Promise.all(promises);
 }
 
 export const injectAmends = async (
@@ -71,7 +77,7 @@ export const injectAmends = async (
   step = Math.min(step, amends.length);
 
   let promises = [];
-  for (let i = 0; i <= amends.length; i += step) {
+  for (let i = 0; i <= amends.length-1; i += step, step = Math.min(step * 2, amends.length-1)) {
     if (noisy) {
       console.log(`Amends | i: ${i} | step: ${step} | Sending...`);
     }
@@ -92,8 +98,6 @@ export const injectAmends = async (
     });
 
     promises.push(txPromise);
-
-    step = Math.min(step * 2, amends.length-1);
   }
 
   
@@ -114,7 +118,7 @@ export const injectIndices = async (
   step = Math.min(step, addresses.length-1);
 
   let promises = [];
-  for (let i = start; i < addresses.length-1; i += step) {
+  for (let i = start; i < addresses.length-1; i += step, step = Math.min(step * 2, addresses.length-1)) {
     if (noisy) {
       console.log(`Indices | i: ${i} | step: ${step} | Sending...`);
     }
@@ -134,11 +138,9 @@ export const injectIndices = async (
     });
     
     promises.push(txPromise);
-
-    step = Math.min(step * 2, addresses.length-1);
   }
 
-  console.log(await Promise.all(promises));
+  await Promise.all(promises);
 
   return true;
 }
@@ -155,7 +157,7 @@ export const injectVesting = async (
   step = Math.min(step, addresses.length-1);
 
   let promises = [];
-  for (let i = start; i < addresses.length-1; i += step) {
+  for (let i = start; i < addresses.length-1; i += step, step = Math.min(step * 2, addresses.length-1)) {
     if (noisy) {
       console.log(`Vesting | i: ${i} | step: ${step} | Sending...`);
     }
@@ -175,8 +177,6 @@ export const injectVesting = async (
     });
     
     promises.push(txPromise);
-
-    step = Math.min(step * 2, addresses.length-1);
   }
 
   await Promise.all(promises);
