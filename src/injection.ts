@@ -90,7 +90,7 @@ export const injectIndices = async (
     step = Math.min(step * 2, addresses.length-1);
   }
 
-  await Promise.all(promises);
+  console.log(await Promise.all(promises));
 
   return true;
 }

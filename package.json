@@ -12,7 +12,7 @@
     "web3": "1.0.0-beta.34"
   },
   "scripts": {
-    "scrape": "ts-node index.ts scrape --provider http://localhost:8545 --claims '0xDe27E9EACD21f4F74d6EF2f59FaD787377741780' --frozenToken '0xf217195de7023b56550a84A1e656ab91F1a24E3c'",
+    "scrape": "ts-node index.ts scrape --provider http://localhost:8545 --claims '0x6886DBb936707f600dceD458819Da9152c750384' --frozenToken '0xEB0d3a01FA9700d074f637632594497266C3dD18'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

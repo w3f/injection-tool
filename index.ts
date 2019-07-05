@@ -56,54 +56,106 @@ program
   .option('--claims <address>', 'Supply the address of the Claims contract')
   .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract')
   .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
-  .action((cmd: any) => {
-    const claimsContract = initClaims(cmd.claims, cmd.provider);
-
-    if (cmd.allocations) {
-      if (!cmd.frozenToken) {
-        throw new Error('Must supply the address of FrozenToken if injecting allocations!');
+  .option('--from <sender>', 'Supply the sender of the transaction')
+  .option('--gasPrice <number>', 'Supply the gasPrice in wei of the transaction (default: 200000000)', '2000000000')
+  .option('--gas <amount>', 'Supply the amount of gas to send with the transaction (default: 500000)', '500000')
+  .action(async (cmd: any) => {
+    try {
+      if (!cmd.from) {
+        throw new Error('Must specify which address the transaction is sending from');
       }
-      const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
 
-      const csv = fs.readFileSync(cmd.allocations, { encoding: 'utf-8' });
-      const parsed = parse(csv);
+      const claimsContract = initClaims(cmd.claims, cmd.provider);
 
-      let txParams: any;
+      if (cmd.allocations) {
+        if (!cmd.frozenToken) {
+          throw new Error('Must supply the address of FrozenToken if injecting allocations!');
+        }
+        const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
 
-      // injectAllocations(frozenTokenContract, addresses, balances, txParams);
-    }
+        const csv = fs.readFileSync(cmd.allocations, { encoding: 'utf-8' });
+        const parsed = parse(csv);
 
-    if (cmd.amends) {
-      const csv = fs.readFileSync(cmd.amends, { encoding: 'utf-8' });
-      const parsed = parse(csv);
-      const { originals, amends } = parsed.map((entry: any) => {
-        return {
-          originals: entry[0],
-          amends: entry[1],
+        let addresses: any[] = [];
+        let balances: any[] = [];
+        parsed.forEach((entry: any) => {
+          addresses.push(entry[0]);
+          balances.push(entry[1]);
+        });
+
+        let txParams: any = {
+          from: cmd.from,
+          gasPrice: cmd.gasPrice,
+          gas: cmd.gas,
         };
-      });
 
-      let txParams: any;
+        await injectAllocations(frozenTokenContract, addresses, balances, txParams);
+      }
 
-      injectAmends(claimsContract, originals, amends, txParams);
-    }
+      if (cmd.amends) {
+        const csv = fs.readFileSync(cmd.amends, { encoding: 'utf-8' });
+        const parsed = parse(csv);
+        
+        let originals: any[] = [];
+        let amends: any[] = [];
+        parsed.forEach((entry: any) => {
+          originals.push(entry[0]);
+          amends.push(entry[1]);
+        })
 
-    if (cmd.indices) {
-      const csv = fs.readFileSync(cmd.indices, { encoding: 'utf-8' });
-      const parsed = parse(csv);
+        let txParams: any = {
+          from: cmd.from,
+          gasPrice: cmd.gasPrice,
+          gas: cmd.gas,
+        };
 
-      let txParams: any;
+        await injectAmends(claimsContract, originals, amends, txParams);
+      }
 
-      injectIndices(claimsContract, parsed, txParams);
-    }
+      if (cmd.indices) {
+        const csv = fs.readFileSync(cmd.indices, { encoding: 'utf-8' });
+        const parsed = parse(csv);
 
-    if (cmd.vesting) {
-      const csv = fs.readFileSync(cmd.vesting, { encoding: 'utf-8' });
-      const parsed = parse(csv);
+        const sanitize = (input: any) => {
+          input = input[0]
+          return input.filter(Boolean)
+        }
 
-      let txParams: any;
+        const input = sanitize(parsed);
 
-      injectVesting(claimsContract, parsed, txParams);
+        let txParams: any = {
+          from: cmd.from,
+          gasPrice: cmd.gasPrice,
+          gas: cmd.gas,
+        };
+
+        console.log(input);
+
+        await injectIndices(claimsContract, input, txParams);
+      }
+
+      if (cmd.vesting) {
+        const csv = fs.readFileSync(cmd.vesting, { encoding: 'utf-8' });
+        const parsed = parse(csv);
+
+        const sanitize = (input: any) => {
+          input = input[0]
+          return input.filter(Boolean)
+        }
+
+        const input = sanitize(parsed);
+
+        let txParams: any = {
+          from: cmd.from,
+          gasPrice: cmd.gasPrice,
+          gas: cmd.gas,
+        };
+
+        await injectVesting(claimsContract, input, txParams);
+      }
+    } catch (err) {
+      console.error(err);
+      process.exit(1);
     }
   })
 
