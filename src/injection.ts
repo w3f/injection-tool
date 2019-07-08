@@ -79,7 +79,7 @@ export const injectAmends = async (
   let promises = [];
   for (let i = 0; i <= amends.length-1; i += step, step = Math.min(step * 2, amends.length-1)) {
     if (noisy) {
-      console.log(`Amends | i: ${i} | step: ${step} | Sending...`);
+      console.log(`Amends | i: ${i} | end: ${step} | Sending...`);
     }
 
     const originalsArg = originals.slice(i, step);
@@ -88,10 +88,10 @@ export const injectAmends = async (
     const txPromise = claims.methods.amend(originalsArg, amendsArg).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
-        console.error(`Amends | i: ${i} | step: ${step} | FAILED`);
+        console.error(`Amends | i: ${i} | end: ${step} | FAILED`);
       } else {
         if (noisy) {
-          console.log(`Amends | i: ${i} | step: ${step} | Succeeded
+          console.log(`Amends | i: ${i} | end: ${step} | Succeeded
   Hash: ${receipt.transactionHash}`);
         }
       }
@@ -120,7 +120,7 @@ export const injectIndices = async (
   let promises = [];
   for (let i = start; i < addresses.length-1; i += step, step = Math.min(step * 2, addresses.length-1)) {
     if (noisy) {
-      console.log(`Indices | i: ${i} | step: ${step} | Sending...`);
+      console.log(`Indices | i: ${i} | end: ${step} | Sending...`);
     }
 
     const indicesArg = addresses.slice(i, step);
@@ -128,10 +128,10 @@ export const injectIndices = async (
     const txPromise = claims.methods.assignIndices(indicesArg).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
-        console.error(`Indices | i: ${i} | step: ${step} | FAILED`);
+        console.error(`Indices | i: ${i} | end: ${step} | FAILED`);
       } else {
         if (noisy) {
-          console.log(`Indices | i: ${i} | step: ${step} | Succeeded
+          console.log(`Indices | i: ${i} | end: ${step} | Succeeded
   Hash: ${receipt.transactionHash}`);
         }
       }
@@ -159,7 +159,7 @@ export const injectVesting = async (
   let promises = [];
   for (let i = start; i < addresses.length-1; i += step, step = Math.min(step * 2, addresses.length-1)) {
     if (noisy) {
-      console.log(`Vesting | i: ${i} | step: ${step} | Sending...`);
+      console.log(`Vesting | i: ${i} | end: ${step} | Sending...`);
     }
 
     const vestingArg = addresses.slice(i, step);
@@ -167,10 +167,10 @@ export const injectVesting = async (
     const txPromise = claims.methods.setVesting(vestingArg).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
-        console.error(`Vesting | i: ${i} | step: ${step} | FAILED`);
+        console.error(`Vesting | i: ${i} | end: ${step} | FAILED`);
       } else {
         if (noisy) {
-          console.log(`Vesting | i: ${i} | step: ${step} | Succeeded
+          console.log(`Vesting | i: ${i} | end: ${step} | Succeeded
   Hash: ${receipt.transactionHash}`);
         }
       }
