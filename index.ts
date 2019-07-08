@@ -32,11 +32,16 @@ program
       throw new Error('Must supply addresses for Claims and FrozenToken!');
     }
 
+    process.stdout.write('Initializing contracts...')
     const claimsContract = initClaims(cmd.claims, cmd.provider);
     const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
+    console.log(' done');
 
+    process.stdout.write('Scraping state from Ethereum...')
     const { memory, stillToClaim } = await getFullDataFromState(claimsContract, frozenTokenContract);
+    console.log(' done');
 
+    process.stdout.write('Writing genesis chain specification...')
     const genesis = writeGenesis(memory, Template, stillToClaim);
     fs.writeFileSync(
       cmd.output,
@@ -44,8 +49,10 @@ program
         genesis, null, 2
       )
     );
+    console.log(' done');
+    console.log('Chain specification written to ', cmd.output);
   });
-  
+
 /** Injection */
 program
   .command('inject')
