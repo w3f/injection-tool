@@ -1,12 +1,19 @@
 # Kusama scraping and genesis specification
 
-This repository contains a simple node (writte in TypeScript) utility for scraping the state of the Claims contract and generating the Kusama genesis chain specification.
+This repository contains a simple node (written in TypeScript) utility for scraping the state of the Claims contract and generating the Kusama genesis chain specification.
 
 ## Running locally
 
 You can generate the Kusama chain specification locally by following these steps:
 
-### Testing (only one that works now)
+### Goerli (Testing)
+
+```
+$ yarn
+$ yarn goerli:scrape
+```
+
+The above commands will output a `kusama.json` file containing genesis state generated from the Claims and FrozenToken contracts that are deployed to the Goerli test network.
 
 ### Full generation (not working yet)
 

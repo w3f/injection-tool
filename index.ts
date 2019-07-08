@@ -45,7 +45,7 @@ program
       )
     );
   });
-// 0x42A89440E6a6919767D3e7ac9d120575a70926e8
+  
 /** Injection */
 program
   .command('inject')
