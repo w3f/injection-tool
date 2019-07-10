@@ -1,18 +1,16 @@
 import * as pUtil from '@polkadot/util';
 import * as keyring from '@polkadot/keyring';
-import * as fs from 'fs';
 import Web3 from 'web3';
 
 const utils = (new Web3()).utils;
 
+type EthAddress = string;
+type DotPublicKey = string;
 type Contract = any;
-type Address = string;
 
 type ClaimData = {
   balance: string,
-  eth: string,
-  pubKey: string,
-  index: string,
+  index: number,
   vested: boolean,
 };
 
@@ -23,8 +21,8 @@ type W3Event = {
   }
 }
 
-export const getAllTokenHolders = async (frozenToken: Contract, fromBlock: string = '0', toBlock: string = 'latest'): Promise<Set<Address>> => {
-  const tokenHolders: Set<Address> = new Set();
+export const getAllTokenHolders = async (frozenToken: Contract, fromBlock: string = '0', toBlock: string = 'latest'): Promise<Set<EthAddress>> => {
+  const tokenHolders: Set<EthAddress> = new Set();
 
   (await frozenToken.getPastEvents('Transfer', {
     fromBlock,
@@ -65,9 +63,9 @@ export const getVestedFromEvents = async (claims: Contract, fromBlock: string = 
 export const getFullDataFromState = async (claims: Contract, frozenToken: Contract) => {
   const claimedLength = await claims.methods.claimedLength().call();
 
-  let allHolders: Set<Address> = await getAllTokenHolders(frozenToken);
+  const allHolders: Set<EthAddress> = await getAllTokenHolders(frozenToken);
 
-  const memory = new Map();
+  const memory: Map<DotPublicKey, ClaimData> = new Map();
 
   for (let i = 0; i < Number(claimedLength); i++) {
     const ethAddress = await claims.methods.claimed(i).call();
@@ -84,11 +82,11 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
       const oldData = memory.get(polkadot);
       const newData = {
         // Add the balances together.
-        balance: oldData.balance + balance, // TODO use BNs
+        balance: oldData!.balance + balance, // TODO use BNs
         // Assign the lowest index for multiples claims to the same public key.
-        index: Math.min(Number(index), Number(oldData.index)),
+        index: Math.min(Number(index), Number(oldData!.index)),
         // Vesting is turned on if its been turned on for any of the claims.
-        vested: vested || oldData.vested,
+        vested: vested || oldData!.vested,
       } 
 
       memory.set(polkadot, newData);
@@ -102,7 +100,7 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
     }
   }
 
-  const stillToClaim = await Promise.all(Array.from(allHolders).map(async (holder: Address) => {
+  const stillToClaim = await Promise.all(Array.from(allHolders).map(async (holder: EthAddress) => {
     const bal = await frozenToken.methods.balanceOf(holder).call();
     return [utils.hexToBytes(holder), Number(bal)];
   }))
@@ -113,7 +111,7 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
   };
 };
 
-export const writeGenesis = (memory: Map<any, any>, template: any, stillToClaim: any[]) => {
+export const writeGenesis = (memory: Map<DotPublicKey, ClaimData>, template: any, stillToClaim: EthAddress[]) => {
   let indices: any[] = [];
 
   memory.forEach((value: any, key: string) => {
