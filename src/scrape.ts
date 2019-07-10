@@ -1,3 +1,4 @@
+import BN from 'bn.js';
 import * as pUtil from '@polkadot/util';
 import * as keyring from '@polkadot/keyring';
 import Web3 from 'web3';
@@ -8,11 +9,18 @@ type EthAddress = string;
 type DotPublicKey = string;
 type Contract = any;
 
+// Intermediate claim data type
 type ClaimData = {
-  balance: string,
+  balance: BN,
   index: number,
   vested: boolean,
 };
+
+// Intermediate indices type
+type IndexData = {
+  polkadot: string,
+  index: number,
+}
 
 // Abridged web3 event type
 type W3Event = {
@@ -73,7 +81,10 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
     // Delete the address out of `allHolders` array.
     allHolders.delete(ethAddress);
 
-    const balance = await frozenToken.methods.balanceOf(ethAddress).call();
+    const balance: BN = utils.toBN(
+      await frozenToken.methods.balanceOf(ethAddress).call()
+    );
+
     const { index, polkadot, vested } = await claims.methods.claims(ethAddress).call();
 
     if (memory.has(polkadot)) {
@@ -82,7 +93,7 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
       const oldData = memory.get(polkadot);
       const newData = {
         // Add the balances together.
-        balance: oldData!.balance + balance, // TODO use BNs
+        balance: oldData!.balance.add(balance),
         // Assign the lowest index for multiples claims to the same public key.
         index: Math.min(Number(index), Number(oldData!.index)),
         // Vesting is turned on if its been turned on for any of the claims.
@@ -111,13 +122,13 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
   };
 };
 
-export const writeGenesis = (memory: Map<DotPublicKey, ClaimData>, template: any, stillToClaim: EthAddress[]) => {
-  let indices: any[] = [];
+export const writeGenesis = (memory: Map<DotPublicKey, ClaimData>, template: any, stillToClaim: any[]) => {
+  let indices: IndexData[] = [];
 
-  memory.forEach((value: any, key: string) => {
+  memory.forEach((value: ClaimData, key: DotPublicKey) => {
     const encodedAddress = keyring.encodeAddress(pUtil.hexToU8a(key));
     template.genesis.runtime.balances.balances.push(
-      [encodedAddress, Number(value.balance)]
+      [encodedAddress, value.balance.toNumber()]
     );
 
     if (value.vested) {
@@ -129,12 +140,12 @@ export const writeGenesis = (memory: Map<DotPublicKey, ClaimData>, template: any
     indices.push({ polkadot: encodedAddress, index: value.index });
   });
 
-  indices.sort((a: any, b: any) => {
+  indices.sort((a: IndexData, b: IndexData) => {
     return Number(a.index) - Number(b.index);
   });
 
   let correctIndex = 0;
-  template.genesis.runtime.indices.ids = indices.map((entry: any) => {
+  template.genesis.runtime.indices.ids = indices.map((entry: IndexData) => {
     if (entry.index != correctIndex) {
       throw new Error('Index ordering did not work!');
     }
