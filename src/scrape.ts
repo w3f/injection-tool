@@ -5,11 +5,6 @@ import Web3 from 'web3';
 
 const utils = (new Web3()).utils;
 
-const Claims = require('../build/contracts/Claims.json');
-const FrozenToken = require('../build/contracts/FrozenToken.json');
-
-const Template = require('../template.json')
-
 type Contract = any;
 type Address = string;
 
@@ -21,11 +16,22 @@ type ClaimData = {
   vested: boolean,
 };
 
-export const getAllTokenHolders = async (frozenToken: Contract, fromBlock: string = '0', toBlock: string = 'latest'): Promise<Address[]> => {
-  return (await frozenToken.getPastEvents('Transfer', {
+// Abridged web3 event type
+type W3Event = {
+  returnValues: {
+    to: string,
+  }
+}
+
+export const getAllTokenHolders = async (frozenToken: Contract, fromBlock: string = '0', toBlock: string = 'latest'): Promise<Set<Address>> => {
+  const tokenHolders: Set<Address> = new Set();
+
+  (await frozenToken.getPastEvents('Transfer', {
     fromBlock,
     toBlock,
-  })).map((event: any) => event.returnValues.to);
+  })).map((event: W3Event) => tokenHolders.add(event.returnValues.to));
+
+  return tokenHolders;
 };
 
 export const getAmended = async (claims: Contract, fromBlock: string = '0', toBlock: string = 'latest') => {
@@ -59,16 +65,15 @@ export const getVestedFromEvents = async (claims: Contract, fromBlock: string = 
 export const getFullDataFromState = async (claims: Contract, frozenToken: Contract) => {
   const claimedLength = await claims.methods.claimedLength().call();
 
-  let allHolders = await getAllTokenHolders(frozenToken);
+  let allHolders: Set<Address> = await getAllTokenHolders(frozenToken);
 
   const memory = new Map();
 
   for (let i = 0; i < Number(claimedLength); i++) {
     const ethAddress = await claims.methods.claimed(i).call();
 
-    // Splice the address out of `allHolders` array.
-    const indexOf = allHolders.indexOf(ethAddress);
-    allHolders.splice(indexOf, 1);
+    // Delete the address out of `allHolders` array.
+    allHolders.delete(ethAddress);
 
     const balance = await frozenToken.methods.balanceOf(ethAddress).call();
     const { index, polkadot, vested } = await claims.methods.claims(ethAddress).call();
@@ -97,7 +102,7 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
     }
   }
 
-  const stillToClaim = await Promise.all(allHolders.map(async (holder: Address) => {
+  const stillToClaim = await Promise.all(Array.from(allHolders).map(async (holder: Address) => {
     const bal = await frozenToken.methods.balanceOf(holder).call();
     return [utils.hexToBytes(holder), Number(bal)];
   }))
