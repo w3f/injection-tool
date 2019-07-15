@@ -22,16 +22,6 @@ Claims - 0x0453F59D19F55bC8501306D2A44EA4c872f4d05E
 FrozenToken - 0x8f23892739D2A094E430d983317d02eE906cFe3c
 ```
 
-### Full generation (not working yet)
+### Full generation
 
-In order to do a complete generation of the Kusama genesis block, including compiling the WebAssembly binary and formatting it in hex requires additional Rust dependencies.
-
-```
-$ rustup update
-```
-
-Run the script:
-
-```
-$ full_gen.sh
-```
+Coming soon

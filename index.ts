@@ -10,7 +10,7 @@ import {
   initFrozenToken,
   injectAllocations,
 } from './src/injection';
-import { getFullDataFromState, writeGenesis } from './src/scrape';
+import { getAllTokenHolders, getFullDataFromState, writeGenesis } from './src/scrape';
 
 const Template = require('./template.json');
 
@@ -18,6 +18,26 @@ program
   .version('0.0.1', '-v --version')
 
 /** Claim */
+
+/** Get all Frozen Token hodlers */
+program
+  .command('hodlers')
+  .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract')
+  .option('--output <file>', 'Supply a custom output filename', 'holders.csv')
+  .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
+  .action(async (cmd: any) => {
+    if (!cmd.frozenToken) { throw new Error('Must supply the address of the FrozenToken contract!'); }
+
+    const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
+
+    process.stdout.write('Getting all hodlers of FrozenToken...');
+    const hodlers = await getAllTokenHolders(frozenTokenContract);
+    console.log('done');
+
+    process.stdout.write(`Writing to ${cmd.output}...`);
+    fs.writeFileSync(cmd.output, Array.from(hodlers).join('\n'));
+    console.log('done');
+  });
 
 /** Scrape */
 program
