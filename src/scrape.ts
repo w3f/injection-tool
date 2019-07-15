@@ -18,7 +18,7 @@ type ClaimData = {
 
 // Intermediate indices type
 type IndexData = {
-  polkadot: string,
+  encodedAddress: string,
   index: number,
 }
 
@@ -85,12 +85,12 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
       await frozenToken.methods.balanceOf(ethAddress).call()
     );
 
-    const { index, polkadot, vested } = await claims.methods.claims(ethAddress).call();
+    const { index, pubKey, vested } = await claims.methods.claims(ethAddress).call();
 
-    if (memory.has(polkadot)) {
+    if (memory.has(pubKey)) {
       // More than one claim has been made to this Polkadot public key.
       // Need to merge the old data with the new data.
-      const oldData = memory.get(polkadot);
+      const oldData = memory.get(pubKey);
       const newData = {
         // Add the balances together.
         balance: oldData!.balance.add(balance),
@@ -100,10 +100,10 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
         vested: vested || oldData!.vested,
       } 
 
-      memory.set(polkadot, newData);
+      memory.set(pubKey, newData);
     } else {
       // The public key has not been used before, likely the more common case.
-      memory.set(polkadot, {
+      memory.set(pubKey, {
         balance,
         index,
         vested,
@@ -137,7 +137,7 @@ export const writeGenesis = (memory: Map<DotPublicKey, ClaimData>, template: any
 
     // The tricky part is the indices array, we must be sure to preserve
     // the correct ordering: hence this intermediate step.
-    indices.push({ polkadot: encodedAddress, index: value.index });
+    indices.push({ encodedAddress, index: value.index });
   });
 
   indices.sort((a: IndexData, b: IndexData) => {
@@ -150,7 +150,7 @@ export const writeGenesis = (memory: Map<DotPublicKey, ClaimData>, template: any
       throw new Error('Index ordering did not work!');
     }
     correctIndex++;
-    return entry.polkadot;
+    return entry.encodedAddress;
   });
 
   template.genesis.runtime.claims.claims = stillToClaim;
