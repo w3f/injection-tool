@@ -13,7 +13,7 @@ type Contract = any;
 type ClaimData = {
   balance: BN,
   index: number,
-  vested: boolean,
+  vested: BN,
 };
 
 // Intermediate indices type
@@ -86,6 +86,7 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
     );
 
     const { index, pubKey, vested } = await claims.methods.claims(ethAddress).call();
+    
 
     if (memory.has(pubKey)) {
       // More than one claim has been made to this Polkadot public key.
@@ -97,7 +98,7 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
         // Assign the lowest index for multiples claims to the same public key.
         index: Math.min(Number(index), Number(oldData!.index)),
         // Vesting is turned on if its been turned on for any of the claims.
-        vested: vested || oldData!.vested,
+        vested: oldData!.vested.add(utils.toBN(vested)),
       } 
 
       memory.set(pubKey, newData);
@@ -106,7 +107,7 @@ export const getFullDataFromState = async (claims: Contract, frozenToken: Contra
       memory.set(pubKey, {
         balance,
         index,
-        vested,
+        vested: utils.toBN(vested),
       });
     }
   }
@@ -131,8 +132,10 @@ export const writeGenesis = (memory: Map<DotPublicKey, ClaimData>, template: any
       [encodedAddress, value.balance.toNumber()]
     );
 
-    if (value.vested) {
-      template.genesis.runtime.balances.vesting.push([encodedAddress, 0, 24]);
+    if (value.vested.gt(utils.toBN(0))) {
+      const { balance, vested } = value;
+      const liquid = balance.sub(vested);
+      template.genesis.runtime.balances.vesting.push([encodedAddress, 0, 24, liquid.toNumber()]);
     }
 
     // The tricky part is the indices array, we must be sure to preserve
