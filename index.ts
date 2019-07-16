@@ -10,6 +10,7 @@ import {
   injectVesting,
   initFrozenToken,
   injectAllocations,
+  injectClaims,
 } from './src/injection';
 import { getAllTokenHolders, getFullDataFromState, writeGenesis } from './src/scrape';
 
@@ -82,10 +83,11 @@ program
   .option('--indices <file>', 'CSV file of indices')
   .option('--vesting <file>', 'CSV file of vestings')
   .option('--claims <address>', 'Supply the address of the Claims contract')
+  .option('--claimFile <file>', 'CSV file for claims')
   .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract', '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907')
   .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
   .option('--from <sender>', 'Supply the sender of the transaction')
-  .option('--gasPrice <number>', 'Supply the gasPrice in wei of the transaction (default: 200000000)', '200000000')
+  .option('--gasPrice <number>', 'Supply the gasPrice in wei of the transaction (default: 2000000000)', '2000000000')
   .option('--gas <amount>', 'Supply the amount of gas to send with the transaction (default: 500000)', '3000000')
   .action(async (cmd: any) => {
     try {
@@ -94,6 +96,27 @@ program
       }
 
       const claimsContract = initClaims(cmd.claims, cmd.provider);
+
+      if (cmd.claimFile) {
+        const csv = fs.readFileSync(cmd.claimFile, { encoding: 'utf-8' });
+        const parsed = parse(csv);
+
+        let eths: any[] = [];
+        let pubKeys: any[] = [];
+        parsed.forEach((entry: any) => {
+          eths.push(entry[0]);
+          pubKeys.push(entry[1]);
+        })
+
+        let txParams: any = {
+          from: cmd.from,
+          gasPrice: cmd.gasPrice,
+          gas: cmd.gas,
+        };
+
+        await injectClaims(claimsContract, eths, pubKeys, txParams);
+      }
+
 
       if (cmd.allocations) {
         if (!cmd.frozenToken) {

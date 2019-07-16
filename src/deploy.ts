@@ -11,7 +11,7 @@ const OWNER = '';
 
 const providerUrl = '';
 
-const w3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
+const w3 = new Web3(new Web3.providers.WebsocketProvider(providerUrl));
 
 const deployClaims = async (txParams: any) => {
   return (new w3.eth.Contract(Claims.abi)).deploy({
