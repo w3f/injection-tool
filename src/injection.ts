@@ -77,21 +77,21 @@ export const injectAmends = async (
   step = Math.min(step, amends.length);
 
   let promises = [];
-  for (let i = 0; i <= amends.length-1; i += step, step = Math.min(step * 2, amends.length-1)) {
+  for (let i = 0, end = step; i <= amends.length-1; i += step, end = Math.min(end + step, amends.length-1)) {
     if (noisy) {
-      console.log(`Amends | i: ${i} | end: ${step} | Sending...`);
+      console.log(`Amends | i: ${i} | end: ${end} | Sending...`);
     }
 
-    const originalsArg = originals.slice(i, step);
-    const amendsArg = amends.slice(i, step);
+    const originalsArg = originals.slice(i, end);
+    const amendsArg = amends.slice(i, end);
 
     const txPromise = claims.methods.amend(originalsArg, amendsArg).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
-        console.error(`Amends | i: ${i} | end: ${step} | FAILED`);
+        console.error(`Amends | i: ${i} | end: ${end} | FAILED`);
       } else {
         if (noisy) {
-          console.log(`Amends | i: ${i} | end: ${step} | Succeeded
+          console.log(`Amends | i: ${i} | end: ${end} | Succeeded
   Hash: ${receipt.transactionHash}`);
         }
       }
@@ -118,20 +118,20 @@ export const injectIndices = async (
   step = Math.min(step, addresses.length-1);
 
   let promises = [];
-  for (let i = start; i < addresses.length-1; i += step, step = Math.min(step * 2, addresses.length-1)) {
+  for (let i = start, end = step; i < addresses.length-1; i += step, end = Math.min(end + step, addresses.length-1)) {
     if (noisy) {
-      console.log(`Indices | i: ${i} | end: ${step} | Sending...`);
+      console.log(`Indices | i: ${i} | end: ${end} | Sending...`);
     }
 
-    const indicesArg = addresses.slice(i, step);
+    const indicesArg = addresses.slice(i, end);
 
     const txPromise = claims.methods.assignIndices(indicesArg).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
-        console.error(`Indices | i: ${i} | end: ${step} | FAILED`);
+        console.error(`Indices | i: ${i} | end: ${end} | FAILED`);
       } else {
         if (noisy) {
-          console.log(`Indices | i: ${i} | end: ${step} | Succeeded
+          console.log(`Indices | i: ${i} | end: ${end} | Succeeded
   Hash: ${receipt.transactionHash}`);
         }
       }
@@ -157,26 +157,73 @@ export const injectVesting = async (
   step = Math.min(step, addresses.length-1);
 
   let promises = [];
-  for (let i = start; i < addresses.length-1; i += step, step = Math.min(step * 2, addresses.length-1)) {
+  for (let i = start, end = step; i < addresses.length-1; i += step, step = Math.min(end + step, addresses.length-1)) {
     if (noisy) {
-      console.log(`Vesting | i: ${i} | end: ${step} | Sending...`);
+      console.log(`Vesting | i: ${i} | end: ${end} | Sending...`);
     }
 
-    const vestingArg = addresses.slice(i, step);
+    const vestingArg = addresses.slice(i, end);
 
     const txPromise = claims.methods.setVesting(vestingArg).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
-        console.error(`Vesting | i: ${i} | end: ${step} | FAILED`);
+        console.error(`Vesting | i: ${i} | end: ${end} | FAILED`);
       } else {
         if (noisy) {
-          console.log(`Vesting | i: ${i} | end: ${step} | Succeeded
+          console.log(`Vesting | i: ${i} | end: ${end} | Succeeded
   Hash: ${receipt.transactionHash}`);
         }
       }
     });
     
     promises.push(txPromise);
+  }
+
+  await Promise.all(promises);
+
+  return true;
+}
+
+/** Claim as an amendment */
+export const injectClaims = async (
+  claims: Contract,
+  eths: string[],
+  pubKeys: string[],
+  txParams: TxParams,
+  start: number = 0,
+  step: number = 50,
+  noisy: boolean = true,
+): Promise<boolean> => {
+
+  step = Math.min(step, eths.length-1);
+
+  if (eths.length != pubKeys.length) {
+    throw new Error('ERROR: provided args `eths` and `pubKeys` as arrays of different lengths.');
+  }
+
+  let i = 0;
+  let promises = [];
+  while (i < eths.length) {
+    if (noisy) {
+      console.log(`Sending claim for allocation at ${eths[i]}...`);
+    }
+
+    const txPromise = claims.methods.claim(eths[i], pubKeys[i]).send(txParams)
+      .on('receipt', (receipt: any) => {
+        if (!receipt.status) {
+          console.error(`Claim for ${eths[i]} FAILED! Hash:
+          ${receipt.transactionHash}`);
+        } else {
+          if (noisy) {
+            console.log(`Claim to ${eths[i]} succeeded. Hash:
+            ${receipt.transactionHash}`);
+          }
+        }
+      });
+
+      promises.push(txPromise);
+      
+      i++;
   }
 
   await Promise.all(promises);
