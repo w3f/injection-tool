@@ -12,6 +12,11 @@ Optionally you can pass the `--gas <GAS>` and `--gasPrice <GAS_PRICE>` flags. Th
 
 ## Deploy the Kusama claim contract
 
+Modifiy the `src/deploy.ts` file with the correct parameters.
+
+```
+yarn deploy
+```
 
 
 ## Inject Indices
