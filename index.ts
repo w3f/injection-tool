@@ -3,6 +3,7 @@ import parse from 'csv-parse/lib/sync';
 import fs from 'fs';
 
 import {
+  convertFromDecimalString,
   initClaims,
   injectAmends,
   injectIndices,
@@ -81,10 +82,10 @@ program
   .option('--indices <file>', 'CSV file of indices')
   .option('--vesting <file>', 'CSV file of vestings')
   .option('--claims <address>', 'Supply the address of the Claims contract')
-  .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract')
+  .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract', '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907')
   .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
   .option('--from <sender>', 'Supply the sender of the transaction')
-  .option('--gasPrice <number>', 'Supply the gasPrice in wei of the transaction (default: 200000000)', '2000000000')
+  .option('--gasPrice <number>', 'Supply the gasPrice in wei of the transaction (default: 200000000)', '200000000')
   .option('--gas <amount>', 'Supply the amount of gas to send with the transaction (default: 500000)', '3000000')
   .action(async (cmd: any) => {
     try {
@@ -167,12 +168,16 @@ program
         const csv = fs.readFileSync(cmd.vesting, { encoding: 'utf-8' });
         const parsed = parse(csv);
 
-        const sanitize = (input: any) => {
-          input = input[0]
-          return input.filter(Boolean)
-        }
-
-        const input = sanitize(parsed);
+        let addresses: any[] = [];
+        let amounts: any[] = [];
+        parsed.forEach((entry: any) => {
+          addresses.push(entry[0]);
+          if (entry[1].indexOf('.') != -1) {
+            amounts.push(convertFromDecimalString(entry[1]));
+          } else {
+            amounts.push(entry[1]);
+          }
+        })
 
         let txParams: any = {
           from: cmd.from,
@@ -180,7 +185,7 @@ program
           gas: cmd.gas,
         };
 
-        await injectVesting(claimsContract, input, txParams);
+        await injectVesting(claimsContract, addresses, amounts, txParams);
       }
     } catch (err) {
       console.error(err);

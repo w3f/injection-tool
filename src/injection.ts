@@ -135,7 +135,6 @@ export const injectIndices = async (
 
   step = Math.min(step, addresses.length);
 
-  let promises = [];
   for (let i = start, end = step; i <= addresses.length; i += step, end = Math.min(end + step, addresses.length)) {
     if (noisy) {
       console.log(`Indices | i: ${i} | end: ${end-1} | Sending...`);
@@ -155,10 +154,8 @@ export const injectIndices = async (
       }
     });
     
-    promises.push(txPromise);
+    await txPromise;
   }
-
-  await Promise.all(promises);
 
   return true;
 }
@@ -166,6 +163,7 @@ export const injectIndices = async (
 export const injectVesting = async (
   claims: Contract,
   addresses: string[],
+  amounts: string[],
   txParams: TxParams,
   start: number = 0,
   step: number = 50,
@@ -181,8 +179,9 @@ export const injectVesting = async (
     }
 
     const vestingArg = addresses.slice(i, end-1);
+    const amtArg = amounts.slice(i, end-1);
 
-    const txPromise = claims.methods.setVesting(vestingArg).send(txParams)
+    const txPromise = claims.methods.setVesting(vestingArg, amtArg).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
         console.error(`Vesting | i: ${i} | end: ${end-1} | FAILED`);

@@ -42,6 +42,6 @@ const deployClaims = async (txParams: any) => {
   console.log('done');
 
   // 3) Make injections
-  
+  // 3.1) Make allocations injections
 
 })();
