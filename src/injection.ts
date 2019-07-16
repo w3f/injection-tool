@@ -28,12 +28,12 @@ export const convertFromDecimalString = (decimalString: any) => {
 }
 
 export const initClaims = (address: string, provider: string) => {
-  const w3 = new Web3(new Web3.providers.HttpProvider(provider));
+  const w3 = new Web3(new Web3.providers.WebsocketProvider(provider));
   return new w3.eth.Contract(Claims.abi, address);
 }
 
 export const initFrozenToken = (address: string, provider: string) => {
-  const w3 = new Web3(new Web3.providers.HttpProvider(provider));
+  const w3 = new Web3(new Web3.providers.WebsocketProvider(provider));
   return new w3.eth.Contract(FrozenToken.abi, address);
 }
 
