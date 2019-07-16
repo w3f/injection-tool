@@ -1,15 +1,11 @@
 import Web3 from 'web3';
 
-import {
-  initFrozenToken,
-} from './injection';
-
 const Claims = require('../build/contracts/Claims.json');
 
 const DOT_ALLOCATION_INDICATOR = '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907';
-const OWNER = '';
+const OWNER = '0x00444c3281dadacb6e7c55357e5a7BBD92C2DC34';
 
-const providerUrl = '';
+const providerUrl = 'ws://127.0.0.1:8546';
 
 const w3 = new Web3(new Web3.providers.WebsocketProvider(providerUrl));
 
@@ -25,9 +21,9 @@ const deployClaims = async (txParams: any) => {
 
 (async () => {
   const txParams = {
-    from: '',
-    gas: '',
-    gasPrice: '',
+    from: '0x00444c3281dadacb6e7c55357e5a7BBD92C2DC34',
+    gas: '1500000',
+    gasPrice: '29500000000',
   };
 
   // 1) deploy Claims
@@ -37,9 +33,9 @@ const deployClaims = async (txParams: any) => {
   console.log(`Claims address: ${claimsContract.options.address}`)
 
   // 2) initialize Frozen Token
-  process.stdout.write('Initializing the Frozen Token contract...')
-  const frozenTokenContract = await initFrozenToken(DOT_ALLOCATION_INDICATOR, providerUrl);
-  console.log('done');
+  // process.stdout.write('Initializing the Frozen Token contract...')
+  // const frozenTokenContract = await initFrozenToken(DOT_ALLOCATION_INDICATOR, providerUrl);
+  // console.log('done');
 
   // 3) Make injections
   // 3.1) Make allocations injections
