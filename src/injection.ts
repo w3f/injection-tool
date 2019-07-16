@@ -13,9 +13,12 @@ type TxParams = {
 }
 
 export const convertFromDecimalString = (decimalString: any) => {
-  const [ units, decimals ] = decimalString.split('.');
-  if (decimals.length != 3) {
+  let [ units, decimals ] = decimalString.split('.');
+  if (decimals.length > 3) {
     throw new Error('Incorrect input ' + decimalString + ' given to convertFromDecimalString');
+  }
+  if (decimals.length < 3) {
+    decimals = decimals.padEnd(3, '0');
   }
   return units.concat(decimals).replace(/^0+/, '');
 }
