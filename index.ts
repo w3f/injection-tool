@@ -13,6 +13,7 @@ import {
   injectClaims,
 } from './src/injection';
 import { getAllTokenHolders, getFullDataFromState, writeGenesis } from './src/scrape';
+import Web3 from 'web3';
 
 const Template = require('./template.json');
 
@@ -89,6 +90,7 @@ program
   .option('--from <sender>', 'Supply the sender of the transaction')
   .option('--gasPrice <number>', 'Supply the gasPrice in wei of the transaction (default: 29500000000)', '29500000000')
   .option('--gas <amount>', 'Supply the amount of gas to send with the transaction (default: 500000)', '3000000')
+  .option('--password', 'Supply your password for personal rpc methods')
   .action(async (cmd: any) => {
     try {
       if (!cmd.from) {
@@ -96,6 +98,8 @@ program
       }
 
       const claimsContract = initClaims(cmd.claims, cmd.provider);
+
+      const w3 = new Web3(new Web3.providers.WebsocketProvider(cmd.provider));
 
       if (cmd.claimFile) {
         const csv = fs.readFileSync(cmd.claimFile, { encoding: 'utf-8' });
@@ -114,7 +118,7 @@ program
           gas: cmd.gas,
         };
 
-        await injectClaims(claimsContract, eths, pubKeys, txParams);
+        await injectClaims(claimsContract, eths, pubKeys, txParams, w3, cmd.password);
       }
 
 
@@ -140,7 +144,7 @@ program
           gas: cmd.gas,
         };
 
-        await injectAllocations(frozenTokenContract, addresses, balances, txParams);
+        await injectAllocations(frozenTokenContract, addresses, balances, txParams, w3, cmd.password);
       }
 
       if (cmd.amends) {
@@ -160,7 +164,7 @@ program
           gas: cmd.gas,
         };
 
-        await injectAmends(claimsContract, originals, amends, txParams);
+        await injectAmends(claimsContract, originals, amends, txParams, w3, cmd.password);
       }
 
       if (cmd.indices) {
@@ -180,7 +184,7 @@ program
           gas: cmd.gas,
         };
 
-        await injectIndices(claimsContract, input, txParams);
+        await injectIndices(claimsContract, input, txParams, w3, cmd.password);
       }
 
       if (cmd.vesting) {
@@ -200,7 +204,7 @@ program
           gas: cmd.gas,
         };
 
-        await injectVesting(claimsContract, addresses, amounts, txParams);
+        await injectVesting(claimsContract, addresses, amounts, txParams, w3, cmd.password);
       }
     } catch (err) {
       console.error(err);

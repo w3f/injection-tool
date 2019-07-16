@@ -2,6 +2,8 @@ import Web3 from 'web3';
 
 const Claims = require('../build/contracts/Claims.json');
 
+const PASSWORD = '';
+
 const DOT_ALLOCATION_INDICATOR = '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907';
 const OWNER = '0x00444c3281dadacb6e7c55357e5a7BBD92C2DC34';
 
@@ -9,14 +11,17 @@ const providerUrl = 'ws://127.0.0.1:8546';
 
 const w3 = new Web3(new Web3.providers.WebsocketProvider(providerUrl));
 
-const deployClaims = async (txParams: any) => {
-  return (new w3.eth.Contract(Claims.abi)).deploy({
+const deployClaims = async (txParams: any, password: string) => {
+  const encoded = (new w3.eth.Contract(Claims.abi)).deploy({
     data: Claims.bytecode,
     arguments: [
       OWNER,
       DOT_ALLOCATION_INDICATOR,
     ],
-  }).send(txParams);
+  }).encodeABI();
+
+  let tx = Object.assign(txParams, { data: encoded });
+  return w3.eth.personal.sendTransaction(tx, password);
 }
 
 (async () => {
@@ -28,9 +33,9 @@ const deployClaims = async (txParams: any) => {
 
   // 1) deploy Claims
   process.stdout.write('Deploying the Claims contract...');
-  const claimsContract = await deployClaims(txParams);
+  const claimsHash = await deployClaims(txParams, PASSWORD);
   console.log('done');
-  console.log(`Claims address: ${claimsContract.options.address}`)
+  console.log(`Claims transaction hash: ${claimsHash}`)
 
   // 2) initialize Frozen Token
   // process.stdout.write('Initializing the Frozen Token contract...')

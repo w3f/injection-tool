@@ -1,4 +1,5 @@
 import Web3 from "web3";
+import { win32 } from "path";
 
 const Claims = require('../build/contracts/Claims.json');
 const FrozenToken = require('../build/contracts/FrozenToken.json');
@@ -42,6 +43,8 @@ export const injectAllocations = async (
   addresses: string[],
   balances: string[],
   txParams: TxParams,
+  w3: any,
+  password: string,
   noisy: boolean = true,
 ) => {
 
@@ -56,18 +59,10 @@ export const injectAllocations = async (
       console.log(`Sending transfer of ${balances[i]} FrozenToken to ${addresses[i]}`);
     }
 
-    const txPromise = frozenToken.methods.transfer(addresses[i], balances[i]).send(txParams)
-    .on('receipt', (receipt: any) => {
-      if (!receipt.status) {
-        console.error(`Transaction to ${receipt.to} FAILED! Hash:
-        ${receipt.transactionHash}`);
-      } else {
-        if (noisy) {
-          console.log(`Transfer to ${receipt.to} succeeded. Hash:
-          ${receipt.transactionHash}`);
-        }
-      }
-    });
+    const encoded = frozenToken.methods.transfer(addresses[i], balances[i]).encodeABI();
+    let tx = Object.assign(txParams, { data: encoded, to: frozenToken.options.address });
+
+    const txPromise = w3.eth.personal.sendTransaction(tx, password);
 
     promises.push(txPromise);
 
@@ -82,6 +77,8 @@ export const injectAmends = async (
   originals: string[], 
   amends: string[], 
   txParams: TxParams, 
+  w3: any,
+  password: string,
   step: number = 50,
   noisy: boolean = true,
 ): Promise<boolean> => {
@@ -100,17 +97,10 @@ export const injectAmends = async (
     const originalsArg = originals.slice(i, end);
     const amendsArg = amends.slice(i, end);
 
-    const txPromise = claims.methods.amend(originalsArg, amendsArg).send(txParams)
-    .on('receipt', (receipt: any) => {
-      if (!receipt.status) {
-        console.error(`Amends | i: ${i} | end: ${end-1} | FAILED`);
-      } else {
-        if (noisy) {
-          console.log(`Amends | i: ${i} | end: ${end-1} | Succeeded
-  Hash: ${receipt.transactionHash}`);
-        }
-      }
-    });
+    const encoded = claims.methods.amend(originalsArg, amendsArg).encodeABI();
+    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
+
+    const txPromise = w3.eth.personal.sendTransaction(tx, password);
 
     promises.push(txPromise);
   }
@@ -124,6 +114,8 @@ export const injectIndices = async (
   claims: Contract,
   addresses: string[],
   txParams: TxParams,
+  w3: any,
+  password: string,
   start: number = 0,
   step: number = 50,
   noisy: boolean = true,
@@ -138,17 +130,10 @@ export const injectIndices = async (
 
     const indicesArg = addresses.slice(i, end);
 
-    const txPromise = claims.methods.assignIndices(indicesArg).send(txParams)
-    .on('receipt', (receipt: any) => {
-      if (!receipt.status) {
-        console.error(`Indices | i: ${i} | end: ${end-1} | FAILED`);
-      } else {
-        if (noisy) {
-          console.log(`Indices | i: ${i} | end: ${end-1} | Succeeded
-  Hash: ${receipt.transactionHash}`);
-        }
-      }
-    });
+    const encoded = claims.methods.assignIndices(indicesArg).encodeABI();
+    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
+
+    const txPromise = w3.eth.personal.sendTransaction(tx, password);
     
     await txPromise;
   }
@@ -161,6 +146,8 @@ export const injectVesting = async (
   addresses: string[],
   amounts: string[],
   txParams: TxParams,
+  w3: any,
+  password: string,
   start: number = 0,
   step: number = 50,
   noisy: boolean = true,
@@ -177,17 +164,10 @@ export const injectVesting = async (
     const vestingArg = addresses.slice(i, end);
     const amtArg = amounts.slice(i, end);
 
-    const txPromise = claims.methods.setVesting(vestingArg, amtArg).send(txParams)
-    .on('receipt', (receipt: any) => {
-      if (!receipt.status) {
-        console.error(`Vesting | i: ${i} | end: ${end-1} | FAILED`);
-      } else {
-        if (noisy) {
-          console.log(`Vesting | i: ${i} | end: ${end-1} | Succeeded
-  Hash: ${receipt.transactionHash}`);
-        }
-      }
-    });
+    const encoded = claims.methods.setVesting(vestingArg, amtArg).encodeABI();
+    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
+
+    const txPromise = w3.eth.personal.sendTransaction(tx, password);
     
     promises.push(txPromise);
   }
@@ -203,6 +183,8 @@ export const injectClaims = async (
   eths: string[],
   pubKeys: string[],
   txParams: TxParams,
+  w3: any,
+  password: string,
   start: number = 0,
   step: number = 50,
   noisy: boolean = true,
@@ -221,22 +203,14 @@ export const injectClaims = async (
       console.log(`Sending claim for allocation at ${eths[i]}...`);
     }
 
-    const txPromise = claims.methods.claim(eths[i], pubKeys[i]).send(txParams)
-      .on('receipt', (receipt: any) => {
-        if (!receipt.status) {
-          console.error(`Claim for ${eths[i]} FAILED! Hash:
-          ${receipt.transactionHash}`);
-        } else {
-          if (noisy) {
-            console.log(`Claim to ${eths[i]} succeeded. Hash:
-            ${receipt.transactionHash}`);
-          }
-        }
-      });
+    const encoded = claims.methods.claim(eths[i], pubKeys[i]).encodeABI();
+    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
 
-      promises.push(txPromise);
-      
-      i++;
+    const txPromise = w3.eth.personal.sendTransaction(tx, password);
+
+    promises.push(txPromise);
+    
+    i++;
   }
 
   await Promise.all(promises);
