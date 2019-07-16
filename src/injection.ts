@@ -77,21 +77,21 @@ export const injectAmends = async (
   step = Math.min(step, amends.length);
 
   let promises = [];
-  for (let i = 0, end = step; i <= amends.length-1; i += step, end = Math.min(end + step, amends.length-1)) {
+  for (let i = 0, end = step; i <= amends.length; i += step, end = Math.min(end + step, amends.length)) {
     if (noisy) {
-      console.log(`Amends | i: ${i} | end: ${end} | Sending...`);
+      console.log(`Amends | i: ${i} | end: ${end-1} | Sending...`);
     }
 
-    const originalsArg = originals.slice(i, end);
-    const amendsArg = amends.slice(i, end);
+    const originalsArg = originals.slice(i, end-1);
+    const amendsArg = amends.slice(i, end-1);
 
     const txPromise = claims.methods.amend(originalsArg, amendsArg).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
-        console.error(`Amends | i: ${i} | end: ${end} | FAILED`);
+        console.error(`Amends | i: ${i} | end: ${end-1} | FAILED`);
       } else {
         if (noisy) {
-          console.log(`Amends | i: ${i} | end: ${end} | Succeeded
+          console.log(`Amends | i: ${i} | end: ${end-1} | Succeeded
   Hash: ${receipt.transactionHash}`);
         }
       }
@@ -115,23 +115,23 @@ export const injectIndices = async (
   noisy: boolean = true,
 ): Promise<boolean> => {
 
-  step = Math.min(step, addresses.length-1);
+  step = Math.min(step, addresses.length);
 
   let promises = [];
-  for (let i = start, end = step; i < addresses.length-1; i += step, end = Math.min(end + step, addresses.length-1)) {
+  for (let i = start, end = step; i <= addresses.length; i += step, end = Math.min(end + step, addresses.length)) {
     if (noisy) {
-      console.log(`Indices | i: ${i} | end: ${end} | Sending...`);
+      console.log(`Indices | i: ${i} | end: ${end-1} | Sending...`);
     }
 
-    const indicesArg = addresses.slice(i, end);
+    const indicesArg = addresses.slice(i, end-1);
 
     const txPromise = claims.methods.assignIndices(indicesArg).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
-        console.error(`Indices | i: ${i} | end: ${end} | FAILED`);
+        console.error(`Indices | i: ${i} | end: ${end-1} | FAILED`);
       } else {
         if (noisy) {
-          console.log(`Indices | i: ${i} | end: ${end} | Succeeded
+          console.log(`Indices | i: ${i} | end: ${end-1} | Succeeded
   Hash: ${receipt.transactionHash}`);
         }
       }
@@ -154,23 +154,23 @@ export const injectVesting = async (
   noisy: boolean = true,
 ): Promise<boolean> => {
 
-  step = Math.min(step, addresses.length-1);
+  step = Math.min(step, addresses.length);
 
   let promises = [];
-  for (let i = start, end = step; i < addresses.length-1; i += step, step = Math.min(end + step, addresses.length-1)) {
+  for (let i = start, end = step; i <= addresses.length; i += step, step = Math.min(end + step, addresses.length)) {
     if (noisy) {
-      console.log(`Vesting | i: ${i} | end: ${end} | Sending...`);
+      console.log(`Vesting | i: ${i} | end: ${end-1} | Sending...`);
     }
 
-    const vestingArg = addresses.slice(i, end);
+    const vestingArg = addresses.slice(i, end-1);
 
     const txPromise = claims.methods.setVesting(vestingArg).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
-        console.error(`Vesting | i: ${i} | end: ${end} | FAILED`);
+        console.error(`Vesting | i: ${i} | end: ${end-1} | FAILED`);
       } else {
         if (noisy) {
-          console.log(`Vesting | i: ${i} | end: ${end} | Succeeded
+          console.log(`Vesting | i: ${i} | end: ${end-1} | Succeeded
   Hash: ${receipt.transactionHash}`);
         }
       }

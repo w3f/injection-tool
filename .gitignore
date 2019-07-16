@@ -4,3 +4,4 @@ kusama.json
 *.csv
 kusama.json
 internal
+src/test.ts
