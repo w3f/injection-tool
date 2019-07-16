@@ -12,6 +12,14 @@ type TxParams = {
   gasPrice?: string,
 }
 
+export const convertFromDecimalString = (decimalString: any) => {
+  const [ units, decimals ] = decimalString.split('.');
+  if (decimals.length != 3) {
+    throw new Error('Incorrect input ' + decimalString + ' given to convertFromDecimalString');
+  }
+  return units.concat(decimals).replace(/^0+/, '');
+}
+
 export const initClaims = (address: string, provider: string) => {
   const w3 = new Web3(new Web3.providers.HttpProvider(provider));
   return new w3.eth.Contract(Claims.abi, address);
@@ -41,7 +49,17 @@ export const injectAllocations = async (
       console.log(`Sending transfer of ${balances[i]} FrozenToken to ${addresses[i]}`);
     }
 
-    const txPromise = frozenToken.methods.transfer(addresses[i], balances[i]).send(txParams)
+    let bal;
+    if (balances[i].indexOf('.') != -1) {
+      // formatted with 3 decimals
+      // remove them
+      bal = convertFromDecimalString(balances[i]);
+    } else {
+      // already formatted
+      bal = balances[i];
+    }
+
+    const txPromise = frozenToken.methods.transfer(addresses[i], bal).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
         console.error(`Transaction to ${receipt.to} FAILED! Hash:

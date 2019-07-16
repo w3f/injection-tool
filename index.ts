@@ -107,7 +107,11 @@ program
         let balances: any[] = [];
         parsed.forEach((entry: any) => {
           addresses.push(entry[0]);
-          balances.push(entry[1]);
+          if (entry[1].indexOf('.') != -1) {
+            balances.push(convertFromDecimalString(entry[1]));
+          } else {
+            balances.push(entry[1]);
+          }
         });
 
         let txParams: any = {
