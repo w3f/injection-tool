@@ -97,8 +97,8 @@ export const injectAmends = async (
       console.log(`Amends | i: ${i} | end: ${end-1} | Sending...`);
     }
 
-    const originalsArg = originals.slice(i, end-1);
-    const amendsArg = amends.slice(i, end-1);
+    const originalsArg = originals.slice(i, end);
+    const amendsArg = amends.slice(i, end);
 
     const txPromise = claims.methods.amend(originalsArg, amendsArg).send(txParams)
     .on('receipt', (receipt: any) => {
@@ -115,7 +115,6 @@ export const injectAmends = async (
     promises.push(txPromise);
   }
 
-  
   await Promise.all(promises);
 
   return true;
@@ -137,7 +136,7 @@ export const injectIndices = async (
       console.log(`Indices | i: ${i} | end: ${end-1} | Sending...`);
     }
 
-    const indicesArg = addresses.slice(i, end-1);
+    const indicesArg = addresses.slice(i, end);
 
     const txPromise = claims.methods.assignIndices(indicesArg).send(txParams)
     .on('receipt', (receipt: any) => {
@@ -175,8 +174,8 @@ export const injectVesting = async (
       console.log(`Vesting | i: ${i} | end: ${end-1} | Sending...`);
     }
 
-    const vestingArg = addresses.slice(i, end-1);
-    const amtArg = amounts.slice(i, end-1);
+    const vestingArg = addresses.slice(i, end);
+    const amtArg = amounts.slice(i, end);
 
     const txPromise = claims.methods.setVesting(vestingArg, amtArg).send(txParams)
     .on('receipt', (receipt: any) => {
@@ -209,7 +208,7 @@ export const injectClaims = async (
   noisy: boolean = true,
 ): Promise<boolean> => {
 
-  step = Math.min(step, eths.length-1);
+  step = Math.min(step, eths.length);
 
   if (eths.length != pubKeys.length) {
     throw new Error('ERROR: provided args `eths` and `pubKeys` as arrays of different lengths.');
