@@ -87,7 +87,7 @@ program
   .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract', '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907')
   .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
   .option('--from <sender>', 'Supply the sender of the transaction')
-  .option('--gasPrice <number>', 'Supply the gasPrice in wei of the transaction (default: 2000000000)', '2000000000')
+  .option('--gasPrice <number>', 'Supply the gasPrice in wei of the transaction (default: 21500000000)', '21500000000')
   .option('--gas <amount>', 'Supply the amount of gas to send with the transaction (default: 500000)', '3000000')
   .action(async (cmd: any) => {
     try {
