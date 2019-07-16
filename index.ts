@@ -108,11 +108,7 @@ program
         let balances: any[] = [];
         parsed.forEach((entry: any) => {
           addresses.push(entry[0]);
-          if (entry[1].indexOf('.') != -1) {
-            balances.push(convertFromDecimalString(entry[1]));
-          } else {
-            balances.push(entry[1]);
-          }
+          balances.push(convertFromDecimalString(entry[1]));
         });
 
         let txParams: any = {
@@ -172,11 +168,7 @@ program
         let amounts: any[] = [];
         parsed.forEach((entry: any) => {
           addresses.push(entry[0]);
-          if (entry[1].indexOf('.') != -1) {
-            amounts.push(convertFromDecimalString(entry[1]));
-          } else {
-            amounts.push(entry[1]);
-          }
+          amounts.push(convertFromDecimalString(entry[1]));
         })
 
         let txParams: any = {

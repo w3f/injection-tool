@@ -13,6 +13,10 @@ type TxParams = {
 }
 
 export const convertFromDecimalString = (decimalString: any) => {
+  if (decimalString.indexOf('.') == -1) {
+    return decimalString.concat('000');
+  }
+  
   let [ units, decimals ] = decimalString.split('.');
   if (decimals.length > 3) {
     throw new Error('Incorrect input ' + decimalString + ' given to convertFromDecimalString');
@@ -52,17 +56,7 @@ export const injectAllocations = async (
       console.log(`Sending transfer of ${balances[i]} FrozenToken to ${addresses[i]}`);
     }
 
-    let bal;
-    if (balances[i].indexOf('.') != -1) {
-      // formatted with 3 decimals
-      // remove them
-      bal = convertFromDecimalString(balances[i]);
-    } else {
-      // already formatted
-      bal = balances[i];
-    }
-
-    const txPromise = frozenToken.methods.transfer(addresses[i], bal).send(txParams)
+    const txPromise = frozenToken.methods.transfer(addresses[i], balances[i]).send(txParams)
     .on('receipt', (receipt: any) => {
       if (!receipt.status) {
         console.error(`Transaction to ${receipt.to} FAILED! Hash:
