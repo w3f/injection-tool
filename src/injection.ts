@@ -1,5 +1,8 @@
 import Web3 from "web3";
-import { win32 } from "path";
+import Api from '@parity/api';
+
+const provider = new Api.Provider.WebsocketProvider('ws://localhost:8546');
+const api = new Api(provider);
 
 const Claims = require('../build/contracts/Claims.json');
 const FrozenToken = require('../build/contracts/FrozenToken.json');
@@ -14,6 +17,7 @@ type TxParams = {
 }
 
 function sleep(ms: any) {
+  let nonceCounter = 0;
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -56,6 +60,8 @@ export const injectAllocations = async (
     throw new Error('Attempted to supply arrays of non-equal lengths to `injectAllocations`!');
   }
 
+  const startingNonce = await api.parity.nextNonce(txParams.from);
+
   let i = 0;
   while (i < addresses.length) {
     if (noisy) {
@@ -63,10 +69,10 @@ export const injectAllocations = async (
     }
 
     const encoded = frozenToken.methods.transfer(addresses[i], balances[i]).encodeABI();
-    let tx = Object.assign(txParams, { data: encoded, to: frozenToken.options.address });
+    let tx = Object.assign(txParams, { data: encoded, to: frozenToken.options.address, nonce: startingNonce + i });
 
     const txHash = await w3.eth.personal.sendTransaction(tx, password); 
-    
+
     console.log(`Hash: ${txHash}`);
 
     await sleep(2000);
@@ -91,6 +97,9 @@ export const injectAmends = async (
 
   step = Math.min(step, amends.length);
 
+  const startingNonce = await api.parity.nextNonce(txParams.from);
+  let nonceCounter = 0;
+
   for (let i = 0, end = step; i <= amends.length; i += step, end = Math.min(end + step, amends.length)) {
     if (noisy) {
       console.log(`Amends | i: ${i} | end: ${end-1} | Sending...`);
@@ -100,12 +109,13 @@ export const injectAmends = async (
     const amendsArg = amends.slice(i, end);
 
     const encoded = claims.methods.amend(originalsArg, amendsArg).encodeABI();
-    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
+    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address, nonce: startingNonce + nonceCounter });
 
     const txHash = await w3.eth.personal.sendTransaction(tx, password);
 
     console.log(`Hash: ${txHash}`);
 
+    nonceCounter++;
     await sleep(2000);
   }
 
@@ -126,6 +136,9 @@ export const injectIndices = async (
 
   step = Math.min(step, addresses.length);
 
+  const startingNonce = await api.parity.nextNonce(txParams.from);
+  let nonceCounter = 0;
+
   for (let i = start, end = step; i <= addresses.length; i += step, end = Math.min(end + step, addresses.length)) {
     if (noisy) {
       console.log(`Indices | i: ${i} | end: ${end-1} | Sending...`);
@@ -134,11 +147,13 @@ export const injectIndices = async (
     const indicesArg = addresses.slice(i, end);
 
     const encoded = claims.methods.assignIndices(indicesArg).encodeABI();
-    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
+    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address, nonce: startingNonce + nonceCounter });
 
     const txHash = await w3.eth.personal.sendTransaction(tx, password);
     
     console.log(`Hash: ${txHash}`);
+
+    nonceCounter++;
 
     await sleep(2000);
   }
@@ -160,6 +175,9 @@ export const injectVesting = async (
 
   step = Math.min(step, addresses.length);
 
+  const startingNonce = await api.parity.nextNonce(txParams.from);
+  let nonceCounter = 0;
+
   for (let i = start, end = step; i <= addresses.length; i += step, step = Math.min(end + step, addresses.length)) {
     if (noisy) {
       console.log(`Vesting | i: ${i} | end: ${end-1} | Sending...`);
@@ -169,11 +187,13 @@ export const injectVesting = async (
     const amtArg = amounts.slice(i, end);
 
     const encoded = claims.methods.setVesting(vestingArg, amtArg).encodeABI();
-    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
+    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address, nonce: startingNonce + nonceCounter });
 
     const txHash = await w3.eth.personal.sendTransaction(tx, password);
     
     console.log(`Hash: ${txHash}`);
+
+    nonceCounter++;
 
     await sleep(2000);
   }
@@ -200,6 +220,8 @@ export const injectClaims = async (
     throw new Error('ERROR: provided args `eths` and `pubKeys` as arrays of different lengths.');
   }
 
+  const startingNonce = await api.parity.nextNonce(txParams.from);
+
   let i = 0;
   while (i < eths.length) {
     if (noisy) {
@@ -207,7 +229,7 @@ export const injectClaims = async (
     }
 
     const encoded = claims.methods.claim(eths[i], pubKeys[i]).encodeABI();
-    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
+    let tx = Object.assign(txParams, { data: encoded, to: claims.options.address, nonce: startingNonce + i });
 
     const txHash = await w3.eth.personal.sendTransaction(tx, password);
 
