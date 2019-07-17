@@ -53,7 +53,6 @@ export const injectAllocations = async (
   }
 
   let i = 0;
-  let promises = [];
   while (i < addresses.length) {
     if (noisy) {
       console.log(`Sending transfer of ${balances[i]} FrozenToken to ${addresses[i]}`);
@@ -62,14 +61,12 @@ export const injectAllocations = async (
     const encoded = frozenToken.methods.transfer(addresses[i], balances[i]).encodeABI();
     let tx = Object.assign(txParams, { data: encoded, to: frozenToken.options.address });
 
-    const txPromise = w3.eth.personal.sendTransaction(tx, password);
+    const txHash = await w3.eth.personal.sendTransaction(tx, password);
 
-    promises.push(txPromise);
+    console.log(`Hash: ${txHash}`);
 
     i++;
   }
-
-  await Promise.all(promises);
 }
 
 export const injectAmends = async (
@@ -88,7 +85,6 @@ export const injectAmends = async (
 
   step = Math.min(step, amends.length);
 
-  let promises = [];
   for (let i = 0, end = step; i <= amends.length; i += step, end = Math.min(end + step, amends.length)) {
     if (noisy) {
       console.log(`Amends | i: ${i} | end: ${end-1} | Sending...`);
@@ -100,12 +96,11 @@ export const injectAmends = async (
     const encoded = claims.methods.amend(originalsArg, amendsArg).encodeABI();
     let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
 
-    const txPromise = w3.eth.personal.sendTransaction(tx, password);
+    const txHash = await w3.eth.personal.sendTransaction(tx, password);
 
-    promises.push(txPromise);
+    console.log(`Hash: ${txHash}`);
   }
 
-  await Promise.all(promises);
 
   return true;
 }
@@ -133,9 +128,9 @@ export const injectIndices = async (
     const encoded = claims.methods.assignIndices(indicesArg).encodeABI();
     let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
 
-    const txPromise = w3.eth.personal.sendTransaction(tx, password);
+    const txHash = await w3.eth.personal.sendTransaction(tx, password);
     
-    await txPromise;
+    console.log(`Hash: ${txHash}`);
   }
 
   return true;
@@ -155,7 +150,6 @@ export const injectVesting = async (
 
   step = Math.min(step, addresses.length);
 
-  let promises = [];
   for (let i = start, end = step; i <= addresses.length; i += step, step = Math.min(end + step, addresses.length)) {
     if (noisy) {
       console.log(`Vesting | i: ${i} | end: ${end-1} | Sending...`);
@@ -167,12 +161,10 @@ export const injectVesting = async (
     const encoded = claims.methods.setVesting(vestingArg, amtArg).encodeABI();
     let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
 
-    const txPromise = w3.eth.personal.sendTransaction(tx, password);
+    const txHash = await w3.eth.personal.sendTransaction(tx, password);
     
-    promises.push(txPromise);
+    console.log(`Hash: ${txHash}`);
   }
-
-  await Promise.all(promises);
 
   return true;
 }
@@ -197,7 +189,6 @@ export const injectClaims = async (
   }
 
   let i = 0;
-  let promises = [];
   while (i < eths.length) {
     if (noisy) {
       console.log(`Sending claim for allocation at ${eths[i]}...`);
@@ -206,14 +197,12 @@ export const injectClaims = async (
     const encoded = claims.methods.claim(eths[i], pubKeys[i]).encodeABI();
     let tx = Object.assign(txParams, { data: encoded, to: claims.options.address });
 
-    const txPromise = w3.eth.personal.sendTransaction(tx, password);
+    const txHash = await w3.eth.personal.sendTransaction(tx, password);
 
-    promises.push(txPromise);
+    console.log(`Hash: ${txHash}`);
     
     i++;
   }
-
-  await Promise.all(promises);
 
   return true;
 }
