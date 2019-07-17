@@ -1,4 +1,7 @@
 import Web3 from "web3";
+
+const utils = (new Web3()).utils;
+
 // @ts-ignore
 import Api from '@parity/api';
 
@@ -61,7 +64,7 @@ export const injectAllocations = async (
     throw new Error('Attempted to supply arrays of non-equal lengths to `injectAllocations`!');
   }
 
-  const startingNonce = await api.parity.nextNonce(txParams.from);
+  const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
 
   let i = 0;
   while (i < addresses.length) {
@@ -98,7 +101,7 @@ export const injectAmends = async (
 
   step = Math.min(step, amends.length);
 
-  const startingNonce = await api.parity.nextNonce(txParams.from);
+  const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
   let nonceCounter = 0;
 
   for (let i = 0, end = step; i <= amends.length; i += step, end = Math.min(end + step, amends.length)) {
@@ -137,7 +140,7 @@ export const injectIndices = async (
 
   step = Math.min(step, addresses.length);
 
-  const startingNonce = await api.parity.nextNonce(txParams.from);
+  const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
   let nonceCounter = 0;
 
   for (let i = start, end = step; i <= addresses.length; i += step, end = Math.min(end + step, addresses.length)) {
@@ -176,7 +179,7 @@ export const injectVesting = async (
 
   step = Math.min(step, addresses.length);
 
-  const startingNonce = await api.parity.nextNonce(txParams.from);
+  const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
   let nonceCounter = 0;
 
   for (let i = start, end = step; i <= addresses.length; i += step, step = Math.min(end + step, addresses.length)) {
@@ -221,7 +224,7 @@ export const injectClaims = async (
     throw new Error('ERROR: provided args `eths` and `pubKeys` as arrays of different lengths.');
   }
 
-  const startingNonce = await api.parity.nextNonce(txParams.from);
+  const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
 
   let i = 0;
   while (i < eths.length) {
