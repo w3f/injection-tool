@@ -90,7 +90,7 @@ program
   .option('--from <string>', 'Supply the sender of the transaction')
   .option('--gasPrice <number>', 'Supply the gasPrice in wei of the transaction (default: 29500000000)', '29500000000')
   .option('--gas <amount>', 'Supply the amount of gas to send with the transaction (default: 500000)', '3000000')
-  .option('--password', 'Supply your password for personal rpc methods')
+  .option('--password <string>', 'Supply your password for personal rpc methods')
   .action(async (cmd: any) => {
     try {
       if (!cmd.from) {
