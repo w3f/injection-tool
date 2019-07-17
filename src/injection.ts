@@ -13,6 +13,10 @@ type TxParams = {
   gasPrice?: string,
 }
 
+function sleep(ms: any) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export const convertFromDecimalString = (decimalString: any) => {
   if (decimalString.indexOf('.') == -1) {
     return decimalString.concat('000');
@@ -61,9 +65,11 @@ export const injectAllocations = async (
     const encoded = frozenToken.methods.transfer(addresses[i], balances[i]).encodeABI();
     let tx = Object.assign(txParams, { data: encoded, to: frozenToken.options.address });
 
-    const txHash = await w3.eth.personal.sendTransaction(tx, password);
-
+    const txHash = await w3.eth.personal.sendTransaction(tx, password); 
+    
     console.log(`Hash: ${txHash}`);
+
+    await sleep(2000);
 
     i++;
   }
@@ -99,6 +105,8 @@ export const injectAmends = async (
     const txHash = await w3.eth.personal.sendTransaction(tx, password);
 
     console.log(`Hash: ${txHash}`);
+
+    await sleep(2000);
   }
 
 
@@ -131,6 +139,8 @@ export const injectIndices = async (
     const txHash = await w3.eth.personal.sendTransaction(tx, password);
     
     console.log(`Hash: ${txHash}`);
+
+    await sleep(2000);
   }
 
   return true;
@@ -164,6 +174,8 @@ export const injectVesting = async (
     const txHash = await w3.eth.personal.sendTransaction(tx, password);
     
     console.log(`Hash: ${txHash}`);
+
+    await sleep(2000);
   }
 
   return true;
@@ -200,6 +212,8 @@ export const injectClaims = async (
     const txHash = await w3.eth.personal.sendTransaction(tx, password);
 
     console.log(`Hash: ${txHash}`);
+
+    await sleep(2000);
     
     i++;
   }
