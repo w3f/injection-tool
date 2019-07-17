@@ -1,7 +1,9 @@
 import Web3 from "web3";
+// @ts-ignore
 import Api from '@parity/api';
 
-const provider = new Api.Provider.WebsocketProvider('ws://localhost:8546');
+// @ts-ignore
+const provider = new Api.Provider.Ws('ws://localhost:8546');
 const api = new Api(provider);
 
 const Claims = require('../build/contracts/Claims.json');
