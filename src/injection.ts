@@ -104,7 +104,7 @@ export const injectAmends = async (
   const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
   let nonceCounter = 0;
 
-  for (let i = 0, end = step; i <= amends.length; i += step, end = Math.min(end + step, amends.length)) {
+  for (let i = 0, end = step; i < amends.length; i += step, end = Math.min(end + step, amends.length)) {
     if (noisy) {
       console.log(`Amends | i: ${i} | end: ${end-1} | Sending...`);
     }
@@ -143,7 +143,7 @@ export const injectIndices = async (
   const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
   let nonceCounter = 0;
 
-  for (let i = start, end = step; i <= addresses.length; i += step, end = Math.min(end + step, addresses.length)) {
+  for (let i = start, end = step; i < addresses.length; i += step, end = Math.min(end + step, addresses.length)) {
     if (noisy) {
       console.log(`Indices | i: ${i} | end: ${end-1} | Sending...`);
     }
@@ -182,7 +182,7 @@ export const injectVesting = async (
   const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
   let nonceCounter = 0;
 
-  for (let i = start, end = step; i <= addresses.length; i += step, step = Math.min(end + step, addresses.length)) {
+  for (let i = start, end = step; i < addresses.length; i += step, step = Math.min(end + step, addresses.length)) {
     if (noisy) {
       console.log(`Vesting | i: ${i} | end: ${end-1} | Sending...`);
     }
