@@ -2,12 +2,12 @@
     "name": "Kusama",
     "id": "kusama",
     "bootNodes": [
-        "/dns4/p2p.pumpkin-0.kusama.network/tcp/30100/p2p/QmeCit3Nif4VfNqrEJsdYHZGcKzRCnZvGxg6hha1iNj4mk",
-        "/dns4/p2p.pumpkin-1.kusama.network/tcp/30100/p2p/QmchDJtEGiEWf7Ag58HNoTg9jSGzxkSZ23VgmF6xiLKKsZ",
-        "/dns4/p2p.pumpkin-2.kusama.network/tcp/30100/p2p/QmYG1YUekKETmD68yFKbjXDRbSAFULRRJpb1SbQPuSKA87",
-        "/dns4/p2p.pumpkin-3.kusama.network/tcp/30100/p2p/QmQv5EXUAfVt4gbupiuLDZP2Gd7ykK6YuXoYPkyLfLtJch",
-        "/dns4/p2p.pumpkin-4.kusama.network/tcp/30100/p2p/QmP3zYRhAxxw4fDf6Vq5agM8AZt1m2nKpPAEDmyEHPK5go",
-        "/dns4/p2p.pumpkin-5.kusama.network/tcp/30100/p2p/QmdePe9MiAJT4yHT2tEwmazCsckAZb19uaoSUgRDffPq3G"
+        "/dns4/p2p.testnet-0.kusama.network/tcp/30100/p2p/QmeCit3Nif4VfNqrEJsdYHZGcKzRCnZvGxg6hha1iNj4mk",
+        "/dns4/p2p.testnet-1.kusama.network/tcp/30100/p2p/QmchDJtEGiEWf7Ag58HNoTg9jSGzxkSZ23VgmF6xiLKKsZ",
+        "/dns4/p2p.testnet-2.kusama.network/tcp/30100/p2p/QmYG1YUekKETmD68yFKbjXDRbSAFULRRJpb1SbQPuSKA87",
+        "/dns4/p2p.testnet-3.kusama.network/tcp/30100/p2p/QmQv5EXUAfVt4gbupiuLDZP2Gd7ykK6YuXoYPkyLfLtJch",
+        "/dns4/p2p.testnet-4.kusama.network/tcp/30100/p2p/QmP3zYRhAxxw4fDf6Vq5agM8AZt1m2nKpPAEDmyEHPK5go",
+        "/dns4/p2p.testnet-5.kusama.network/tcp/30100/p2p/QmdePe9MiAJT4yHT2tEwmazCsckAZb19uaoSUgRDffPq3G"
     ],
     "telemetryEndpoints": [
 
@@ -22,12 +22,12 @@
         "runtime": {
             "aura": {
                 "authorities": [
-                  "5ECH2agQMGtSaPEh7uWebvQVHDb42RWy6bM3dEqmgFecMcTX",
-                  "5CqwbM9uWcwSnCz1mJ6kXr8KeHSeVe8tHQbHq9JiEowaCqGy",
-                  "5DNyWj96WdWE13TytQdpYYP7WHFqN7s9TpJUuqRsFenVpmb4",
-                  "5EqShgxW2QGWYWy4MnL6pnN7e21CbQhyCr2HkAZo5mT1Lzws",
-                  "5HnG5jmh7H6vYqwdfW7VFSZHgZDndKCgrYS4p9ypTU3a7LcH",
-                  "5EtSxEfvWpeuKbe3wrXyDR4PaBQrVzVR5nDtUhA6rudQyyFj"
+                    "5DBX7khaonKbGj2cffV6yzpndcBAyXJnLF5j2QpB6mpyq9hh",
+                    "5DY6QLwxempFvJ7fvA6xWhthgErwnEaWHcSd385rbDA6qUPY",
+                    "5GtMfznJnWpZR1nxLjo8a3VqdbfVGhQygQFK4jbjL82gmT5o",
+                    "5GFzUWeubNFRz2wc3YyPFAi4EvjuPpfga9rrqnNsM6squEdT",
+                    "5EAViDGBwAUJMTyMtNa2xRmpcei4XHLTbPLJQenyWjnqgb7Q",
+                    "5Hb4dYYcm8mpGGNWtBRNMknBZoH1J8J3iu2hJ519MnY4vjL8"
                 ]
             },
             "system": {
@@ -53,58 +53,44 @@
                 ]
             },
             "session": {
-                "validators": [
-                    "5ECH2agQMGtSaPEh7uWebvQVHDb42RWy6bM3dEqmgFecMcTX",
-                    "5CqwbM9uWcwSnCz1mJ6kXr8KeHSeVe8tHQbHq9JiEowaCqGy",
-                    "5DNyWj96WdWE13TytQdpYYP7WHFqN7s9TpJUuqRsFenVpmb4",
-                    "5EqShgxW2QGWYWy4MnL6pnN7e21CbQhyCr2HkAZo5mT1Lzws",
-                    "5HnG5jmh7H6vYqwdfW7VFSZHgZDndKCgrYS4p9ypTU3a7LcH",
-                    "5EtSxEfvWpeuKbe3wrXyDR4PaBQrVzVR5nDtUhA6rudQyyFj"
-                ],
-                "keys": [
-                    [
-                        "5ECH2agQMGtSaPEh7uWebvQVHDb42RWy6bM3dEqmgFecMcTX",
-                        [
-                        "5DBX7khaonKbGj2cffV6yzpndcBAyXJnLF5j2QpB6mpyq9hh",
-                        "5DBX7khaonKbGj2cffV6yzpndcBAyXJnLF5j2QpB6mpyq9hh"
-                        ]
-                    ],
-                    [
-                        "5CqwbM9uWcwSnCz1mJ6kXr8KeHSeVe8tHQbHq9JiEowaCqGy",
-                        [
-                        "5DY6QLwxempFvJ7fvA6xWhthgErwnEaWHcSd385rbDA6qUPY",
-                        "5DY6QLwxempFvJ7fvA6xWhthgErwnEaWHcSd385rbDA6qUPY"
-                        ]
-                    ],
-                    [
-                        "5DNyWj96WdWE13TytQdpYYP7WHFqN7s9TpJUuqRsFenVpmb4",
-                        [
-                        "5GtMfznJnWpZR1nxLjo8a3VqdbfVGhQygQFK4jbjL82gmT5o",
-                        "5GtMfznJnWpZR1nxLjo8a3VqdbfVGhQygQFK4jbjL82gmT5o"
-                        ]
-                    ],
-                    [
-                        "5EqShgxW2QGWYWy4MnL6pnN7e21CbQhyCr2HkAZo5mT1Lzws",
-                        [
-                        "5GFzUWeubNFRz2wc3YyPFAi4EvjuPpfga9rrqnNsM6squEdT",
-                        "5GFzUWeubNFRz2wc3YyPFAi4EvjuPpfga9rrqnNsM6squEdT"
-                        ]
-                    ],
-                    [
-                        "5HnG5jmh7H6vYqwdfW7VFSZHgZDndKCgrYS4p9ypTU3a7LcH",
-                        [
-                        "5EAViDGBwAUJMTyMtNa2xRmpcei4XHLTbPLJQenyWjnqgb7Q",
-                        "5EAViDGBwAUJMTyMtNa2xRmpcei4XHLTbPLJQenyWjnqgb7Q"
-                         ]
-                    ],
-                        [
-                        "5EtSxEfvWpeuKbe3wrXyDR4PaBQrVzVR5nDtUhA6rudQyyFj",
-                        [
-                        "5Hb4dYYcm8mpGGNWtBRNMknBZoH1J8J3iu2hJ519MnY4vjL8",
-                        "5Hb4dYYcm8mpGGNWtBRNMknBZoH1J8J3iu2hJ519MnY4vjL8"
-                        ]
-                    ]
-                ]
+              "keys": [
+                  [
+                      "5ECH2agQMGtSaPEh7uWebvQVHDb42RWy6bM3dEqmgFecMcTX",
+                      {
+                          "ed25519": "5DBX7khaonKbGj2cffV6yzpndcBAyXJnLF5j2QpB6mpyq9hh"
+                      }
+                  ],
+                  [
+                      "5CqwbM9uWcwSnCz1mJ6kXr8KeHSeVe8tHQbHq9JiEowaCqGy",
+                      {
+                          "ed25519": "5DY6QLwxempFvJ7fvA6xWhthgErwnEaWHcSd385rbDA6qUPY"
+                      }
+                  ],
+                  [
+                      "5DNyWj96WdWE13TytQdpYYP7WHFqN7s9TpJUuqRsFenVpmb4",
+                      {
+                          "ed25519": "5GtMfznJnWpZR1nxLjo8a3VqdbfVGhQygQFK4jbjL82gmT5o"
+                      }
+                  ],
+                  [
+                      "5EqShgxW2QGWYWy4MnL6pnN7e21CbQhyCr2HkAZo5mT1Lzws",
+                      {
+                          "ed25519": "5GFzUWeubNFRz2wc3YyPFAi4EvjuPpfga9rrqnNsM6squEdT"
+                      }
+                  ],
+                  [
+                      "5HnG5jmh7H6vYqwdfW7VFSZHgZDndKCgrYS4p9ypTU3a7LcH",
+                      {
+                          "ed25519": "5EAViDGBwAUJMTyMtNa2xRmpcei4XHLTbPLJQenyWjnqgb7Q"
+                      }
+                  ],
+                  [
+                      "5EtSxEfvWpeuKbe3wrXyDR4PaBQrVzVR5nDtUhA6rudQyyFj",
+                      {
+                          "ed25519": "5Hb4dYYcm8mpGGNWtBRNMknBZoH1J8J3iu2hJ519MnY4vjL8"
+                      }
+                  ]
+              ]
             },
             "staking": {
                 "validatorCount": 6,
@@ -155,23 +141,6 @@
                 ]
             },
             "democracy": {},
-            "councilSeats": {
-                "candidacyBond": 10,
-                "voterBond": 2,
-                "votingFee": 5,
-                "presentSlashPerVoter": 1,
-                "carryCount": 4,
-                "presentationDuration": 10,
-                "inactiveGracePeriod": 1,
-                "approvalVotingPeriod": 20,
-                "termDuration": 1000000,
-                "desiredSeats": 2,
-                "decayRatio": 1,
-                "activeCouncil": []
-            },
-            "timestamp": {
-                "minimumPeriod": 3
-            },
             "treasury": {
                 "proposalBond": 5000000,
                 "proposalBondMinimum": 1000,
