@@ -136,12 +136,6 @@
                 ]
             },
             "democracy": {},
-            "treasury": {
-                "proposalBond": 5000000,
-                "proposalBondMinimum": 1000,
-                "spendPeriod": 100000000,
-                "burn": 50000000
-            },
             "sudo": {
                 "key": "5GH9nfWc9Z2SX8iSmF3iegeMFoHMyjFdhNf7G5R1Euxcojr3"
             },

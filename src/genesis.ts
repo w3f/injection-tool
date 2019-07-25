@@ -168,13 +168,13 @@ export const getW3 = (providerUrl: string): W3Api => {
   Template.genesis.runtime.indices.ids = Array.from(
     { length: claimers.size + 925 },
     // @ts-ignore
-    () => keyring.encodeAddress(pUtil.hexToU8a(w3Util.randomHex(32)), 2),
+    () => keyring.encodeAddress(pUtil.hexToU8a(w3Util.randomHex(32))),
   );
 
   // Write to the genesis config those that have claimed.
   claimers.forEach((value: any, key: string) => {
     // @ts-ignore
-    const encodedAddress = keyring.encodeAddress(pUtil.hexToU8a(key), 2);
+    const encodedAddress = keyring.encodeAddress(pUtil.hexToU8a(key));
 
     // Put in the balances.
     Template.genesis.runtime.balances.balances.push([
@@ -195,6 +195,18 @@ export const getW3 = (providerUrl: string): W3Api => {
 
     // Put in the index array.
     Template.genesis.runtime.indices.ids[value.index] = encodedAddress;
+  });
+
+  // For testing...
+  Template.genesis.runtime.staking.stakers.forEach((entry: any) => {
+    let [account1, account2, reqBalance] = entry;
+    Template.genesis.runtime.balances.balances.push([
+      account1,
+      reqBalance,
+    ], [
+      account2,
+      reqBalance,
+    ]);
   });
 
   fs.writeFileSync('kusama.json', JSON.stringify(Template, null, 2));
