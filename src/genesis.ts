@@ -60,12 +60,7 @@ export const getW3 = (providerUrl: string): W3Api => {
       const newData = Object.assign(oldData, {
         balance: newBalance,
       });
-//       console.log(`
-// DEBUG SUBTRACT BALANCE
-// Address: ${from}
-// Old Balance: ${oldBalance}
-// New Balance: ${newBalance}
-//       `);
+
       tokenHolders.set(from, newData);
     } else {
       // Initialize the data to the correct types.
@@ -83,12 +78,7 @@ export const getW3 = (providerUrl: string): W3Api => {
       const newData = Object.assign(oldData, {
         balance: newBalance,
       });
-//       console.log(`
-// DEBUG ADD BALANCE
-// Address: ${to}
-// Old Balance: ${oldBalance}
-// New Balance: ${newBalance}
-//       `);
+      
       tokenHolders.set(to, newData);
     } else {
       // Initialize the data to the correct types.
