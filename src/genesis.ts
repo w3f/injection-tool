@@ -1,6 +1,7 @@
 import BN from 'bn.js';
 import fs from 'fs';
 import * as pUtil from '@polkadot/util';
+import * as keyring from '@polkadot/keyring';
 import Web3 from 'web3';
 
 const w3Util = (new Web3()).utils;
@@ -164,13 +165,20 @@ export const getW3 = (providerUrl: string): W3Api => {
   assert(tokenHolders.size === 0, 'Token Holders have not been cleared!');
 
   // Fill the indices with the max length now.
-  Template.genesis.runtime.indices.ids = new Array(claimers.size + 925).fill('xxx');
+  Template.genesis.runtime.indices.ids = Array.from(
+    { length: claimers.size + 925 },
+    // @ts-ignore
+    () => keyring.encodeAddress(pUtil.hexToU8a(w3Util.randomHex(32)), 2),
+  );
 
   // Write to the genesis config those that have claimed.
   claimers.forEach((value: any, key: string) => {
+    // @ts-ignore
+    const encodedAddress = keyring.encodeAddress(pUtil.hexToU8a(key), 2);
+
     // Put in the balances.
     Template.genesis.runtime.balances.balances.push([
-      pUtil.hexToU8a(key),
+      encodedAddress,
       value.balance.toNumber(),
     ]);
 
@@ -178,7 +186,7 @@ export const getW3 = (providerUrl: string): W3Api => {
     if (value.vested.gt(w3Util.toBN(0))) {
       const liquid = value.balance.sub(value.vested);
       Template.genesis.runtime.balances.vesting.push([
-        pUtil.hexToU8a(key),
+        encodedAddress,
         0,
         24,
         liquid.toNumber(),
@@ -186,7 +194,7 @@ export const getW3 = (providerUrl: string): W3Api => {
     }
 
     // Put in the index array.
-    Template.genesis.runtime.indices.ids[value.index] = key;
+    Template.genesis.runtime.indices.ids[value.index] = encodedAddress;
   });
 
   fs.writeFileSync('kusama.json', JSON.stringify(Template, null, 2));
