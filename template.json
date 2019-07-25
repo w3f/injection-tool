@@ -16,7 +16,7 @@
     "consensusEngine": null,
     "properties": {
         "tokenDecimals": 15,
-        "tokenSymbol": "KSMA"
+        "tokenSymbol": "KSM"
     },
     "genesis": {
         "runtime": {
