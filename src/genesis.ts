@@ -1,7 +1,6 @@
 import BN from 'bn.js';
 import fs from 'fs';
 import * as pUtil from '@polkadot/util';
-// import * as keyring from '@polkadot/keyring';
 import Web3 from 'web3';
 
 const w3Util = (new Web3()).utils;
@@ -78,7 +77,7 @@ export const getW3 = (providerUrl: string): W3Api => {
       const newData = Object.assign(oldData, {
         balance: newBalance,
       });
-      
+
       tokenHolders.set(to, newData);
     } else {
       // Initialize the data to the correct types.
