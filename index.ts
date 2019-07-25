@@ -46,10 +46,10 @@ program
 program
   .command('scrape')
   .option('--atBlock <number>', 'Scrape the state at block number')
-  .option('--claims <address>', 'Supply the address of the Claims contract')
-  .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract')
+  .option('--claims <address>', 'Supply the address of the Claims contract', '0x9a1B58399EdEBd0606420045fEa0347c24fB86c2')
+  .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract', '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907')
   .option('--output <file>', 'Supply a custom output filename', 'kusama.json')
-  .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
+  .option('--provider <value>', 'Supply a custom http provider', 'https://mainnet.infura.io/v3/7121204aac9a45dcb9c2cc825fb85159')
   .action(async (cmd: any) => {
     if (!cmd.claims && !cmd.frozenToken) {
       throw new Error('Must supply addresses for Claims and FrozenToken!');
