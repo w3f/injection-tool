@@ -20,6 +20,9 @@ const DefaultEndpoint = 'https://mainnet.infura.io/v3/7121204aac9a45dcb9c2cc825f
 // JSON template
 const Template = require('../template.json');
 
+// Vesting (over 6 months for Kusama + assuming 6 second block times)
+const VestingLength = 10 * 60 * 24 * 30 * 6;
+
 type W3Api = any;
 
 type ClaimData = {
@@ -188,7 +191,7 @@ export const getW3 = (providerUrl: string): W3Api => {
       Template.genesis.runtime.balances.vesting.push([
         encodedAddress,
         0,
-        24,
+        VestingLength,
         liquid.toNumber(),
       ]);
     }
