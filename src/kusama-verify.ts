@@ -21,18 +21,17 @@ try {
     const frozenTokenContract = getFrozenTokenContract(w3);
     const claimsContract = getClaimsContract(w3);
 
-    let tokenHolders = new Map();
-    tokenHolders = await getTokenHolderData(frozenTokenContract, claimsContract);
-
-    console.log('size 2', tokenHolders.size);
+    const tokenHolders = await getTokenHolderData(frozenTokenContract, claimsContract);
 
     const { leftoverTokenHolders, claimers } = getClaimers(tokenHolders); 
 
     // Now iterate through these data sets and check them against the state of Kusama.
     // First check the leftovers...
-    leftoverTokenHolders.forEach((value: any, key: any) => {
-      console.log(value)
-      console.log(key)
+    leftoverTokenHolders.forEach(async (value: any, key: any) => {
+      console.log(key);
+      // @ts-ignore
+      const res = await api.rpc.claims.claims(key);
+      console.log(res);
     });
   })();
 } catch (e) { console.error('wtf\n\n', e); }
