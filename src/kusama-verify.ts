@@ -1,25 +1,38 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { getW3, getFrozenTokenContract, getClaimsContract, getTokenHolderData } from './genesis';
+import { getW3, getFrozenTokenContract, getClaimsContract, getTokenHolderData, getClaimers } from './genesis';
 
 const KusamaTestnetEndpoint = 'wss://testnet-0.kusama.network';
 
-(async () => {
-  const provider = new WsProvider(KusamaTestnetEndpoint);
-  const api = await ApiPromise.create(provider);
+try {
+  (async () => {
+    const provider = new WsProvider(KusamaTestnetEndpoint);
+    const api = await ApiPromise.create(provider);
 
-  const [chain, nodeName, nodeVersion] = await Promise.all([
-    api.rpc.system.chain(),
-    api.rpc.system.name(),
-    api.rpc.system.version()
-  ]);
+    const [chain, nodeName, nodeVersion] = await Promise.all([
+      api.rpc.system.chain(),
+      api.rpc.system.name(),
+      api.rpc.system.version()
+    ]);
 
-  console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
+    console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
 
-  // const w3 = getW3();
-  // const frozenTokenContract = getFrozenTokenContract(w3);
-  // const claimsContract = getClaimsContract(w3);
+    // Get all the old Ethereum data.
+    const w3 = getW3();
+    const frozenTokenContract = getFrozenTokenContract(w3);
+    const claimsContract = getClaimsContract(w3);
 
-  // const tokenHolders = await getTokenHolderData(frozenTokenContract, claimsContract);
+    let tokenHolders = new Map();
+    tokenHolders = await getTokenHolderData(frozenTokenContract, claimsContract);
 
+    console.log('size 2', tokenHolders.size);
 
-})();
+    const { leftoverTokenHolders, claimers } = getClaimers(tokenHolders); 
+
+    // Now iterate through these data sets and check them against the state of Kusama.
+    // First check the leftovers...
+    leftoverTokenHolders.forEach((value: any, key: any) => {
+      console.log(value)
+      console.log(key)
+    });
+  })();
+} catch (e) { console.error('wtf\n\n', e); }

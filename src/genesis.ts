@@ -56,86 +56,87 @@ export const getFrozenTokenContract = (w3: any, frozenTokenAbi: any = FrozenToke
 export const getTokenHolderData = async (frozenTokenContract: any, claimsContract: any): Promise<Map<EthAddress, ClaimData>> => {
   const tokenHolders = new Map();
 
-    // Get all the balances of FrozenToken by parsing `Transfer` events.
-    (await frozenTokenContract.getPastEvents('Transfer', {
-      fromBlock: '0',
-      toBlock: 'latest',
-    })).forEach((event: any) => {
-      const { from, to, value } = event.returnValues;
-      if (tokenHolders.has(from)) {
-        const oldData = tokenHolders.get(from);
-        const newBalance = oldData.balance.sub(w3Util.toBN(value));
-        const newData = Object.assign(oldData, {
-          balance: newBalance,
-        });
-  
-        tokenHolders.set(from, newData);
-      } else {
-        // Initialize the data to the correct types.
-        tokenHolders.set(from, {
-          balance: w3Util.toBN(value),
-          index: 0,
-          pubKey: '',
-          vested: w3Util.toBN(0),
-        });
-      }
-  
-      if (tokenHolders.has(to)) {
-        const oldData = tokenHolders.get(to);
-        const newBalance = oldData.balance.add(w3Util.toBN(value));
-        const newData = Object.assign(oldData, {
-          balance: newBalance,
-        });
-  
-        tokenHolders.set(to, newData);
-      } else {
-        // Initialize the data to the correct types.
-        tokenHolders.set(to, {
-          balance: w3Util.toBN(value),
-          index: 0,
-          pubKey: '',
-          vested: w3Util.toBN(0),
-        });
-      }
-    });
-    
-    // Get all the `Claimed` events.
-    (await claimsContract.getPastEvents('Claimed', {
-      fromBlock: '0',
-      toBlock: 'latest',
-    })).forEach((event: any) => {
-      const { eth, idx, dot } = event.returnValues;
-      assert(tokenHolders.has(eth), `Claimed: Account ${eth} not found having balance!`);
-  
-      const oldData = tokenHolders.get(eth);
-      assert(!oldData.pubKey, "Account already has a public key!");
+  // Get all the balances of FrozenToken by parsing `Transfer` events.
+  (await frozenTokenContract.getPastEvents('Transfer', {
+    fromBlock: '0',
+    toBlock: 'latest',
+  })).forEach((event: any) => {
+    const { from, to, value } = event.returnValues;
+    if (tokenHolders.has(from)) {
+      const oldData = tokenHolders.get(from);
+      const newBalance = oldData.balance.sub(w3Util.toBN(value));
       const newData = Object.assign(oldData, {
-        index: Number(idx),
-        pubKey: dot,
+        balance: newBalance,
       });
-      tokenHolders.set(eth, newData);
-    });
-  
-    // Get all the `Vested` events.
-    (await claimsContract.getPastEvents('Vested', {
-      fromBlock: '0',
-      toBlock: 'latest',
-    })).forEach((event: any) => {
-      const { eth, amount } = event.returnValues;
-      assert(tokenHolders.has(eth), `Vested: Account ${eth} not found having balance!`);
-  
-      const oldData = tokenHolders.get(eth);
-      assert(oldData.vested.isZero(), "Account already been vested!");
-      const newData = Object.assign(oldData, {
-        vested: w3Util.toBN(amount),
-      });
-      tokenHolders.set(eth, newData);
-    });
 
-    return tokenHolders;
+      tokenHolders.set(from, newData);
+    } else {
+      // Initialize the data to the correct types.
+      tokenHolders.set(from, {
+        balance: w3Util.toBN(value),
+        index: 0,
+        pubKey: '',
+        vested: w3Util.toBN(0),
+      });
+    }
+
+    if (tokenHolders.has(to)) {
+      const oldData = tokenHolders.get(to);
+      const newBalance = oldData.balance.add(w3Util.toBN(value));
+      const newData = Object.assign(oldData, {
+        balance: newBalance,
+      });
+
+      tokenHolders.set(to, newData);
+    } else {
+      // Initialize the data to the correct types.
+      tokenHolders.set(to, {
+        balance: w3Util.toBN(value),
+        index: 0,
+        pubKey: '',
+        vested: w3Util.toBN(0),
+      });
+    }
+  });
+    
+  // Get all the `Claimed` events.
+  (await claimsContract.getPastEvents('Claimed', {
+    fromBlock: '0',
+    toBlock: 'latest',
+  })).forEach((event: any) => {
+    const { eth, idx, dot } = event.returnValues;
+    assert(tokenHolders.has(eth), `Claimed: Account ${eth} not found having balance!`);
+
+    const oldData = tokenHolders.get(eth);
+    assert(!oldData.pubKey, "Account already has a public key!");
+    const newData = Object.assign(oldData, {
+      index: Number(idx),
+      pubKey: dot,
+    });
+    tokenHolders.set(eth, newData);
+  });
+
+  // Get all the `Vested` events.
+  (await claimsContract.getPastEvents('Vested', {
+    fromBlock: '0',
+    toBlock: 'latest',
+  })).forEach((event: any) => {
+    const { eth, amount } = event.returnValues;
+    assert(tokenHolders.has(eth), `Vested: Account ${eth} not found having balance!`);
+
+    const oldData = tokenHolders.get(eth);
+    assert(oldData.vested.isZero(), "Account already been vested!");
+    const newData = Object.assign(oldData, {
+      vested: w3Util.toBN(amount),
+    });
+    tokenHolders.set(eth, newData);
+  });
+
+  console.log('size', tokenHolders.size)
+  return tokenHolders;
 }
 
-const getClaimers = (tokenHolders: Map<EthAddress, ClaimData>): any => {
+export const getClaimers = (tokenHolders: Map<EthAddress, ClaimData>): any => {
   // Even though this is marked `const` it is indeed mutable because we
   // use the Map.delete(key) built-in to mutate it. That's JavaScript :)
   const leftoverTokenHolders = tokenHolders;
@@ -172,7 +173,7 @@ const getClaimers = (tokenHolders: Map<EthAddress, ClaimData>): any => {
   return { leftoverTokenHolders, claimers };
 }
 
-(async () => {
+const writeGenesis = async () => {
   const w3 = getW3();
   const claimsContract = getClaimsContract(w3);
   const frozenTokenContract = getFrozenTokenContract(w3);
@@ -240,5 +241,7 @@ const getClaimers = (tokenHolders: Map<EthAddress, ClaimData>): any => {
 
   fs.writeFileSync('kusama.json', JSON.stringify(Template, null, 2));
 
-  process.stdout.write('done'); process.exit(0);
-})();
+  process.stdout.write('done');
+}
+
+// writeGenesis();
