@@ -1,7 +1,8 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { getW3, getFrozenTokenContract, getClaimsContract, getTokenHolderData, getClaimers } from './genesis';
 
-const KusamaTestnetEndpoint = 'wss://testnet-0.kusama.network';
+// const KusamaTestnetEndpoint = 'wss://testnet-0.kusama.network';
+const KusamaTestnetEndpoint = 'ws://127.0.0.1:9944'
 
 try {
   (async () => {
@@ -30,8 +31,8 @@ try {
     leftoverTokenHolders.forEach(async (value: any, key: any) => {
       console.log(key);
       // @ts-ignore
-      const res = await api.rpc.claims.claims(key);
-      console.log(res);
+      // const res = await api.rpc.claims.claims(key);
+      // console.log(res);
     });
   })();
 } catch (e) { console.error('wtf\n\n', e); }

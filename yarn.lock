@@ -54,7 +54,7 @@
     "@polkadot/util" "^0.94.1"
     "@polkadot/util-crypto" "^0.94.1"
 
-"@polkadot/api@^0.82.0-beta.96":
+"@polkadot/api@0.82.0-beta.96", "@polkadot/api@^0.82.0-beta.96":
   version "0.82.0-beta.96"
   resolved "https://registry.yarnpkg.com/@polkadot/api/-/api-0.82.0-beta.96.tgz#442167fbdf13ebba591d55f7dba854186227bf87"
   integrity sha512-g3W3VzF5a3QhVQF1TAMON/YLUmBFSaUQkoo3ZOBEXDYGFSNI72RLJVzde3n1yb/bE/CSwAEk+VG87dB/d3mEAw==

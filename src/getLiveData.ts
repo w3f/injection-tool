@@ -19,8 +19,9 @@ import { getW3, getClaimsContract, getFrozenTokenContract } from './genesis';
       total += Number(balance);
       i++;
     }
-  } catch (e) { console.error('Total:', total, 'i:', i); }
+  } catch (e) { console.error('Something went wrong!\nHere are the intermediate values. Plug them in the script and try again...\n', 'Total:', total, 'i:', i); }
 
-  console.log('Total:', total);
+  console.log('Total KSM claimed:', total, '(divide by 1000 for number with correct decimals!)');
+  console.log('Number of claims:', claimedLength);
 
 })();
