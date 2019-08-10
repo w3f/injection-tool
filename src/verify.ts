@@ -7,15 +7,6 @@ import { getW3, getFrozenTokenContract, getClaimsContract, getTokenHolderData, g
 // const KusamaTestnetEndpoint = 'wss://testnet-0.kusama.network';
 const KusamaTestnetEndpoint = 'ws://127.0.0.1:9944'
 
-// try {
-//   (async () => {
-//     const provider = new WsProvider(KusamaTestnetEndpoint);
-//     const api = await ApiPromise.create(provider);
-
-
-//   })();
-// } catch (e) { console.error('wtf\n\n', e); }
-
 const getPdApi = (endpoint: string = KusamaTestnetEndpoint): Promise<ApiPromise> => {
   const provider = new WsProvider(endpoint);
   return ApiPromise.create({
@@ -61,19 +52,16 @@ export const verifyGenesis = async () => {
 
   // Now iterate through these data sets and check them against the state of Kusama.
   // First check the leftovers...
-  // leftoverTokenHolders.forEach(async (value: any, key: any) => {
-  //   console.log(key);
+  leftoverTokenHolders.forEach(async (value: any, key: any) => {
+    const { balance } = value;
 
-  //   const { balance } = value;
-
-  //   // @ts-ignore
-  //   const res = await api.query.claims.claims(key);
-  //   if (res.toString() !== balance.toString()) {
-  //     throw new Error('KUSAMA STATE IS CORRUPTED');
-  //   } else {
-  //     console.log('Claims: checked!');
-  //   }
-  // });
+    const pdClaim = await api.query.claims.claims(key);
+    if (pdClaim.toString() !== balance.toString()) {
+      throw new Error('KUSAMA STATE IS CORRUPTED');
+    } else {
+      console.log('Claims: checked!');
+    }
+  });
 
   // Now check the claimed ones for three things:
   //    1. Correct balance.
@@ -85,7 +73,7 @@ export const verifyGenesis = async () => {
 
     const pdBalance = await api.query.balances.freeBalance(encodedAddress);
     if (pdBalance.toString() !== balance.toString()) {
-      console.log('Balance: False!', pdBalance.toString(), balance.toString());
+      throw new Error('Balance: False! ' + pdBalance.toString() + ' ' + balance.toString());
     } else {
       console.log('Balance: checked!');
     }
@@ -99,14 +87,11 @@ export const verifyGenesis = async () => {
     if (vested.toNumber() > 0) {
       const pdVested = JSON.parse((await api.query.balances.vesting(encodedAddress)).toString());
       if (vested.toNumber() !== pdVested.locked) {
-        console.log('Vesting: False!', vested.toNumber(), pdVested.locked);
+        throw new Error('Vesting: False! ' + vested.toNumber() + ' ' + pdVested.locked);
       } else {
         console.log('Vesting: checked!');
       }
     }
 
   })
-
-
-  setTimeout(() => console.log('Verified!'), 500);
 }
