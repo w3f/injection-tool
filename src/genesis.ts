@@ -132,7 +132,6 @@ export const getTokenHolderData = async (frozenTokenContract: any, claimsContrac
     tokenHolders.set(eth, newData);
   });
 
-  console.log('size', tokenHolders.size)
   return tokenHolders;
 }
 
@@ -173,7 +172,7 @@ export const getClaimers = (tokenHolders: Map<EthAddress, ClaimData>): any => {
   return { leftoverTokenHolders, claimers };
 }
 
-const writeGenesis = async () => {
+export const writeGenesis = async () => {
   const w3 = getW3();
   const claimsContract = getClaimsContract(w3);
   const frozenTokenContract = getFrozenTokenContract(w3);
@@ -243,5 +242,3 @@ const writeGenesis = async () => {
 
   process.stdout.write('done');
 }
-
-// writeGenesis();
