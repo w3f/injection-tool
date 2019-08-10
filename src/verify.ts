@@ -59,7 +59,7 @@ export const verifyGenesis = async () => {
     if (pdClaim.toString() !== balance.toString()) {
       throw new Error('KUSAMA STATE IS CORRUPTED');
     } else {
-      console.log('Claims: checked!');
+      console.log('Claims | checked!');
     }
   });
 
@@ -73,23 +73,22 @@ export const verifyGenesis = async () => {
 
     const pdBalance = await api.query.balances.freeBalance(encodedAddress);
     if (pdBalance.toString() !== balance.toString()) {
-      throw new Error('Balance: False! ' + pdBalance.toString() + ' ' + balance.toString());
+      throw new Error(`Balance | Got: ${pdBalance.toString()} | Expected ${balance.toString()}`);
     } else {
-      console.log('Balance: checked!');
+      console.log('Balance | checked!');
     }
 
     const pubKey = await lookupIndex(api, index);
     if (pubKey !== key) {
-      console.log('False!', pubKey, key);
-      console.log(index);
-    } else { console.log('Index: checked!'); }
+      throw new Error(`Index | Got: ${pubKey} | Expected: ${key}`);
+    } else { console.log(`Index | ${index} | checked!`); }
 
     if (vested.toNumber() > 0) {
       const pdVested = JSON.parse((await api.query.balances.vesting(encodedAddress)).toString());
       if (vested.toNumber() !== pdVested.locked) {
-        throw new Error('Vesting: False! ' + vested.toNumber() + ' ' + pdVested.locked);
+        throw new Error(`Vesting | Got: ${pdVested.locked} | Expected: ${vested.toNumber()}`);
       } else {
-        console.log('Vesting: checked!');
+        console.log('Vesting | checked!');
       }
     }
 
