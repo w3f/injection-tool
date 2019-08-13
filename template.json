@@ -128,6 +128,7 @@
                 "offlineSlashGrace": 0,
                 "invulnerables": [],
                 "currentEra": 0,
+                "forceEra": "NotForcing",  
                 "stakers": [
                   [
                       "5ECH2agQMGtSaPEh7uWebvQVHDb42RWy6bM3dEqmgFecMcTX",
