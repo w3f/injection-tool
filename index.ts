@@ -2,6 +2,7 @@ import program from 'commander';
 
 import { writeGenesis } from './src/genesis';
 import { verifyGenesis } from './src/verify';
+import { Option } from '@polkadot/types';
 
 program
   .version('0.0.1', '-v --version')
@@ -9,11 +10,13 @@ program
 /** Genesis */
 program
   .command('genesis')
+  .option('--atBlock <num>', 'The Ethereum block number to pull state from', 'latest')
   .action(writeGenesis)
 
 /** Verify genesis state */
 program
   .command('verify')
+  .option('--atBlock <num>', 'The Ethereum block number to check state against', 'latest')
   .action(verifyGenesis)
 
 /** Get all Frozen Token hodlers */

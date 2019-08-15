@@ -4,8 +4,8 @@ import * as pdKeyring from '@polkadot/keyring';
 
 import { getW3, getFrozenTokenContract, getClaimsContract, getTokenHolderData, getClaimers } from './genesis';
 
-// const KusamaTestnetEndpoint = 'wss://testnet-0.kusama.network';
-const KusamaTestnetEndpoint = 'ws://127.0.0.1:9944'
+const KusamaTestnetEndpoint = 'wss://testnet-0.kusama.network';
+// const KusamaTestnetEndpoint = 'ws://127.0.0.1:9944'
 
 const getPdApi = (endpoint: string = KusamaTestnetEndpoint): Promise<ApiPromise> => {
   const provider = new WsProvider(endpoint);
@@ -17,7 +17,8 @@ const getPdApi = (endpoint: string = KusamaTestnetEndpoint): Promise<ApiPromise>
         locked: "Balance",
         perBlock: "Balance",
         startingBlock: "BlockNumber",
-      }
+      },
+      Force: 'BlockNumber',
     }
   });
 }
