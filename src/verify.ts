@@ -3,6 +3,7 @@ import * as pdUtil from '@polkadot/util';
 import * as pdKeyring from '@polkadot/keyring';
 
 import { getW3, getFrozenTokenContract, getClaimsContract, getTokenHolderData, getClaimers } from './genesis';
+import { Command } from 'commander';
 
 const KusamaTestnetEndpoint = 'wss://testnet-0.kusama.network';
 // const KusamaTestnetEndpoint = 'ws://127.0.0.1:9944'
@@ -29,7 +30,9 @@ const lookupIndex = async (api: any, index: number, enumSetSize: number = 64) =>
   return pdUtil.u8aToHex(set[i]);
 }
 
-export const verifyGenesis = async () => {
+export const verifyGenesis = async (cmd: Command) => {
+  const { atBlock } = cmd;
+
   console.log('Verifying...');
 
   const api = await getPdApi();
@@ -47,7 +50,7 @@ export const verifyGenesis = async () => {
   const frozenTokenContract = getFrozenTokenContract(w3);
   const claimsContract = getClaimsContract(w3);
 
-  const tokenHolders = await getTokenHolderData(frozenTokenContract, claimsContract);
+  const tokenHolders = await getTokenHolderData(frozenTokenContract, claimsContract, atBlock);
 
   const { leftoverTokenHolders, claimers } = getClaimers(tokenHolders); 
 

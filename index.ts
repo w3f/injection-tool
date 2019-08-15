@@ -2,7 +2,6 @@ import program from 'commander';
 
 import { writeGenesis } from './src/genesis';
 import { verifyGenesis } from './src/verify';
-import { Option } from '@polkadot/types';
 
 program
   .version('0.0.1', '-v --version')

@@ -3,6 +3,7 @@ import fs from 'fs';
 import * as pUtil from '@polkadot/util';
 import * as keyring from '@polkadot/keyring';
 import Web3 from 'web3';
+import { Command } from 'commander';
 
 const w3Util = (new Web3()).utils;
 
@@ -53,13 +54,13 @@ export const getFrozenTokenContract = (w3: any, frozenTokenAbi: any = FrozenToke
   return new w3.eth.Contract(frozenTokenAbi, address);
 }
 
-export const getTokenHolderData = async (frozenTokenContract: any, claimsContract: any): Promise<Map<EthAddress, ClaimData>> => {
+export const getTokenHolderData = async (frozenTokenContract: any, claimsContract: any, atBlock: string = 'latest'): Promise<Map<EthAddress, ClaimData>> => {
   const tokenHolders = new Map();
 
   // Get all the balances of FrozenToken by parsing `Transfer` events.
   (await frozenTokenContract.getPastEvents('Transfer', {
     fromBlock: '0',
-    toBlock: 'latest',
+    toBlock: atBlock,
   })).forEach((event: any) => {
     const { from, to, value } = event.returnValues;
     if (tokenHolders.has(from)) {
@@ -102,7 +103,7 @@ export const getTokenHolderData = async (frozenTokenContract: any, claimsContrac
   // Get all the `Claimed` events.
   (await claimsContract.getPastEvents('Claimed', {
     fromBlock: '0',
-    toBlock: 'latest',
+    toBlock: atBlock,
   })).forEach((event: any) => {
     const { eth, idx, dot } = event.returnValues;
     assert(tokenHolders.has(eth), `Claimed: Account ${eth} not found having balance!`);
@@ -119,7 +120,7 @@ export const getTokenHolderData = async (frozenTokenContract: any, claimsContrac
   // Get all the `Vested` events.
   (await claimsContract.getPastEvents('Vested', {
     fromBlock: '0',
-    toBlock: 'latest',
+    toBlock: atBlock,
   })).forEach((event: any) => {
     const { eth, amount } = event.returnValues;
     assert(tokenHolders.has(eth), `Vested: Account ${eth} not found having balance!`);
@@ -172,13 +173,15 @@ export const getClaimers = (tokenHolders: Map<EthAddress, ClaimData>): any => {
   return { leftoverTokenHolders, claimers };
 }
 
-export const writeGenesis = async () => {
+export const writeGenesis = async (cmd: Command) => {
+  const { atBlock } = cmd;
+
   const w3 = getW3();
   const claimsContract = getClaimsContract(w3);
   const frozenTokenContract = getFrozenTokenContract(w3);
 
   // Map TokenHolder to ClaimData.
-  const tokenHolders = await getTokenHolderData(frozenTokenContract, claimsContract);
+  const tokenHolders = await getTokenHolderData(frozenTokenContract, claimsContract, atBlock);
 
   const { leftoverTokenHolders, claimers } = getClaimers(tokenHolders);
 
