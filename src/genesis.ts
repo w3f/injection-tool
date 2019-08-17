@@ -5,6 +5,8 @@ import * as keyring from '@polkadot/keyring';
 import Web3 from 'web3';
 import { Command } from 'commander';
 
+const TEST = true;
+
 const w3Util = (new Web3()).utils;
 
 // Contract Artifacts
@@ -240,6 +242,15 @@ export const writeGenesis = async (cmd: Command) => {
       reqBalance,
     ]);
   });
+
+  if (TEST) {
+    const mineSudo = '5EvvwXJsJNpVuNd8u3xnYnHDTCD1bxbsY4JtRmra3mqz6hxN';
+    Template.genesis.runtime.sudo.key = mineSudo;
+    Template.genesis.runtime.balances.balances.push([
+      mineSudo,
+      10000000000000000000000000000000000000,
+    ]);
+  }
 
   fs.writeFileSync('kusama.json', JSON.stringify(Template, null, 2));
 
