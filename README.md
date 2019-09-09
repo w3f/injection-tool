@@ -1,27 +1,26 @@
-# Kusama scraping and genesis specification
+# Injection Tool
 
-This repository contains a simple node (written in TypeScript) utility for scraping the state of the Claims contract and generating the Kusama genesis chain specification.
+In your shell type `ts-node index --help` after running `yarn` in the root of the project for complete usage options.
 
-## Running locally
+## Force Transfers (On Kusama)
 
-You can generate the Kusama chain specification locally by following these steps:
+### Usage
 
-### Goerli (Testing)
+```sh
+Usage: force-transfers [options]
 
-```
-$ yarn
-$ yarn goerli:scrape
-```
-
-The above commands will output a `kusama.json` file containing genesis state generated from the Claims and FrozenToken contracts that are deployed to the Goerli test network.
-
-#### Goerli contract addresses
-
-```
-Claims - 0x0453F59D19F55bC8501306D2A44EA4c872f4d05E
-FrozenToken - 0x8f23892739D2A094E430d983317d02eE906cFe3c
+Options:
+  --csv <filepath>             A CSV file formatted <source>,<dest>,<amount> on each line.
+  --cryptoType <type>          One of ed25519 or sr25519. (default: "sr25519")
+  --endpoint <url>             The endpoint of the WebSockets to connect with.
+  --mnemonic <string>          Pass in the mnemonic for the Sudo key.
+  --suri <suri>                Pass in the suri for the Sudo key.
+  --jsonPath <pathToKeystore>  Pass in the path to the JSON keystore for the Sudo key.
+  -h, --help                   output usage information
 ```
 
-### Full generation
+### Example
 
-Coming soon
+```sh
+$ ts-node index force-transfers --csv test.csv.example --endpoint ws://localhost:9944 --suri '//Alice'
+```

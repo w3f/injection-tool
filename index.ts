@@ -1,22 +1,19 @@
 import program from 'commander';
 
-import { writeGenesis } from './src/genesis';
-import { verifyGenesis } from './src/verify';
+import { forceTransfers } from './src/forceTransfers';
 
 program
   .version('0.0.1', '-v --version')
 
-/** Genesis */
 program
-  .command('genesis')
-  .option('--atBlock <num>', 'The Ethereum block number to pull state from', 'latest')
-  .action(writeGenesis)
-
-/** Verify genesis state */
-program
-  .command('verify')
-  .option('--atBlock <num>', 'The Ethereum block number to check state against', 'latest')
-  .action(verifyGenesis)
+  .command('force-transfers')
+  .option('--csv <filepath>', 'A CSV file formatted <source>,<dest>,<amount> on each line.')
+  .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
+  .option('--endpoint <url>', 'The endpoint of the WebSockets to connect with.')
+  .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
+  .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
+  .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
+  .action(forceTransfers)
 
 /** Get all Frozen Token hodlers */
 // program

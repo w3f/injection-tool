@@ -11,7 +11,7 @@ const KusamaTestnetEndpoint = 'wss://testnet-0.kusama.network';
 const getPdApi = (endpoint: string = KusamaTestnetEndpoint): Promise<ApiPromise> => {
   const provider = new WsProvider(endpoint);
   return ApiPromise.create({
-    provider,2472198.517
+    provider,
     types: {
       ParachainPublic: "AccountId",
       VestingSchedule: {
