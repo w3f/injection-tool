@@ -7,7 +7,8 @@ program
 
 program
   .command('force-transfers')
-  .option('--csv <filepath>', 'A CSV file formatted <source>,<dest>,<amount> on each line.')
+  .option('--csv <filepath>', 'A CSV file formatted <dest>,<amount> on each line.')
+  .option('--source <source>', 'The address from which funds will be force transferred from.')
   .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
   .option('--endpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')

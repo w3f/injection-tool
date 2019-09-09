@@ -21,7 +21,8 @@ const parseCSV = (filepath: string) => {
 }
 
 export const forceTransfers = async (cmd: Command) => {
-  const { endpoint, csv, cryptoType, mnemonic, suri, jsonPath } = cmd;
+  const { endpoint, csv, cryptoType, mnemonic, suri, jsonPath, source } = cmd;
+  if (!source) { throw Error('Source address is required!')}
 
   const csvParsed = parseCSV(csv);
 
@@ -47,7 +48,7 @@ export const forceTransfers = async (cmd: Command) => {
 
   let startingNonce = await api.query.system.accountNonce(sudoKey.address);
   csvParsed.map(async (entry: any, index: any) => {
-    const [ source, dest, amount ] = entry;
+    const [ dest, amount ] = entry;
     const proposal = api.tx.balances.forceTransfer(source,dest,amount);
     const nonce = Number(startingNonce) + index;
     const signedBlock = await api.rpc.chain.getBlock();
@@ -58,7 +59,7 @@ export const forceTransfers = async (cmd: Command) => {
 
     console.log(`Sending transaction to force_transfer from ${source} to ${dest} for amount ${amount} with account nonce: ${nonce}.`);
     const hash = await api.tx.sudo.sudo(proposal).signAndSend(sudoKey, { blockHash, era, nonce });
-    console.log(`Has: ${hash.toString()}`);
+    console.log(`Hash: ${hash.toString()}`);
     fs.appendFileSync('hashes.log', hash.toString() + '\n');
   })
 }
