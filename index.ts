@@ -9,7 +9,7 @@ program
   .command('force-transfers')
   .option('--csv <filepath>', 'A CSV file formatted <source>,<dest>,<amount> on each line.')
   .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
-  .option('--endpoint <url>', 'The endpoint of the WebSockets to connect with.')
+  .option('--endpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')

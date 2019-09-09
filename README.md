@@ -12,8 +12,7 @@ Usage: force-transfers [options]
 Options:
   --csv <filepath>             A CSV file formatted <source>,<dest>,<amount> on each line.
   --cryptoType <type>          One of ed25519 or sr25519. (default: "sr25519")
-  --endpoint <url>             The endpoint of the WebSockets to connect with.
-  --mnemonic <string>          Pass in the mnemonic for the Sudo key.
+  --endpoint <url>             The endpoint of the WebSockets to connect with. (default: "wss://canary-4.kusama.network")  --mnemonic <string>          Pass in the mnemonic for the Sudo key.
   --suri <suri>                Pass in the suri for the Sudo key.
   --jsonPath <pathToKeystore>  Pass in the path to the JSON keystore for the Sudo key.
   -h, --help                   output usage information
