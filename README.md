@@ -1,6 +1,11 @@
 # Injection Tool
 
-In your shell type `ts-node index --help` after running `yarn` in the root of the project for complete usage options.
+After cloning the repository run `yarn` at the root to install the dependencies and `yarn global add ts-node` to install `ts-node` globally.
+
+**Utilities:**
+
+- [Force Transfers on Kusama](#force-transfers-on-kusama)
+- [DOT Allocations on Ethereum](#dot-allocations-on-ethereum)
 
 ## Force Transfers (On Kusama)
 
@@ -24,4 +29,28 @@ Options:
 
 ```sh
 $ ts-node index force-transfers --csv test.csv.example --endpoint ws://localhost:9944 --suri '//Alice' --source 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+```
+
+## DOT Allocations (On Ethereum)
+
+### Usage
+
+```sh
+Usage: eth:dot-allocations [options]
+
+Options:
+  --csv <filepath>           A CSV file formatted <address>,<amount> on each line.
+  --frozenToken <address>    The address of the Frozen Token (default: "0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907")
+  --providerUrl <url>        A WebSockets provider for an Ethereum node. (default: "ws://localhost:8545")
+  --from <address>           Sender of the transactions.
+  --gas <amount>             Amount of gas to send. (default: "50000")
+  --gasPrice <price_in_wei>  Amount to pay in wei per each unit of gas (default: "29500000000")
+  --password <string>        The password to unlock personal_* RPC methods on the node.
+  -h, --help                 output usage information
+```
+
+### Exmaple
+
+```sh
+$ ts-node index eth:dot-allocations --csv allocations.csv.test --from 0xd84b338b06222295a9ac1f1e81722f0c3a354884 --password 1234
 ```

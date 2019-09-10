@@ -15,7 +15,7 @@ const getApi = (endpoint: string = KusamaCanaryEndpoint): Promise<ApiPromise> =>
 }
 
 const parseCSV = (filepath: string) => {
-  // The CSV file be formatted <source>,<dest>,<amount>
+  // The CSV file be formatted <dest>,<amount>
   const csvRead = fs.readFileSync(filepath, { encoding: 'utf-8' });
   return parse(csvRead);
 }

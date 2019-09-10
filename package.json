@@ -5,6 +5,7 @@
   "main": "index.js",
   "devDependencies": {},
   "dependencies": {
+    "@parity/api": "^5.1.12",
     "@polkadot/api": "^0.91.1",
     "@polkadot/keyring": "^1.2.1",
     "@polkadot/types": "^0.91.1",

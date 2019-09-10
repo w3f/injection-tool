@@ -1,10 +1,12 @@
 import program from 'commander';
 
 import { forceTransfers } from './src/forceTransfers';
+import { dotAllocations } from './src/dotAllocations';
 
 program
   .version('0.0.1', '-v --version')
 
+/* Polkadot / Kusama */
 program
   .command('force-transfers')
   .option('--csv <filepath>', 'A CSV file formatted <dest>,<amount> on each line.')
@@ -16,62 +18,18 @@ program
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
   .action(forceTransfers)
 
-/** Get all Frozen Token hodlers */
-// program
-//   .command('hodlers')
-//   .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract')
-//   .option('--output <file>', 'Supply a custom output filename', 'holders.csv')
-//   .option('--provider <value>', 'Supply a custom http provider', 'http://localhost:8545')
-//   .action(async (cmd: any) => {
-//     if (!cmd.frozenToken) { throw new Error('Must supply the address of the FrozenToken contract!'); }
-
-//     const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
-
-//     process.stdout.write('Getting all hodlers of FrozenToken...');
-//     const hodlers = await getAllTokenHolders(frozenTokenContract);
-//     console.log('done');
-
-//     process.stdout.write(`Writing to ${cmd.output}...`);
-//     fs.writeFileSync(cmd.output, Array.from(hodlers).join('\n'));
-//     console.log('done');
-//   });
-
-/** Scrape */
-// program
-//   .command('scrape')
-//   .option('--atBlock <number>', 'Scrape the state at block number')
-//   .option('--claims <address>', 'Supply the address of the Claims contract', '0x9a1B58399EdEBd0606420045fEa0347c24fB86c2')
-//   .option('--frozenToken <address>', 'Supply the address of the FrozenToken contract', '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907')
-//   .option('--output <file>', 'Supply a custom output filename', 'kusama.json')
-//   .option('--provider <value>', 'Supply a custom http provider', 'https://mainnet.infura.io/v3/7121204aac9a45dcb9c2cc825fb85159')
-//   .action(async (cmd: any) => {
-//     if (!cmd.claims && !cmd.frozenToken) {
-//       throw new Error('Must supply addresses for Claims and FrozenToken!');
-//     }
-
-//     process.stdout.write('Initializing contracts...')
-//     const claimsContract = initClaims(cmd.claims, cmd.provider);
-//     const frozenTokenContract = initFrozenToken(cmd.frozenToken, cmd.provider);
-//     console.log(' done');
-
-//     process.stdout.write('Scraping state from Ethereum...')
-//     const { memory, stillToClaim } = await getFullDataFromState(claimsContract, frozenTokenContract);
-//     console.log(' done');
-
-//     process.stdout.write('Writing genesis chain specification...')
-//     const genesis = writeGenesis(memory, Template, stillToClaim);
-//     fs.writeFileSync(
-//       cmd.output,
-//       JSON.stringify(
-//         genesis, null, 2
-//       )
-//     );
-//     console.log(' done');
-//     console.log('Chain specification written to ', cmd.output);
-//   });
-
-/** Injection */
-// program
+/* Ethereum */
+program
+  .command('eth:dot-allocations')
+  .option('--csv <filepath>', 'A CSV file formatted <address>,<amount> on each line.')
+  .option('--frozenToken <address>', 'The address of the Frozen Token', '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907')
+  .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8545')
+  .option('--from <address>', 'Sender of the transactions.')
+  .option('--gas <amount>', 'Amount of gas to send.', '50000')
+  .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '29500000000')
+  .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
+  .action(dotAllocations)
+  // program
 //   .command('inject')
 //   .option('--allocations <file>', 'CSV file of allocations')
 //   .option('--amends <file>', 'CSV file of amendments')
