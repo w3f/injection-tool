@@ -41,7 +41,7 @@ Usage: eth:dot-allocations [options]
 Options:
   --csv <filepath>           A CSV file formatted <address>,<amount> on each line.
   --frozenToken <address>    The address of the Frozen Token (default: "0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907")
-  --providerUrl <url>        A WebSockets provider for an Ethereum node. (default: "ws://localhost:8545")
+  --providerUrl <url>        A WebSockets provider for an Ethereum node. (default: "ws://localhost:8546")
   --from <address>           Sender of the transactions.
   --gas <amount>             Amount of gas to send. (default: "50000")
   --gasPrice <price_in_wei>  Amount to pay in wei per each unit of gas (default: "29500000000")
