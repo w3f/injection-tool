@@ -62,7 +62,7 @@ export const dotAllocations = async (cmd: Command) => {
   while (i < destinations.length) {
     console.log(`Sending transfer of ${amounts[i]} FrozenToken to ${destinations[i]}. Has nonce ${startingNonce+i}`);
 
-    const encoded = frozenToken.methods.transfer(destinations[i], amounts[i]).encodeABI();
+    const encoded = frozenTokenContract.methods.transfer(destinations[i], amounts[i]).encodeABI();
     let tx = Object.assign(txParams, { data: encoded, to: frozenToken.options.address, nonce: startingNonce + i });
 
     const txHash = await w3.eth.personal.sendTransaction(tx, password); 
