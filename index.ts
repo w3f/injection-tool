@@ -1,6 +1,7 @@
 import program from 'commander';
 
 import { forceTransfers } from './src/forceTransfers';
+import { injectClaims } from './src/injectClaims';
 import { dotAllocations } from './src/dotAllocations';
 
 program
@@ -16,7 +17,13 @@ program
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
-  .action(forceTransfers)
+  .action(forceTransfers);
+
+program
+  .command('inject-claims')
+  .option('--csv <filepath>', 'A CSV file formatted <dest>,<signature> on each line.')
+  .option('--endpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
+  .action(injectClaims);
 
 /* Ethereum */
 program
@@ -28,7 +35,8 @@ program
   .option('--gas <amount>', 'Amount of gas to send.', '50000')
   .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '29500000000')
   .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
-  .action(dotAllocations)
+  .action(dotAllocations);
+
   // program
 //   .command('inject')
 //   .option('--allocations <file>', 'CSV file of allocations')
