@@ -1,8 +1,8 @@
-import { ApiPromise, WsProvider } from '@polkadot/api';
+import { ApiPromise, WsProvider, createSubmittable } from '@polkadot/api';
 import pdKeyring from '@polkadot/keyring';
-import { createType } from '@polkadot/types';
+import { createType, GenericCall } from '@polkadot/types';
+import * as util from '@polkadot/util';
 import { Command } from 'commander';
-import parse from 'csv-parse/lib/sync';
 import * as fs from 'fs';
 
 const KusamaCanaryEndpoint = 'wss://canary-4.kusama.network';
@@ -14,17 +14,16 @@ const getApi = (endpoint: string = KusamaCanaryEndpoint): Promise<ApiPromise> =>
   });
 }
 
-const parseCSV = (filepath: string) => {
-  // The CSV file be formatted <dest>,<amount>
-  const csvRead = fs.readFileSync(filepath, { encoding: 'utf-8' });
-  return parse(csvRead);
-}
+export const sudoAs = async (cmd: Command) => {
+  const { endpoint, csv, cryptoType, mnemonic, suri, jsonPath } = cmd;
 
-export const forceTransfers = async (cmd: Command) => {
-  const { endpoint, csv, cryptoType, mnemonic, suri, jsonPath, source } = cmd;
-  if (!source) { throw Error('Source address is required!')}
-
-  const csvParsed = parseCSV(csv);
+  const csvParsed = fs.readFileSync(csv, { encoding: 'utf-8' }).split('\n').map((line) => {
+    const [whom, almostCompleteJson] = line.split(',{');
+    return {
+      whom,
+      json: JSON.parse('{' + almostCompleteJson),
+    }
+  });
 
   const api = await getApi(endpoint);
   const keyring = new pdKeyring({ type: cryptoType });
@@ -39,7 +38,7 @@ export const forceTransfers = async (cmd: Command) => {
   } else {
     throw Error('Failed to pass in a method to get the address.');
   }
-
+  // console.log(sudoKey.address)
   if (sudoKey.address !== (await api.query.sudo.key()).toString()) {
     console.log(sudoKey.address);
     console.log((await api.query.sudo.key()).toString())
@@ -48,8 +47,12 @@ export const forceTransfers = async (cmd: Command) => {
 
   let startingNonce = await api.query.system.accountNonce(sudoKey.address);
   csvParsed.map(async (entry: any, index: any) => {
-    const [ dest, amount ] = entry;
-    const proposal = api.tx.balances.forceTransfer(source,dest,amount);
+    const { whom, json } = entry;
+    const { callIndex, args } = json;
+    const { method, section } = GenericCall.findFunction(util.hexToU8a(callIndex));
+    // @ts-ignore
+    const vals = Object.values(args);
+    const proposal = api.tx[section][method](...vals);
     const nonce = Number(startingNonce) + index;
     const signedBlock = await api.rpc.chain.getBlock();
     const blockHash = signedBlock.block.header.hash;
@@ -57,9 +60,10 @@ export const forceTransfers = async (cmd: Command) => {
 
     const era = createType('ExtrinsicEra', { current: currentHeight, period: 10 });
 
-    console.log(`Sending transaction to force_transfer from ${source} to ${dest} for amount ${amount} with account nonce: ${nonce}.`);
-    const hash = await api.tx.sudo.sudo(proposal).signAndSend(sudoKey, { blockHash, era, nonce });
+    const logString = `Sending transaction ${section}::${method} from ${whom} with sudo key ${sudoKey.address} and nonce: ${nonce}.`;
+    // @ts-ignore
+    const hash = await api.tx.sudo.sudoAs(whom, proposal).signAndSend(sudoKey, { blockHash, era, nonce });
     console.log(`Hash: ${hash.toString()}`);
-    fs.appendFileSync('forceTransfers.hashes.log', hash.toString() + '\n');
+    fs.appendFileSync('sudoAs.hashes.log', logString + '\n' + hash.toString() + '\n');
   })
 }

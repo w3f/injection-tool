@@ -32,6 +32,6 @@ export const injectClaims = async (cmd: Command) => {
     // @ts-ignore
     const hash = await api.tx.claims.claim(dest, sig).send();
     console.log(`Hash: ${hash.toString()}`);
-    fs.appendFileSync('hashes.log', hash.toString() + '\n');
+    fs.appendFileSync('claim.hashes.log', hash.toString() + '\n');
   })
 }
