@@ -49,8 +49,32 @@ Options:
   -h, --help                 output usage information
 ```
 
-### Exmaple
+### Example
 
 ```sh
 $ ts-node index eth:dot-allocations --csv allocations.csv.test --from 0xd84b338b06222295a9ac1f1e81722f0c3a354884 --password 1234
+```
+
+## Vesting (On Ethereum)
+
+### Usage 
+
+```sh
+Usage: eth:vesting [options]
+
+Options:
+  --csv <filepath>           A CSV file formatted <address>,<amount> on each line.
+  --claims <address>         The address of the Claims contract. (default: "0x9a1B58399EdEBd0606420045fEa0347c24fB86c2")
+  --providerUrl <url>        A WebSockets provider for an Ethereum node. (default: "ws://localhost:8545")
+  --from <address>           Sender of the transactions.
+  --gas <amount>             Amount of gas to send. (default: "2000000")
+  --gasPrice <price_in_wei>  Amount to pay in wei per each unit of gas (default: "29500000000")
+  --password <string>        The password to unlock personal_* RPC methods on the node.
+  -h, --help                 output usage information
+```
+
+### Example
+
+```sh
+ts-node index eth:vesting --csv test.csv --from 0xd84b338b06222295a9ac1f1e81722f0c3a354884 --password 1234
 ```

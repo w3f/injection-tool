@@ -4,6 +4,7 @@ import { forceTransfers } from './src/forceTransfers';
 import { injectClaims } from './src/injectClaims';
 import { sudoAs } from './src/sudoAs';
 import { dotAllocations } from './src/dotAllocations';
+import { vesting } from './src/vesting';
 
 program
   .version('0.0.1', '-v --version')
@@ -47,6 +48,17 @@ program
   .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '29500000000')
   .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
   .action(dotAllocations);
+
+program
+  .command('eth:vesting')
+  .option('--csv <filepath>', 'A CSV file formatted <address>,<amount> on each line.')
+  .option('--claims <address>', 'The address of the Claims contract.', '0x9a1B58399EdEBd0606420045fEa0347c24fB86c2')
+  .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8545')
+  .option('--from <address>', 'Sender of the transactions.')
+  .option('--gas <amount>', 'Amount of gas to send.', '2000000')
+  .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '29500000000')
+  .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
+  .action(vesting)
 
   // program
 //   .command('inject')
