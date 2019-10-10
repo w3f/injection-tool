@@ -3,6 +3,7 @@ import program from 'commander';
 import { forceTransfers } from './src/forceTransfers';
 import { injectClaims } from './src/injectClaims';
 import { sudoAs } from './src/sudoAs';
+import { sudoAsForceTransfer } from './src/sudoAsForceTransfer';
 import { dotAllocations } from './src/dotAllocations';
 import { vesting } from './src/vesting';
 
@@ -36,6 +37,17 @@ program
   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
   .action(sudoAs)
+
+program
+  .command('sudo-as-force-transfer')
+  .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
+  .option('--endpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
+  .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
+  .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
+  .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
+  .option('--source <polkadotAddr>')
+  .option('--amount <amountToTransfer>')
+  .action(sudoAsForceTransfer)
 
 /* Ethereum */
 program

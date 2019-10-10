@@ -1,9 +1,13 @@
 import { ApiPromise, WsProvider, createSubmittable } from '@polkadot/api';
 import pdKeyring from '@polkadot/keyring';
-import { createType, GenericCall } from '@polkadot/types';
+import { createType, GenericCall, GenericImmortalEra } from '@polkadot/types';
 import * as util from '@polkadot/util';
 import { Command } from 'commander';
 import * as fs from 'fs';
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 const KusamaCanaryEndpoint = 'wss://canary-4.kusama.network';
 
@@ -46,24 +50,46 @@ export const sudoAs = async (cmd: Command) => {
   }
 
   let startingNonce = await api.query.system.accountNonce(sudoKey.address);
-  csvParsed.map(async (entry: any, index: any) => {
-    const { whom, json } = entry;
-    const { callIndex, args } = json;
-    const { method, section } = GenericCall.findFunction(util.hexToU8a(callIndex));
-    // @ts-ignore
-    const vals = Object.values(args);
-    const proposal = api.tx[section][method](...vals);
-    const nonce = Number(startingNonce) + index;
-    const signedBlock = await api.rpc.chain.getBlock();
-    const blockHash = signedBlock.block.header.hash;
-    const currentHeight = signedBlock.block.header.number;
 
-    const era = createType('ExtrinsicEra', { current: currentHeight, period: 10 });
+  let index = 0;
+  try {
+    for (const entry of csvParsed) {
+      const { whom, json } = entry;
+      const { callIndex, args } = json;
+      const { method, section } = GenericCall.findFunction(util.hexToU8a(callIndex));
 
-    const logString = `Sending transaction ${section}::${method} from ${whom} with sudo key ${sudoKey.address} and nonce: ${nonce}.`;
-    // @ts-ignore
-    const hash = await api.tx.sudo.sudoAs(whom, proposal).signAndSend(sudoKey, { blockHash, era, nonce });
-    console.log(`Hash: ${hash.toString()}`);
-    fs.appendFileSync('sudoAs.hashes.log', logString + '\n' + hash.toString() + '\n');
-  })
+      // @ts-ignore
+      const vals = Object.values(args);
+      const proposal = api.tx[section][method](...vals);
+      const nonce = Number(startingNonce) + index;
+
+      const era = createType('ExtrinsicEra', new GenericImmortalEra());
+
+      const logString = `Sending transaction ${section}::${method} from ${whom} with sudo key ${sudoKey.address} and nonce: ${nonce}.`;
+      console.log(logString);
+
+      const unsub = await api.tx.sudo.sudoAs(whom, proposal).signAndSend(sudoKey, { blockHash: api.genesisHash, era, nonce }, (result) => {
+        const { events, status } = result;
+
+        console.log('Current status is', status.type);
+        fs.appendFileSync('sudAs.hashes.log', logString + '\n' + 'Current status is' + status.type + '\n');
+
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`);
+          fs.appendFileSync('sudoAs.hashes.log', logString + '\n' + status.asFinalized.toString() + '\n');
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            fs.appendFileSync('sudoAs.hashes.log', `\t' ${phase}: ${section}.${method}:: ${data}\n`);
+          });
+          unsub();
+        }
+      });
+
+      index++;
+      await sleep(1000);
+    }
+  } catch (e) { 
+    console.log(e);
+    process.exit(1);
+  }
 }
