@@ -38,15 +38,20 @@ export const injectKusamaState = async (cmd: Command) => {
   const startingNonce = await api.query.system.accountNonce(sudoSigner.address);
 
   let index = 0;
+  let lineCounter = input.length;
   for (const entry of input) {
+    const trace = lineCounter;
+    lineCounter--;
     const { whom, json } = entry;
     const { callIndex, args } = json;
 
     if (callIndex === CallIndices.Claim) {
-      //@ts-ignore
-      const hash = await api.tx.claims.claim(args.dest, args.ethereum_signature).send();
-      console.log(`Claims sent: ${hash}!`);
-      await sleep(3000);
+      try {
+        //@ts-ignore
+        const hash = await api.tx.claims.claim(args.dest, args.ethereum_signature).send();
+        console.log(`${trace} | Claims sent: ${hash}!`);
+        await sleep(3000);
+      } catch (e) { throw new Error(`${trace} | ${e}`); }
     } else {
       const { method, section } = GenericCall.findFunction(util.hexToU8a(callIndex));
 
@@ -57,7 +62,7 @@ export const injectKusamaState = async (cmd: Command) => {
 
       const era = createType('ExtrinsicEra', new GenericImmortalEra());
 
-      const logString = `Sending extrinsic ${section}::${method} as ${whom} with sudo key ${sudoSigner.address} and nonce ${nonce}.`;
+      const logString = `${trace} | Sending extrinsic ${section}::${method} as ${whom} with sudo key ${sudoSigner.address} and nonce ${nonce}.`;
       console.log(logString);
 
       try {
@@ -66,18 +71,18 @@ export const injectKusamaState = async (cmd: Command) => {
           { blockHash: api.genesisHash, era, nonce },
           (result) => {
             const { events, status } = result;
-            console.log(`Status now: ${status.type}`);
+            console.log(`${trace} | Status now: ${status.type}`);
 
             if (status.isFinalized) {
-              console.log(`Extrinsic included at block hash ${status.asFinalized}.`);
+              console.log(`${trace} | Extrinsic included at block hash ${status.asFinalized}.`);
               events.forEach(({ phase, event: { data, method, section } }) => {
-                console.log(`\t${phase}: ${section}::${method} | ${data}\n`)
+                console.log(`${trace} | \t${phase}: ${section}::${method} | ${data}\n`)
               });
               unsub();
             }
           },
         );
-      } catch (e) { console.error(e); }
+      } catch (e) { console.error(`${trace} | ${e}`); }
 
       index++;
       await sleep(1000);
