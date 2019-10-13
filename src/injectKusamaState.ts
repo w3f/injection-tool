@@ -46,7 +46,7 @@ export const injectKusamaState = async (cmd: Command) => {
       //@ts-ignore
       const hash = await api.tx.claims.claim(args.dest, args.ethereum_signature).send();
       console.log(`Claims sent: ${hash}!`);
-      await sleep(100);
+      await sleep(3000);
     } else {
       const { method, section } = GenericCall.findFunction(util.hexToU8a(callIndex));
 
@@ -61,26 +61,26 @@ export const injectKusamaState = async (cmd: Command) => {
       console.log(logString);
 
       try {
-      const unsub = await api.tx.sudo.sudoAs(whom, proposal).signAndSend(
-        sudoSigner,
-        { blockHash: api.genesisHash, era, nonce },
-        (result) => {
-          const { events, status } = result;
-          console.log(`Status now: ${status.type}`);
+        const unsub = await api.tx.sudo.sudoAs(whom, proposal).signAndSend(
+          sudoSigner,
+          { blockHash: api.genesisHash, era, nonce },
+          (result) => {
+            const { events, status } = result;
+            console.log(`Status now: ${status.type}`);
 
-          if (status.isFinalized) {
-            console.log(`Extrinsic included at block hash ${status.asFinalized}.`);
-            events.forEach(({ phase, event: { data, method, section } }) => {
-              console.log(`\t${phase}: ${section}::${method} | ${data}\n`)
-            });
-            unsub();
-          }
-        },
-      );
-      } catch (e) { console.error(e) }
+            if (status.isFinalized) {
+              console.log(`Extrinsic included at block hash ${status.asFinalized}.`);
+              events.forEach(({ phase, event: { data, method, section } }) => {
+                console.log(`\t${phase}: ${section}::${method} | ${data}\n`)
+              });
+              unsub();
+            }
+          },
+        );
+      } catch (e) { console.error(e); }
 
       index++;
-      await sleep(500);
+      await sleep(1000);
     }
   }
 }

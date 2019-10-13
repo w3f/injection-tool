@@ -11,7 +11,7 @@ import { injectKusamaState } from './src/injectKusamaState';
 const errorCatcher = (wrappedFunction: any) => {
   try {
     wrappedFunction;
-  } catch (error) { console.error(error); process.exit(0); }
+  } catch (error) { console.error(error); }
 }
 
 program
