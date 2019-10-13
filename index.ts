@@ -8,6 +8,12 @@ import { dotAllocations } from './src/dotAllocations';
 import { vesting } from './src/vesting';
 import { injectKusamaState } from './src/injectKusamaState';
 
+const errorCatcher = (wrappedFunction: any) => {
+  try {
+    wrappedFunction;
+  } catch (error) { console.error(error); process.exit(0); }
+}
+
 program
   .version('0.0.1', '-v --version')
 
@@ -55,8 +61,8 @@ program
   .option('--csv <filepath>', 'A CSV file formatted <whom>,<signature>,<callObject> on each line.')
   .option('--cryptoType <type>', 'One of ed25519 or sr15519.', 'sr25519')
   .option('--mnemonic <string>', 'The mnemonic for the Sudo signer.')
-  .option('--wsEndpoint <string>', 'A WebSockets endpoint to a Polkadot node.')
-  .action(injectKusamaState)
+  .option('--wsEndpoint <string>', 'A WebSockets endpoint to a Polkadot node.', 'ws://localhost:9944')
+  .action((cmd) => errorCatcher(injectKusamaState(cmd)));
 
 /* Ethereum */
 program
