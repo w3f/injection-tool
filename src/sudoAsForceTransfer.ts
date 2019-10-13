@@ -1,5 +1,6 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import pdKeyring from '@polkadot/keyring';
+import * as util from '@polkadot/util';
 import { Command } from 'commander';
 import * as fs from 'fs';
 
@@ -40,10 +41,13 @@ export const sudoAsForceTransfer = async (cmd: Command) => {
     // 5319651000000000
     // const source = '5EtRyVhTrvqCsrB8vp7gxxGzt5ch8QSZB7eE8zNMtaQLRwYD';
     // const amount = '5319651000000000';
+    // console.log(amount)
+    console.log(source)
+    console.log(sudoKey.address);
     const proposal = api.tx.balances.forceTransfer(source, sudoKey.address, amount);
 
     // @ts-ignore
-    const unsub = await api.tx.sudo.sudoAs(sudoKey.address, proposal).signAndSend(sudoKey, { nonce: startingNonce } , result => {
+    const unsub = await api.tx.sudo.sudo(proposal).signAndSend(sudoKey, { nonce: startingNonce } , result => {
       const { status } = result;
 
       console.log('Current status is', status.type);
