@@ -1,4 +1,4 @@
-import { ApiPromise, WsProvider, createSubmittable } from '@polkadot/api';
+import { ApiPromise, WsProvider } from '@polkadot/api';
 import pdKeyring from '@polkadot/keyring';
 import { createType, GenericCall, GenericImmortalEra } from '@polkadot/types';
 import * as util from '@polkadot/util';

@@ -1,7 +1,7 @@
 {
-  "name": "kusama-scrape",
+  "name": "injection-tool",
   "version": "1.0.0",
-  "description": "Scrape script to generate Kusama genesis.",
+  "description": "Utility scripts for interacting with Kusama and Polkadot.",
   "main": "index.js",
   "devDependencies": {},
   "dependencies": {

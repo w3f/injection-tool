@@ -6,6 +6,7 @@ import { sudoAs } from './src/sudoAs';
 import { sudoAsForceTransfer } from './src/sudoAsForceTransfer';
 import { dotAllocations } from './src/dotAllocations';
 import { vesting } from './src/vesting';
+import { injectKusamaState } from './src/injectKusamaState';
 
 program
   .version('0.0.1', '-v --version')
@@ -48,6 +49,14 @@ program
   .option('--source <polkadotAddr>')
   .option('--amount <amountToTransfer>')
   .action(sudoAsForceTransfer)
+
+program
+  .command('inject-kusama-state')
+  .option('--csv <filepath>', 'A CSV file formatted <whom>,<signature>,<callObject> on each line.')
+  .option('--cryptoType <type>', 'One of ed25519 or sr15519.', 'sr25519')
+  .option('--mnemonic <string>', 'The mnemonic for the Sudo signer.')
+  .option('--wsEndpoint <string>', 'A WebSockets endpoint to a Polkadot node.')
+  .action(injectKusamaState)
 
 /* Ethereum */
 program
