@@ -1,4 +1,4 @@
-import { assert, CallIndices, initApi, sleep } from './helpers';
+import { assert, CallIndices, initApi, sleep } from '../helpers';
 import Keyring from '@polkadot/keyring';
 import { createType, GenericCall, GenericImmortalEra } from '@polkadot/types';
 import * as util from '@polkadot/util';

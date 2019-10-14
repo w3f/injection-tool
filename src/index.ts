@@ -1,12 +1,6 @@
 import program from 'commander';
 
-import { forceTransfers } from './src/forceTransfers';
-import { injectClaims } from './src/injectClaims';
-import { sudoAs } from './src/sudoAs';
-import { sudoAsForceTransfer } from './src/sudoAsForceTransfer';
-import { dotAllocations } from './src/dotAllocations';
-import { vesting } from './src/vesting';
-import { injectKusamaState } from './src/injectKusamaState';
+import * as actions from './actions';
 
 const errorCatcher = (wrappedFunction: any) => {
   try {
@@ -27,13 +21,13 @@ program
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
-  .action(forceTransfers);
+  .action(actions.forceTransfers);
 
 program
   .command('inject-claims')
   .option('--csv <filepath>', 'A CSV file formatted <dest>,<signature> on each line.')
   .option('--endpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
-  .action(injectClaims);
+  .action(actions.injectClaims);
 
 program
   .command('sudo-as')
@@ -43,7 +37,7 @@ program
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
-  .action(sudoAs)
+  .action(actions.sudoAs)
 
 program
   .command('sudo-as-force-transfer')
@@ -54,7 +48,7 @@ program
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
   .option('--source <polkadotAddr>')
   .option('--amount <amountToTransfer>')
-  .action(sudoAsForceTransfer)
+  .action(actions.sudoAsForceTransfer)
 
 program
   .command('inject-kusama-state')
@@ -62,7 +56,7 @@ program
   .option('--cryptoType <type>', 'One of ed25519 or sr15519.', 'sr25519')
   .option('--mnemonic <string>', 'The mnemonic for the Sudo signer.')
   .option('--wsEndpoint <string>', 'A WebSockets endpoint to a Polkadot node.', 'ws://localhost:9944')
-  .action((cmd) => errorCatcher(injectKusamaState(cmd)));
+  .action((cmd) => errorCatcher(actions. injectKusamaState(cmd)));
 
 /* Ethereum */
 program
@@ -74,7 +68,7 @@ program
   .option('--gas <amount>', 'Amount of gas to send.', '50000')
   .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '29500000000')
   .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
-  .action(dotAllocations);
+  .action(actions.dotAllocations);
 
 program
   .command('eth:vesting')
@@ -85,7 +79,7 @@ program
   .option('--gas <amount>', 'Amount of gas to send.', '2000000')
   .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '29500000000')
   .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
-  .action(vesting)
+  .action(actions.vesting)
 
   // program
 //   .command('inject')
