@@ -56,7 +56,7 @@ program
   .option('--cryptoType <type>', 'One of ed25519 or sr15519.', 'sr25519')
   .option('--mnemonic <string>', 'The mnemonic for the Sudo signer.')
   .option('--wsEndpoint <string>', 'A WebSockets endpoint to a Polkadot node.', 'ws://localhost:9944')
-  .action((cmd) => errorCatcher(actions. injectKusamaState(cmd)));
+  .action((cmd) => errorCatcher(actions.injectKusamaState(cmd)));
 
 /* Ethereum */
 program

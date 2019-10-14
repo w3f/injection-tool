@@ -21,25 +21,16 @@
     "web3": "^1.2.0"
   },
   "scripts": {
-    "deploy": "ts-node src/deploy.ts",
-    "inject": "ts-node index.ts inject",
-    "genesis": "ts-node index.ts genesis",
-    "mainnet:hodlers": "ts-node index.ts hodlers --provider https://mainnet.infura.io/v3/7121204aac9a45dcb9c2cc825fb85159 --frozenToken '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907'",
-    "mainnet:scrape": "ts-node index.ts scrape",
-    "goerli:scrape": "ts-node index.ts scrape --provider https://goerli.infura.io/v3/7121204aac9a45dcb9c2cc825fb85159 --claims '0x0453F59D19F55bC8501306D2A44EA4c872f4d05E' --frozenToken '0x8f23892739D2A094E430d983317d02eE906cFe3c'",
-    "scrape": "ts-node index.ts scrape --provider http://localhost:8545 --claims '0x0a373F54aFcDBEFB6050c3b207764c974aB827Ea' --frozenToken '0xFC056BDCdd6d292559B6FfeCEA83E118e2B0E718'",
-    "verify": "ts-node index.ts verify",
-    "getLiveData": "ts-node src/getLiveData.ts",
-    "test": "ts-node src/genesis.ts"
+    "force-transfers": "ts-node src/index force-transfers"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/w3f/kusama-scrape.git"
+    "url": "git+https://github.com/w3f/injection-tool.git"
   },
   "author": "Web3 Foundation",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/w3f/kusama-scrape/issues"
+    "url": "https://github.com/w3f/injection-tool/issues"
   },
-  "homepage": "https://github.com/w3f/kusama-scrape#readme"
+  "homepage": "https://github.com/w3f/injection-tool#readme"
 }
