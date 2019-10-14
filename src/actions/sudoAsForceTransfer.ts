@@ -1,6 +1,5 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import pdKeyring from '@polkadot/keyring';
-import * as util from '@polkadot/util';
 import { Command } from 'commander';
 import * as fs from 'fs';
 

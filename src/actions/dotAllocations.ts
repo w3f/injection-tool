@@ -8,7 +8,7 @@ import Api from '@parity/api';
 
 const utils = (new Web3()).utils;
 
-const FrozenToken = require('../build/contracts/FrozenToken.json');
+const FrozenToken = require('../../build/contracts/FrozenToken.json');
 
 export const initFrozenToken = (address: string, provider: string) => {
   const w3 = new Web3(new Web3.providers.WebsocketProvider(provider));

@@ -1,6 +1,6 @@
-import { Command } from "commander";
+import { Command } from 'commander';
 import * as util from '@polkadot/util';
-import { initApi, CallIndices } from "./helpers";
+import { initApi, CallIndices } from './helpers';
 
 import * as fs from 'fs';
 

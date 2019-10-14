@@ -1,6 +1,7 @@
 import program from 'commander';
 
 import * as actions from './actions';
+import { stateCheck } from './stateCheck';
 
 const errorCatcher = (wrappedFunction: any) => {
   try {
@@ -9,7 +10,7 @@ const errorCatcher = (wrappedFunction: any) => {
 }
 
 program
-  .version('0.0.1', '-v --version')
+  .version('0.2.0', '-v --version')
 
 /* Polkadot / Kusama */
 program
@@ -57,6 +58,12 @@ program
   .option('--mnemonic <string>', 'The mnemonic for the Sudo signer.')
   .option('--wsEndpoint <string>', 'A WebSockets endpoint to a Polkadot node.', 'ws://localhost:9944')
   .action((cmd) => errorCatcher(actions.injectKusamaState(cmd)));
+
+program
+  .command('state-check')
+  .option('--wsEndpointOne <string>')
+  .option('--wsEndpointTwo <string>')
+  .action((cmd) => errorCatcher(stateCheck(cmd)))
 
 /* Ethereum */
 program
