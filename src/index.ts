@@ -1,6 +1,7 @@
 import program from 'commander';
 
 import * as actions from './actions';
+import { bondAndValidate } from './bondAndValidate';
 
 const errorCatcher = (wrappedFunction: any) => {
   try {
@@ -38,6 +39,15 @@ program
   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
   .action(actions.sudoAs);
+
+program
+  .command('bond-and-validate')
+  .option('--csvController <filepath>')
+  .option('--csvStash <filepath>')
+  .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
+  .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
+  .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
+  .action(bondAndValidate);
 
 program
   .command('sudo-as-force-transfer')
