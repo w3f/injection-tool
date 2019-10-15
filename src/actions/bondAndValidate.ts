@@ -2,7 +2,7 @@ import Keyring from '@polkadot/keyring';
 import { createType, GenericImmortalEra } from '@polkadot/types';
 import { Command } from 'commander';
 import * as fs from 'fs';
-import { assert, initApi, sleep } from './helpers';
+import { assert, initApi, sleep } from '../helpers';
 
 const OneKSM = 10**12;
 

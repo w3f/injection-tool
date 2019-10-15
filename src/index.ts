@@ -1,7 +1,6 @@
 import program from 'commander';
 
 import * as actions from './actions';
-import { bondAndValidate } from './bondAndValidate';
 
 const errorCatcher = (wrappedFunction: any) => {
   try {
@@ -47,7 +46,7 @@ program
   .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
   .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
-  .action(bondAndValidate);
+  .action((cmd) => errorCatcher(actions.bondAndValidate(cmd)));
 
 program
   .command('sudo-as-force-transfer')
@@ -68,12 +67,12 @@ program
   .option('--wsEndpoint <string>', 'A WebSockets endpoint to a Polkadot node.', 'ws://localhost:9944')
   .action((cmd) => errorCatcher(actions.injectKusamaState(cmd)));
 
-program
-  .command('scrape-extrinsics')
-  .option('--latestHash <hash>', 'The latest hash to scrape backwards from.')
-  .option('--outFile <filepath>', 'The file to log the method data.')
-  .option('--wsEndpoint <url>')
-  .action((cmd) => errorCatcher(actions.scrapeExtrinsics(cmd)));
+// program
+//   .command('scrape-extrinsics')
+//   .option('--latestHash <hash>', 'The latest hash to scrape backwards from.')
+//   .option('--outFile <filepath>', 'The file to log the method data.')
+//   .option('--wsEndpoint <url>')
+//   .action((cmd) => errorCatcher(actions.scrapeExtrinsics(cmd)));
 
 program
   .command('state-check')
