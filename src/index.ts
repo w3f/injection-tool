@@ -1,7 +1,6 @@
 import program from 'commander';
 
 import * as actions from './actions';
-import { stateCheck } from './stateCheck';
 
 const errorCatcher = (wrappedFunction: any) => {
   try {
@@ -63,7 +62,7 @@ program
   .command('state-check')
   .option('--wsEndpointOne <string>')
   .option('--wsEndpointTwo <string>')
-  .action((cmd) => errorCatcher(stateCheck(cmd)))
+  .action((cmd) => errorCatcher(actions.stateCheck(cmd)))
 
 /* Ethereum */
 program

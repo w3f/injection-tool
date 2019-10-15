@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { initApi } from './helpers';
+import { initApi } from '../helpers';
 import * as util from '@polkadot/util';
 import BN = require('bn.js');
 
@@ -10,7 +10,7 @@ const lookupIndex = async (api: any, index: number, enumSetSize = 64) => {
 }
 
 export const stateCheck = async (cmd: Command) => {
-  const { wsEndpointOne, wsEndpointTwo } = cmd;
+  const { long, short, wsEndpointOne, wsEndpointTwo } = cmd;
 
   console.log(wsEndpointOne);
   console.log(wsEndpointTwo);
@@ -77,5 +77,6 @@ export const stateCheck = async (cmd: Command) => {
     })
   }
 
-  await shortCheck();
+  if (short) await shortCheck();
+  if (long) await longCheck();
 }
