@@ -17,11 +17,11 @@ program
   .option('--csv <filepath>', 'A CSV file formatted <dest>,<amount> on each line.')
   .option('--source <source>', 'The address from which funds will be force transferred from.')
   .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
-  .option('--endpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
+  .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
-  .action(actions.forceTransfers);
+  .action((cmd) => errorCatcher(actions.forceTransfers(cmd)));
 
 program
   .command('inject-claims')

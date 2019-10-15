@@ -1,18 +1,9 @@
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import pdKeyring from '@polkadot/keyring';
-import { createType } from '@polkadot/types';
+import Keyring from '@polkadot/keyring';
+import { createType, GenericImmortalEra } from '@polkadot/types';
 import { Command } from 'commander';
+import { initApi, sleep } from '../helpers';
 import parse from 'csv-parse/lib/sync';
 import * as fs from 'fs';
-
-const KusamaCanaryEndpoint = 'wss://canary-4.kusama.network';
-
-const getApi = (endpoint: string = KusamaCanaryEndpoint): Promise<ApiPromise> => {
-  const provider = new WsProvider(endpoint);
-  return ApiPromise.create({
-    provider,
-  });
-}
 
 const parseCSV = (filepath: string) => {
   // The CSV file be formatted <dest>,<amount>
@@ -21,13 +12,13 @@ const parseCSV = (filepath: string) => {
 }
 
 export const forceTransfers = async (cmd: Command) => {
-  const { endpoint, csv, cryptoType, mnemonic, suri, jsonPath, source } = cmd;
+  const { csv, cryptoType, mnemonic, suri, jsonPath, source, wsEndpoint } = cmd;
   if (!source) { throw Error('Source address is required!')}
 
   const csvParsed = parseCSV(csv);
 
-  const api = await getApi(endpoint);
-  const keyring = new pdKeyring({ type: cryptoType });
+  const api = await initApi(wsEndpoint);
+  const keyring = new Keyring({ type: cryptoType });
 
   let sudoKey: any;
   if (suri) {
@@ -51,15 +42,23 @@ export const forceTransfers = async (cmd: Command) => {
     const [ dest, amount ] = entry;
     const proposal = api.tx.balances.forceTransfer(source,dest,amount);
     const nonce = Number(startingNonce) + index;
-    const signedBlock = await api.rpc.chain.getBlock();
-    const blockHash = signedBlock.block.header.hash;
-    const currentHeight = signedBlock.block.header.number;
+    const nonceString = `Nonce ${nonce} | `;
 
-    const era = createType('ExtrinsicEra', { current: currentHeight, period: 10 });
+    const era = createType('ExtrinsicEra', new GenericImmortalEra());
 
-    console.log(`Sending transaction to force_transfer from ${source} to ${dest} for amount ${amount} with account nonce: ${nonce}.`);
-    const hash = await api.tx.sudo.sudo(proposal).signAndSend(sudoKey, { blockHash, era, nonce });
-    console.log(`Hash: ${hash.toString()}`);
-    fs.appendFileSync('forceTransfers.hashes.log', hash.toString() + '\n');
-  })
+    console.log(`${nonceString}Sending transaction Balances::force_transfer from ${source} to ${dest} for amount ${amount}.`);
+    const unsub = await api.tx.sudo.sudo(proposal).signAndSend(
+      sudoKey,
+      { blockHash: api.genesisHash, era, nonce },
+      (result) => {
+        const { status } = result;
+
+        console.log(`${nonceString}Current status is ${status.type}.`);
+        if (status.isFinalized) {
+          console.log(`${nonceString}Transaction included at block hash ${status.asFinalized}.`);
+          unsub();
+        }
+      });
+      sleep(1000);
+  });
 }
