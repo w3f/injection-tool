@@ -37,7 +37,7 @@ program
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
-  .action(actions.sudoAs)
+  .action(actions.sudoAs);
 
 program
   .command('sudo-as-force-transfer')
@@ -48,7 +48,7 @@ program
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
   .option('--source <polkadotAddr>')
   .option('--amount <amountToTransfer>')
-  .action(actions.sudoAsForceTransfer)
+  .action(actions.sudoAsForceTransfer);
 
 program
   .command('inject-kusama-state')
@@ -59,10 +59,17 @@ program
   .action((cmd) => errorCatcher(actions.injectKusamaState(cmd)));
 
 program
+  .command('scrape-extrinsics')
+  .option('--latestHash <hash>', 'The latest hash to scrape backwards from.')
+  .option('--outFile <filepath>', 'The file to log the method data.')
+  .option('--wsEndpoint <url>')
+  .action((cmd) => errorCatcher(actions.scrapeExtrinsics(cmd)));
+
+program
   .command('state-check')
   .option('--wsEndpointOne <string>')
   .option('--wsEndpointTwo <string>')
-  .action((cmd) => errorCatcher(actions.stateCheck(cmd)))
+  .action((cmd) => errorCatcher(actions.stateCheck(cmd)));
 
 /* Ethereum */
 program

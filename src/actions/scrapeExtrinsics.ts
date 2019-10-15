@@ -1,12 +1,12 @@
 import { Command } from 'commander';
 import * as util from '@polkadot/util';
-import { initApi, CallIndices } from './helpers';
+import { initApi, CallIndices } from '../helpers';
 
 import * as fs from 'fs';
 
 // Scrapes all extrinsics from a Polkadot chain.
 export const scrapeExtrinsics = async (cmd: Command) => {
-  const { outFile, wsEndpoint, latestHash } = cmd;
+  const { latestHash, outFile, wsEndpoint } = cmd;
 
   const api = await initApi(wsEndpoint);
   
@@ -32,6 +32,6 @@ export const scrapeExtrinsics = async (cmd: Command) => {
       // Set the new block as this one's parent.
       //@ts-ignore
       block = await api.rpc.chain.getBlock(block.header.parentHash);
-    })
+    });
   }
 }
