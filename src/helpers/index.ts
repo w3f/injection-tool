@@ -1,7 +1,13 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import Keyring from '@polkadot/keyring';
 
 export const assert = (condition: boolean, message: string): void => {
   if (!condition) throw new Error(message);
+}
+
+export const getSudoSigner = (cryptoType: 'ed25519' | 'sr25519', mnemonic: string) => {
+  const keyring = new Keyring({ type: cryptoType });
+  return keyring.addFromMnemonic(mnemonic);
 }
 
 export const initApi = (wsEndpoint: string = 'ws://localhost:9944'): Promise<ApiPromise> => {

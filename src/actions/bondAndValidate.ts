@@ -2,7 +2,7 @@ import Keyring from '@polkadot/keyring';
 import { createType, GenericImmortalEra } from '@polkadot/types';
 import { Command } from 'commander';
 import * as fs from 'fs';
-import { assert, initApi, sleep } from '../helpers';
+import { assert, getSudoSigner, initApi, sleep } from '../helpers';
 
 const OneKSM = 10**12;
 
@@ -10,12 +10,11 @@ export const bondAndValidate = async (cmd: Command) => {
   const { csvController, csvStash, cryptoType, mnemonic, wsEndpoint } = cmd;
 
   const api = await initApi(wsEndpoint);
-  const keyring = new Keyring({ type: cryptoType });
 
   const controllers = fs.readFileSync(csvController, { encoding: 'utf-8' }).split('\n');
   const stashes = fs.readFileSync(csvStash, { encoding: 'utf-8' }).split('\n');
 
-  const sudoSigner = keyring.addFromMnemonic(mnemonic);
+  const sudoSigner = getSudoSigner(cryptoType, mnemonic);
   assert(
     sudoSigner.address === (await api.query.sudo.key()).toString(),
     'Signer secret does not unlock the Sudo key for this chian!',

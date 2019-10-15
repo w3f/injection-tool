@@ -1,6 +1,7 @@
 import program from 'commander';
 
 import * as actions from './actions';
+import { transitionToPoS } from './transitionToPoS';
 
 const errorCatcher = (wrappedFunction: any) => {
   try {
@@ -73,6 +74,14 @@ program
 //   .option('--outFile <filepath>', 'The file to log the method data.')
 //   .option('--wsEndpoint <url>')
 //   .action((cmd) => errorCatcher(actions.scrapeExtrinsics(cmd)));
+
+program
+  .command('transitionToPoS')
+  .option('--cryptoType <type>', 'One of ed25519 or sr15519.', 'sr25519')
+  .option('--mnemonic <string>', 'The mnemonic for the Sudo signer.')
+  .option('--wsEndpoint <string>', 'A WebSockets endpoint to a Polkadot node.', 'ws://localhost:9944')
+  .option('--runtimeCode <filepath>')
+  .action((cmd) => errorCatcher(transitionToPoS(cmd)));
 
 program
   .command('state-check')

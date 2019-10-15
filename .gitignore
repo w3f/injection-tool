@@ -7,3 +7,4 @@ internal
 src/test.ts
 *.logarchive
 archive
+pos_runtime.compact.wasm
