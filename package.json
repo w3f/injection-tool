@@ -21,7 +21,8 @@
     "web3": "^1.2.0"
   },
   "scripts": {
-    "force-transfers": "ts-node src/index force-transfers"
+    "force-transfers": "ts-node src/index force-transfers",
+    "nominate": "ts-node src/index nominate"
   },
   "repository": {
     "type": "git",

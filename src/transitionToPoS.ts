@@ -1,7 +1,7 @@
 import { createType, GenericImmortalEra } from '@polkadot/types';
 import { Command } from 'commander';
 import * as fs from 'fs';
-import { assert, getSudoSigner, initApi, sleep } from './helpers';
+import { assert, getSigner, initApi, sleep } from './helpers';
 
 const countdown = (ms: number) => {
   console.log('Counting down...');
@@ -24,7 +24,7 @@ export const transitionToPoS = async (cmd: Command) => {
   const { cryptoType, mnemonic, runtimeCode, wsEndpoint } = cmd;
 
   const api = await initApi(wsEndpoint);
-  const sudoSigner = getSudoSigner(cryptoType, mnemonic);
+  const sudoSigner = getSigner(cryptoType, mnemonic);
 
   assert(
     sudoSigner.address === (await api.query.sudo.key()).toString(),

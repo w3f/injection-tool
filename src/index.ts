@@ -2,6 +2,7 @@ import program from 'commander';
 
 import * as actions from './actions';
 import { transitionToPoS } from './transitionToPoS';
+import { nominate } from './nominate';
 
 const errorCatcher = (wrappedFunction: any) => {
   try {
@@ -48,6 +49,14 @@ program
   .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
   .action((cmd) => errorCatcher(actions.bondAndValidate(cmd)));
+
+program
+  .command('nominate')
+  .option('--csv <file>')
+  .option('--cryptoType <type>', '', 'sr25519')
+  .option('--suri <suri>')
+  .option('--wsEndpoint <endpoint>', '', 'wss://serinus-4.kusama.network')
+  .action((cmd) => errorCatcher(nominate(cmd)));
 
 program
   .command('sudo-as-force-transfer')
