@@ -3,17 +3,20 @@
   "version": "1.0.0",
   "description": "Utility scripts for interacting with Kusama and Polkadot.",
   "main": "index.js",
+  "bin":{
+    "injection-tool": "./src/index"
+  },
   "devDependencies": {},
   "dependencies": {
     "@parity/api": "^5.1.12",
-    "@polkadot/api": "^0.91.1",
-    "@polkadot/keyring": "^1.2.1",
-    "@polkadot/types": "^0.91.1",
+    "@polkadot/api": "^0.97.0-beta.38",
+    "@polkadot/keyring": "^1.7.1",
     "@polkadot/util": "^1.4.1",
     "@types/bn.js": "^4.11.5",
     "@types/node": "^12.6.8",
     "@types/web3": "^1.0.19",
     "bn.js": "^5.0.0",
+    "camelcase": "^5.3.1",
     "commander": "^2.20.0",
     "csv-parse": "^4.4.3",
     "ts-node": "^8.3.0",
@@ -21,6 +24,7 @@
     "web3": "^1.2.0"
   },
   "scripts": {
+    "bond-and-validate": "ts-node src/index bond-and-validate",
     "force-transfers": "ts-node src/index force-transfers",
     "nominate": "ts-node src/index nominate"
   },

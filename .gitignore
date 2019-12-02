@@ -8,3 +8,5 @@ src/test.ts
 *.logarchive
 archive
 pos_runtime.compact.wasm
+quickReverse.js
+test.injection.sh

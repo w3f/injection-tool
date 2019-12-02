@@ -12,7 +12,12 @@ export const getSigner = (cryptoType: 'ed25519' | 'sr25519', suri: string) => {
 
 export const initApi = (wsEndpoint: string = 'ws://localhost:9944'): Promise<ApiPromise> => {
   const provider = new WsProvider(wsEndpoint);
-  return ApiPromise.create({ provider });
+  //@ts-ignore
+  return ApiPromise.create({ provider, typesChain: {
+    "Kusama CC3 Tester": {
+      Keys: "SessionKeys5"
+    }
+  } });
 }
 
 export const sleep = (ms: number): Promise<void> => {

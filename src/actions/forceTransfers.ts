@@ -13,7 +13,7 @@ const parseCSV = (filepath: string) => {
 
 export const forceTransfers = async (cmd: Command) => {
   const { csv, cryptoType, mnemonic, suri, jsonPath, source, wsEndpoint } = cmd;
-  if (!source) { throw Error('Source address is required!')}
+  if (!source) { throw Error('Source address is required!'); }
 
   const csvParsed = parseCSV(csv);
 
@@ -38,13 +38,17 @@ export const forceTransfers = async (cmd: Command) => {
   }
 
   let startingNonce = await api.query.system.accountNonce(sudoKey.address);
-  csvParsed.map(async (entry: any, index: any) => {
+  let counter = 0;
+  for (const entry of csvParsed) {
+    //@ts-ignore
     const [ dest, amount ] = entry;
+    // console.log(dest, amount);
+
     const proposal = api.tx.balances.forceTransfer(source,dest,amount);
-    const nonce = Number(startingNonce) + index;
+    const nonce = Number(startingNonce) + counter;
     const nonceString = `Nonce ${nonce} | `;
 
-    const era = createType('ExtrinsicEra', new GenericImmortalEra());
+    const era = createType(api.registry, 'ExtrinsicEra', new GenericImmortalEra(api.registry));
 
     console.log(`${nonceString}Sending transaction Balances::force_transfer from ${source} to ${dest} for amount ${amount}.`);
     const unsub = await api.tx.sudo.sudo(proposal).signAndSend(
@@ -58,7 +62,9 @@ export const forceTransfers = async (cmd: Command) => {
           console.log(`${nonceString}Transaction included at block hash ${status.asFinalized}.`);
           unsub();
         }
-      });
-      sleep(1000);
-  });
+      }
+    );
+    counter++;
+    await sleep(1000);
+  }
 }
