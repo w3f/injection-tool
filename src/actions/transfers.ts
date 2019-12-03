@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import { initApi, sleep } from '../helpers';
 import parse from 'csv-parse/lib/sync';
 import * as fs from 'fs';
+import { decodeAddress } from '@polkadot/keyring'; 
 
 const parseCSV = (filepath: string) => {
   // The CSV file be formatted <dest>,<amount>
@@ -12,25 +13,15 @@ const parseCSV = (filepath: string) => {
 }
 
 export const makeTransfers = async (cmd: Command) => {
-  const { csv, cryptoType, mnemonic, suri, jsonPath, wsEndpoint } = cmd;
+  const { csv, cryptoType, suri, wsEndpoint } = cmd;
 
   const csvParsed = parseCSV(csv);
 
   const api = await initApi(wsEndpoint);
   const keyring = new Keyring({ type: cryptoType });
 
-  let signer: any;
-  if (suri) {
-    signer = keyring.addFromUri(suri);
-  } else if (mnemonic) {
-    signer = keyring.addFromMnemonic(mnemonic);
-  } else if (jsonPath) {
-    signer = keyring.addFromJson(JSON.parse(fs.readFileSync(jsonPath, { encoding: 'utf-8' })));
-  } else {
-    throw Error('Failed to pass in a method to get the address.');
-  }
-
-  console.log(`Sending from ${signer.address}`);
+  const signer = keyring.addFromUri(suri);
+  console.log(`Sending from ${signer.address}\n`);
 
   let startingNonce = await api.query.system.accountNonce(signer.address);
   let counter = 0;
@@ -38,7 +29,7 @@ export const makeTransfers = async (cmd: Command) => {
     //@ts-ignore
     const [ dest, amount ] = entry;
     const nonce = Number(startingNonce) + counter;
-    const trace = `Nonce ${nonce} | `;
+    const trace = `Line ${counter+1} | Nonce ${nonce} | `;
 
     const era = createType(api.registry, 'ExtrinsicEra', new GenericImmortalEra(api.registry));
 
@@ -54,6 +45,10 @@ export const makeTransfers = async (cmd: Command) => {
         if (status.isFinalized) {
           console.log(`${trace}Transaction included at block hash ${status.asFinalized}.`);
           unsub();
+          if (nonce == csvParsed.length + Number(startingNonce)-1) {
+            console.log('\nDONE! Closing...');
+            process.exit(0);
+          }
         }
       }
     );

@@ -26,6 +26,7 @@
   "scripts": {
     "bond-and-validate": "ts-node src/index bond-and-validate",
     "force-transfers": "ts-node src/index force-transfers",
+    "transfer": "ts-node src/index transfer",
     "nominate": "ts-node src/index nominate"
   },
   "repository": {

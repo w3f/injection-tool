@@ -10,3 +10,4 @@ archive
 pos_runtime.compact.wasm
 quickReverse.js
 test.injection.sh
+src/actions/kusamaCc3.ts

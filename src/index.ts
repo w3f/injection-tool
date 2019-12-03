@@ -4,6 +4,8 @@ import program from 'commander';
 
 import { bondAndValidate, forceTransfers, makeTransfers } from './actions';
 
+import Package from '../package.json';
+
 const errorCatcher = (wrappedFunction: any) => {
   try {
     wrappedFunction;
@@ -11,9 +13,9 @@ const errorCatcher = (wrappedFunction: any) => {
 }
 
 program
-  .version('0.2.0', '-v --version')
+  .version(Package.version, '-v --version')
 
-/* Polkadot / Kusama */
+/** Polkadot and Kusama */
 program
   .command('force-transfers')
   .option('--csv <filepath>', 'A CSV file formatted <dest>,<amount> on each line.')
@@ -33,22 +35,6 @@ program
   .option('--suri <suri>', 'The secret URI for the signer key.')
   .action((cmd) => errorCatcher(makeTransfers(cmd)));
 
-// program
-//   .command('inject-claims')
-//   .option('--csv <filepath>', 'A CSV file formatted <dest>,<signature> on each line.')
-//   .option('--endpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
-//   .action(actions.injectClaims);
-
-// program
-//   .command('sudo-as')
-//   .option('--csv <filepath>', 'A CSV file formatted <whom>,<methodObject> on each line.')
-//   .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
-//   .option('--endpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
-//   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
-//   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
-//   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
-//   .action(actions.sudoAs);
-
 program
   .command('bond-and-validate')
   .option('--csvController <filepath>')
@@ -58,54 +44,6 @@ program
   .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
   .action((cmd) => errorCatcher(bondAndValidate(cmd)));
-
-// program
-//   .command('nominate')
-//   .option('--csv <file>')
-//   .option('--cryptoType <type>', '', 'sr25519')
-//   .option('--suri <suri>')
-//   .option('--wsEndpoint <endpoint>', '', 'wss://serinus-4.kusama.network')
-//   .action((cmd) => errorCatcher(nominate(cmd)));
-
-// program
-//   .command('sudo-as-force-transfer')
-//   .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
-//   .option('--endpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
-//   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
-//   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
-//   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
-//   .option('--source <polkadotAddr>')
-//   .option('--amount <amountToTransfer>')
-//   .action(actions.sudoAsForceTransfer);
-
-// program
-//   .command('inject-kusama-state')
-//   .option('--csv <filepath>', 'A CSV file formatted <whom>,<signature>,<callObject> on each line.')
-//   .option('--cryptoType <type>', 'One of ed25519 or sr15519.', 'sr25519')
-//   .option('--mnemonic <string>', 'The mnemonic for the Sudo signer.')
-//   .option('--wsEndpoint <string>', 'A WebSockets endpoint to a Polkadot node.', 'ws://localhost:9944')
-//   .action((cmd) => errorCatcher(actions.injectKusamaState(cmd)));
-
-// // program
-// //   .command('scrape-extrinsics')
-// //   .option('--latestHash <hash>', 'The latest hash to scrape backwards from.')
-// //   .option('--outFile <filepath>', 'The file to log the method data.')
-// //   .option('--wsEndpoint <url>')
-// //   .action((cmd) => errorCatcher(actions.scrapeExtrinsics(cmd)));
-
-// program
-//   .command('transitionToPoS')
-//   .option('--cryptoType <type>', 'One of ed25519 or sr15519.', 'sr25519')
-//   .option('--mnemonic <string>', 'The mnemonic for the Sudo signer.')
-//   .option('--wsEndpoint <string>', 'A WebSockets endpoint to a Polkadot node.', 'ws://localhost:9944')
-//   .option('--runtimeCode <filepath>')
-//   .action((cmd) => errorCatcher(transitionToPoS(cmd)));
-
-// program
-//   .command('state-check')
-//   .option('--wsEndpointOne <string>')
-//   .option('--wsEndpointTwo <string>')
-//   .action((cmd) => errorCatcher(actions.stateCheck(cmd)));
 
 /* Ethereum */
 // program
