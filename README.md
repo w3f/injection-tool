@@ -4,8 +4,72 @@ After cloning the repository run `yarn` at the root to install the dependencies 
 
 **Utilities:**
 
-- [Force Transfers on Kusama](#force-transfers-on-kusama)
+- [Transfers](#transfers) - Make batch transfers on Kusama and other Substrate based chains.
+- [Force Transfers on Kusama](#force-transfers-on-kusama)`  
 - [DOT Allocations on Ethereum](#dot-allocations-on-ethereum)
+
+## Installing
+
+The injection-tool requires some dependencies to be installed on your system such as [nodeJS](https://nodejs.org)
+and the accompanying package manager [npm](https://npmjs.org). On most systems these can be installed from your
+operating system's package manager such as Homebrew for MacOS or apt for Ubuntu.
+
+To check you have these pre-requisite installed try `node --version` and `npm --version` on the commandline. If you
+do not see version numbers from the output of running these commands one at a time, then you will need to install
+them.
+
+You will also need [git](https://git-scm.com/) for cloning this repository locally. Git like node and npm are also
+usually provided in your operating system's package managers. Once this is installed try cloning the `injection-tool`
+like so:
+
+```sh
+git clone https://github.com/w3f/injection-tool.git
+```
+
+This will create an `injection-tool` code repository on your local machine. Next you will `cd` into the repository and use `yarn`
+to install the dependencies:
+
+```sh
+cd injection-tool
+npm i -g yarn # <- this is needed if you haven't installed yarn before
+yarn
+```
+
+Once all the dependencies are install you should be able to use the utilities outlined in the rest of this README.
+
+## Transfers (on Kusama, Polkadot and other Substrate chains)
+
+Transfers expect a CSV (comma-separated-values) file that is formatted with <address>,<amount> on each line. An example
+of this file looks like the below:
+
+```csv
+5Chi986mMWi8ksR2AEcz9VwuHw7DQdU6afB1GtqzkGo2iQN9,1000000000000
+5FCTrcwzkr1uxxLAaTqfkB66NHBEDx2YoDGs3tcX8PM911hC,2000000000000
+```
+
+NOTE: On Kusama the values have **12 decimal places** so the amounts in the example above are sending 1 and 2 KSM respectively.
+
+### Usage
+
+```sh
+Usage: transfer [options]
+
+Options:
+  --csv <file>         A CSV file formatted <destination>,<amount> on each line.
+  --cryptoType <type>  One of ed25519 or sr25519, depending on the crypto used to derive your keys. (default: "sr25519")
+  --wsEndpoint <url>   The endpoint of the WebSockets to connect. (default: "wss://cc3-4.kusama.network")
+  --suri <suri>        The secret URI for the signer key.
+  -h, --help           output usage information
+```
+
+### Example
+
+If you are sending transfers on Kusama then most of the defaults should work and the only two values you need to
+provided are `--csv <file>` and `--suri <secret phrase>` like so: 
+
+```sh
+yarn transfer --csv sample.csv --suri 'here is my mnemonic that I keep very safe because it holds the funds'
+```
 
 ## Force Transfers (On Kusama)
 
