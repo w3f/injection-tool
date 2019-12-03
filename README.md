@@ -15,10 +15,10 @@ and the accompanying package manager [npm](https://npmjs.org). On most systems t
 operating system's package manager such as Homebrew for MacOS or apt for Ubuntu.
 
 To check you have these pre-requisite installed try `node --version` and `npm --version` on the commandline. If you
-do not see version numbers from the output of running these commands one at a time, then you will need to install
+do not see version numbers from the output of running these commands (one at a time), then you will need to install
 them.
 
-You will also need [git](https://git-scm.com/) for cloning this repository locally. Git like node and npm are also
+You will also need [git](https://git-scm.com/) for cloning this repository locally. Git, like node and npm, is
 usually provided in your operating system's package managers. Once this is installed try cloning the `injection-tool`
 like so:
 
