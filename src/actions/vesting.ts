@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import Web3 = require('web3');
+import Web3 from 'web3';
 import parse from 'csv-parse/lib/sync';
 import * as fs from 'fs';
 
