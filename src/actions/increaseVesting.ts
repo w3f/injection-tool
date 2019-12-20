@@ -61,12 +61,12 @@ export const increaseVesting = async (cmd: Command) => {
     const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
     const processSize = 2;
 
-    let numOfLoop = Math.ceil(destinations.length / processSize);
+    let numOfTimes = Math.ceil(destinations.length / processSize);
     let i = 0;
     let start = 0;
     let end = processSize;
 
-    while (i < numOfLoop) {
+    while (i < numOfTimes) {
 
         const vestingArg = destinations.slice(start, end);
         const amtArg = amounts.slice(start, end);
