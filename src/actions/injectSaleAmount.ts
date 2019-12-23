@@ -60,16 +60,13 @@ export const injectSaleAmount = async (cmd: Command) => {
 
     const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
 
-    console.log('what is destinations: ', destinations)
-    console.log('what is amounts: ', amounts)
-
-    const maxProcessSize = 2
-    let numOfLoop = Math.ceil(destinations.length / maxProcessSize);
-
+    let processSize = Math.min(10, destinations.length);
+    let numOfTimes = Math.ceil(destinations.length / processSize);
     let i = 0;
     let start = 0;
-    let end = maxProcessSize;
-    while (i < numOfLoop) {
+    let end = processSize;
+
+    while (i < numOfTimes) {
 
         const vestingArg = destinations.slice(start, end);
         const amtArg = amounts.slice(start, end);
@@ -85,10 +82,10 @@ export const injectSaleAmount = async (cmd: Command) => {
         console.log(`Hash: ${txHash}`);
 
         start = end;
-        end = Math.min(end + maxProcessSize, destinations.length);
+        end = Math.min(end + processSize, destinations.length);
 
-        console.log('start : ', start);
-        console.log('end: ', end);
+        console.log('Updated start : ', start);
+        console.log('Updated end: ', end);
 
         i++;
     }

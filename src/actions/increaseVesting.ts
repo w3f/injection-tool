@@ -59,8 +59,8 @@ export const increaseVesting = async (cmd: Command) => {
     }
 
     const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
-    const processSize = 2;
 
+    let processSize = Math.min(10, destinations.length);
     let numOfTimes = Math.ceil(destinations.length / processSize);
     let i = 0;
     let start = 0;
