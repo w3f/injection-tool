@@ -24,6 +24,7 @@
     "yarn": "^1.21.1"
   },
   "scripts": {
+    "assign-indices": "ts-node src/index assign-indices",
     "bond-and-validate": "ts-node src/index bond-and-validate",
     "claims-deploy": "ts-node src/index eth:claims-deploy",
     "force-transfers": "ts-node src/index force-transfers",
