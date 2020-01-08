@@ -9,7 +9,7 @@ import Api from '@parity/api';
 const utils = (new Web3()).utils;
 
 // TODO. need to double verify
-const claims = require('../../build/contracts/NewClaims.json');
+const claims = require('../../build/contracts/Claims.json');
 
 export const initclaims = (address: string, provider: string) => {
   const w3 = new Web3(new Web3.providers.WebsocketProvider(provider));

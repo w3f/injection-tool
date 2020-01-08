@@ -1,15 +1,19 @@
-#!/usr/bin/env ts-node
-
 import program from 'commander';
 
-import { vesting, injectSaleAmount, increaseVesting, dotAllocations, bondAndValidate, forceTransfers, makeTransfers } from './actions';
+import { claimsDeploy, vesting, injectSaleAmount, assignIndices, increaseVesting, dotAllocations, bondAndValidate, forceTransfers, makeTransfers } from './actions';
 
 import Package from '../package.json';
 
-const errorCatcher = (wrappedFunction: any) => {
+const errorCatcher = async (wrappedFunction: any) => {
   try {
-    wrappedFunction;
-  } catch (error) { console.error(error); }
+     await wrappedFunction;
+  } catch (error) { 
+    console.error(error); 
+    process.exit(1);
+  } finally {
+    console.log('done');
+    process.exit(0);
+  }
 }
 
 program
@@ -89,5 +93,28 @@ program
   .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '29500000000')
   .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
   .action((cmd) => errorCatcher(increaseVesting(cmd)));
+
+program
+  .command('eth:claims-deploy')
+  .option('--dotIndicator <address>', 'Address of the DOT indicator contract.', '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907')
+  .option('--owner <address>', 'Address of the owner of the Claims contract.')
+  .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
+  .option('--from <address>', 'Sender of the transactions.')
+  .option('--gas <amount>', 'Amount of gas to send.', '2000000')
+  .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per unit of gas.', '29500000000')
+  .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
+  .action((cmd) => errorCatcher(claimsDeploy(cmd)));
+
+program
+  .command('eth:indices')
+  .option('--csv <filepath>', 'A CSV file formatted <address> on each line.')
+  .option('--claims <address>', 'The address of DOT Claims.', '')
+  .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
+  .option('--from <address>', 'Sender of the transactions.')
+  .option('--gas <amount>', 'Amount of gas to send.', '2000000')
+  .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '29500000000')
+  .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
+  .option('--start <number>', 'The index of the list to startt on.', 0)
+  .action((cmd) => errorCatcher(assignIndices(cmd)));
 
 program.parse(process.argv);
