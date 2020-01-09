@@ -18,18 +18,22 @@
     "camelcase": "^5.3.1",
     "commander": "^2.20.0",
     "csv-parse": "^4.4.3",
-    "ts-node": "^8.3.0",
+    "ethereumjs-wallet": "^0.6.3",
+    "ts-node": "^8.5.4",
     "typescript": "^3.5.3",
     "web3": "^1.2.3",
     "yarn": "^1.21.1"
   },
   "scripts": {
-    "assign-indices": "ts-node src/index assign-indices",
+    "assign-indices": "ts-node src/index eth:indices",
     "bond-and-validate": "ts-node src/index bond-and-validate",
     "claims-deploy": "ts-node src/index eth:claims-deploy",
+    "dot-allocate": "ts-node src/index eth:dot-allocations",
+    "frozenToken-deploy": "ts-node src/index eth:frozenToken-deploy",
     "force-transfers": "ts-node src/index force-transfers",
     "transfer": "ts-node src/index transfer",
-    "nominate": "ts-node src/index nominate"
+    "nominate": "ts-node src/index nominate",
+    "test": "ts-node src/getAccounts"
   },
   "repository": {
     "type": "git",

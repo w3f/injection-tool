@@ -1,6 +1,6 @@
 import program from 'commander';
 
-import { claimsDeploy, vesting, injectSaleAmount, assignIndices, increaseVesting, dotAllocations, bondAndValidate, forceTransfers, makeTransfers } from './actions';
+import { claimsDeploy, vesting, injectSaleAmount, assignIndices, increaseVesting, dotAllocations, bondAndValidate, forceTransfers, makeTransfers, frozenTokenDeploy } from './actions';
 
 import Package from '../package.json';
 
@@ -56,7 +56,7 @@ program
   .option('--frozenToken <address>', 'The address of the Frozen Token', '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907')
   .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
   .option('--from <address>', 'Sender of the transactions.')
-  .option('--gas <amount>', 'Amount of gas to send.', '50000')
+  .option('--gas <amount>', 'Amount of gas to send.', '80000')
   .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '29500000000')
   .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
   .action((cmd) => errorCatcher(dotAllocations(cmd)));
@@ -104,6 +104,17 @@ program
   .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per unit of gas.', '29500000000')
   .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
   .action((cmd) => errorCatcher(claimsDeploy(cmd)));
+
+program
+  .command('eth:frozenToken-deploy')
+  .option('--owner <address>', 'Address of the owner of the Claims contract.')
+  .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
+  .option('--from <address>', 'Sender of the transactions.')
+  .option('--gas <amount>', 'Amount of gas to send.', '2000000')
+  .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per unit of gas.', '29500000000')
+  .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
+  .action((cmd) => errorCatcher(frozenTokenDeploy(cmd)));
+
 
 program
   .command('eth:indices')

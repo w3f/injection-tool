@@ -9,6 +9,8 @@ import Api from "@parity/api";
 
 const w3Util = (new Web3()).utils;
 
+const Claims = require('../../build/contracts/Claims.json');
+
 export const assignIndices = async (cmd: Command) => {
     const { claims, csv, from, gas, gasPrice, password, providerUrl, start, } = cmd;
 
@@ -19,7 +21,8 @@ export const assignIndices = async (cmd: Command) => {
     };
 
     // @ts-ignore
-    const addresses = fs.readFileSync(csv).split('\n');
+    const addresses = fs.readFileSync(csv, { encoding: 'utf-8' }).split('\n');
+    console.log(addresses)
 
     // Parity instantiation.
     const provider = new Api.Provider.Ws(providerUrl);
@@ -28,6 +31,8 @@ export const assignIndices = async (cmd: Command) => {
     // Web3.js instantiation.
     const w3Provider = new Web3.providers.WebsocketProvider(providerUrl);
     const w3 = new Web3(w3Provider);
+
+    const claimsContract = new w3.eth.Contract(Claims.abi, claims);
 
     const step = Math.min(50, addresses.length);
 
@@ -44,12 +49,12 @@ export const assignIndices = async (cmd: Command) => {
 
         const indicesArg = addresses.slice(i, end);
 
-        const encoded = claims.methods.assignIndices(indicesArg).encodeABI();
+        const encoded = claimsContract.methods.assignIndices(indicesArg).encodeABI();
         const tx = Object.assign(
             txParams,
             {
                 data: encoded,
-                to: claims.options.address,
+                to: claims,
                 nonce: currentNonce,
             },
         );
