@@ -128,4 +128,28 @@ program
   .option('--start <number>', 'The index of the list to startt on.', 0)
   .action((cmd) => errorCatcher(assignIndices(cmd)));
 
+program
+  .command('eth:amendments')
+  .option('--csv <filepath>', 'A CSV file formatted <original>,<amended> on each line.')
+  .option('--claims <address>', 'The address of DOT Claims.', '')
+  .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
+  .option('--from <address>', 'Sender of the transactions.')
+  .option('--gas <amount>', 'Amount of gas to send.', '2000000')
+  .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '29500000000')
+  .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
+  .option('--start <number>', 'The index of the list to startt on.', 0)
+  .action(() => {});
+
+program
+  .command('eth:make-claims')
+  .option('--csv <filepath>', 'A CSV file formatted <dotHolder> on each line.')
+  .option('--claims <address>', 'The address of DOT Claims.', '')
+  .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
+  .option('--from <address>', 'Sender of the transactions.')
+  .option('--gas <amount>', 'Amount of gas to send.', '2000000')
+  .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '29500000000')
+  .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
+  .option('--start <number>', 'The index of the list to startt on.', 0)
+  .action(() => {});
+
 program.parse(process.argv);

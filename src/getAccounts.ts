@@ -23,27 +23,6 @@ const main = async () => {
     console.log(`${accounts[index]} : ${balances[index]}`);
   });
 
-  // const unlocked = await api.personal.unlockAccount(accounts[0], '', 1000);
-  // console.log(`unlocked, ${unlocked}`);
-
-  // await api.personal.sendTransaction({
-  //   from: accounts[0],
-  //   to: accounts[1],
-  //   value: w3.utils.toWei('30', 'ether'),
-  // }, '');
-
-  const afterBalances = await Promise.all(
-    accounts.map((acc: any) => {
-      return w3.eth.getBalance(acc);
-    })
-  );
-
-  accounts.forEach((account: any, index: any) => {
-    console.log(`${accounts[index]} : ${afterBalances[index]}`);
-  });
-
-
-
 }
 
 try {

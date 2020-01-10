@@ -2,7 +2,7 @@ import { Command } from "commander";
 import * as fs from 'fs';
 import Web3 from "web3";
 
-import { sleep } from '../helpers';
+import { sleep } from '../../helpers';
 
 // @ts-ignore
 import Api from "@parity/api";
