@@ -1,6 +1,17 @@
 import program from 'commander';
 
-import { claimsDeploy, vesting, injectSaleAmount, assignIndices, increaseVesting, dotAllocations, bondAndValidate, forceTransfers, makeTransfers, frozenTokenDeploy } from './actions';
+import {
+  claimsDeploy,
+  vesting,
+  injectSaleAmount,
+  assignIndices,
+  increaseVesting, 
+  dotAllocations,
+  bondAndValidate,
+  forceTransfers,
+  makeTransfers,
+  frozenTokenDeploy,
+} from './actions';
 
 import Package from '../package.json';
 
@@ -142,7 +153,7 @@ program
 
 program
   .command('eth:make-claims')
-  .option('--csv <filepath>', 'A CSV file formatted <dotHolder> on each line.')
+  .option('--csv <filepath>', 'A CSV file formatted <dotHolder>,<pubKey> on each line.')
   .option('--claims <address>', 'The address of DOT Claims.', '')
   .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
   .option('--from <address>', 'Sender of the transactions.')
