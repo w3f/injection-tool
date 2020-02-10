@@ -1,0 +1,59 @@
+{
+  "name": "injection-tool",
+  "version": "1.0.0",
+  "description": "Utility scripts for interacting with Kusama and Polkadot.",
+  "main": "index.js",
+  "bin": {
+    "injection-tool": "./src/index"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1",
+    "ganache-core": "^2.10.1"
+  },
+  "dependencies": {
+    "@parity/api": "^5.1.12",
+    "@polkadot/api": "^0.100.0-beta.26",
+    "@polkadot/keyring": "^1.7.1",
+    "@polkadot/util": "^1.4.1",
+    "@types/bn.js": "^4.11.5",
+    "@types/node": "^12.6.8",
+    "bn.js": "^5.0.0",
+    "camelcase": "^5.3.1",
+    "commander": "^2.20.0",
+    "csv-parse": "^4.4.3",
+    "ethereumjs-wallet": "^0.6.3",
+    "ts-node": "^8.5.4",
+    "typescript": "^3.5.3",
+    "web3": "^1.2.6",
+    "yarn": "^1.21.1"
+  },
+  "scripts": {
+    "amend": "ts-node src/index eth:amendments",
+    "assign-indices": "ts-node src/index eth:indices",
+    "bond-and-validate": "ts-node src/index bond-and-validate",
+    "claims-deploy": "ts-node src/index eth:claims-deploy",
+    "dot-allocate": "ts-node src/index eth:dot-allocations",
+    "frozenToken-deploy": "ts-node src/index eth:frozenToken-deploy",
+    "force-transfers": "ts-node src/index force-transfers",
+    "transfer": "ts-node src/index transfer",
+    "vest": "ts-node src/index eth:vesting",
+    "increaseVesting": "ts-node src/index eth:increase-vesting",
+    "nominate": "ts-node src/index nominate",
+    "lint": "npx eslint src/**/*.ts --fix",
+    "test": "ts-node test/ethInjections.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/w3f/injection-tool.git"
+  },
+  "author": "Web3 Foundation",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/w3f/injection-tool/issues"
+  },
+  "homepage": "https://github.com/w3f/injection-tool#readme"
+}
