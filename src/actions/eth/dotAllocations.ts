@@ -68,4 +68,5 @@ export const dotAllocations = async (cmd: Command) => {
     await sleep(500);
     i++;
   }
+  console.log("TotalAllocationCount:",i)
 }

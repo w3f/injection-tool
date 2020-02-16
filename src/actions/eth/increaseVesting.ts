@@ -8,7 +8,6 @@ import Api from '@parity/api';
 
 const utils = (new Web3()).utils;
 
-// TODO. need to double verify
 const claims = require('../../../build/contracts/Claims.json');
 
 export const initclaims = (address: string, provider: string) => {
@@ -55,10 +54,11 @@ export const increaseVesting = async (cmd: Command) => {
     const api = new Api(provider);
 
     if (destinations.length != amounts.length) {
-        throw new Error('Attempted to supply arrays of non-equal lengths to `injectAllocations`!');
+        throw new Error('Attempted to supply arrays of non-equal lengths to `increaseVesting`!');
     }
 
-    const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
+    const startingNonce = await w3.eth.getTransactionCount(txParams.from);
+    // const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
 
     let processSize = Math.min(10, destinations.length);
     let numOfTimes = Math.ceil(destinations.length / processSize);

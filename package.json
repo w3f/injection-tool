@@ -7,12 +7,15 @@
     "injection-tool": "./src/index"
   },
   "devDependencies": {
+    "@types/jest": "^25.1.2",
     "@typescript-eslint/eslint-plugin": "^2.19.0",
     "@typescript-eslint/parser": "^2.19.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
-    "ganache-core": "^2.10.1"
+    "ganache-core": "^2.10.1",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.0"
   },
   "dependencies": {
     "@parity/api": "^5.1.12",
@@ -26,6 +29,7 @@
     "commander": "^2.20.0",
     "csv-parse": "^4.4.3",
     "ethereumjs-wallet": "^0.6.3",
+    "node-gyp": "^6.1.0",
     "ts-node": "^8.5.4",
     "typescript": "^3.5.3",
     "web3": "^1.2.6",
@@ -44,7 +48,9 @@
     "increaseVesting": "ts-node src/index eth:increase-vesting",
     "nominate": "ts-node src/index nominate",
     "lint": "npx eslint src/**/*.ts --fix",
-    "test": "ts-node test/ethInjections.ts"
+    "test": "jest",
+    "test-validate-address": "ts-node test/validateAddress.ts",
+    "test-increase-vesting": "ts-node test/increaseVesting.ts"
   },
   "repository": {
     "type": "git",

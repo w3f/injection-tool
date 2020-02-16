@@ -58,7 +58,9 @@ export const vesting = async (cmd: Command) => {
 
   let step = Math.min(50, destinations.length);
 
-  const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
+  
+  const startingNonce = await w3.eth.getTransactionCount(txParams.from);
+  // const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
   let nonceCounter = 0;
 
   let start = 0;
