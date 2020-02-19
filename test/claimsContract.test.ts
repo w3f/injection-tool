@@ -48,6 +48,7 @@ describe("testing claims contract function", () => {
   const newAccountFile = 'newAccountList.csv';
   const increaseVestingFile = 'increaseVesting.csv';
   const injectSaleFile = 'secondSale.csv';
+  const duplicateAccountFile = 'duplicateAddress.csv';
 
   let frozenTokenAddress : any;
   let claimsAddress: any;
@@ -107,6 +108,17 @@ describe("testing claims contract function", () => {
         "0xfc0988cf6b008c017319fdbc1bbf52c1b516185b86780216e0ace045ae9fd544,20000"
       ];
       fs.writeFileSync(injectSaleFile, secondSaleData.join('\n'));
+
+      // mocked duplicate an address CSV (for setVesting & increaseVesting)
+      const duplicateAddressData = [
+        "0x83BED0AaC8f16fFB782934Aaf9bf95c2Ab8eD672,123.000",
+        "0x4eFFb2719eaF36d0938804D6688f921eEFbB8bC6,325.000",
+        "0xc5fBd14add1732D899a6498397DfB0E6f6cbd6F4,234.000",
+        "0x145140DA9d78CB9618Ce752362C2Ea73111dF27a,555.000",
+        "0x4eFFb2719eaF36d0938804D6688f921eEFbB8bC6,325.000",
+        "0xc7C4d57204f528b1743a2d89c599B190Fbe24940,777.000"
+      ];
+      fs.writeFileSync(duplicateAccountFile, duplicateAddressData.join('\n'));
 
   });
 
@@ -202,6 +214,33 @@ describe("testing claims contract function", () => {
     const successIdx = checkInjectSaleResult.indexOf("Finished without error.");
     expect(successIdx).toBeGreaterThan(-1);
 
-  })
+  });
+
+  it("should fail when duplicate an address calling setVesting", async () => {
+
+    try {
+      await execute(
+        `ts-node src/index eth:set-vesting --csv ${duplicateAccountFile} --claims ${claimsAddress} --providerUrl ws://localhost:8588 --from ${testOwner} --gas 2000000 --password tester -y --noConfirm`
+      );
+    } catch (e) {
+      const errorIdx = e.message.indexOf("Duplicate address exists in the data file!");
+      expect(errorIdx).toBeGreaterThan(-1);
+    }
+
+  });
+
+  it("should fail when duplicate an address calling increaseVesting", async () => {
+
+    try {
+      await execute(
+        `ts-node src/index eth:increase-vesting --csv ${duplicateAccountFile} --claims ${claimsAddress} --providerUrl ws://localhost:8588 --from ${testOwner} --password tester -y --noConfirm` 
+      );
+    } catch (e) {
+      const errorIdx = e.message.indexOf("Duplicate address exists in the data file!");
+      expect(errorIdx).toBeGreaterThan(-1);
+    }
+
+  });
+
 });
 

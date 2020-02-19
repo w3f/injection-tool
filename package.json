@@ -48,9 +48,7 @@
     "increaseVesting": "ts-node src/index eth:increase-vesting",
     "nominate": "ts-node src/index nominate",
     "lint": "npx eslint src/**/*.ts --fix",
-    "test": "jest",
-    "test-validate-address": "ts-node test/validateAddress.ts",
-    "test-increase-vesting": "ts-node test/increaseVesting.ts"
+    "test": "jest --detectOpenHandles ----testTimeout=90000"
   },
   "repository": {
     "type": "git",

@@ -30,6 +30,10 @@ export const convertFromDecimalString = (decimalString: any) => {
     return units.concat(decimals).replace(/^0+/, '');
   }
 
+export const checkIfDuplicateExists = (w: Array<any>) => {
+  return new Set(w).size !== w.length; 
+}
+
 export const increaseVesting = async (cmd: Command) => {
     const { csv, claims, providerUrl, from, gas, gasPrice, password } = cmd;
 
@@ -44,6 +48,12 @@ export const increaseVesting = async (cmd: Command) => {
     const destinations = csvParsed.map((entry: any) => entry[0]);
     const amounts = csvParsed.map((entry: any) => convertFromDecimalString(entry[1]));
 
+    const isDuplicate = checkIfDuplicateExists(destinations);
+
+    if (isDuplicate) {
+      throw new Error('Duplicate address exists in the data file!');
+    }
+    
     const txParams: any = {
         from,
         gas,
