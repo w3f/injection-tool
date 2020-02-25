@@ -70,7 +70,6 @@ export const vesting = async (cmd: Command) => {
 
   
   const startingNonce = await w3.eth.getTransactionCount(txParams.from);
-  // const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
   let nonceCounter = 0;
 
   let start = 0;
