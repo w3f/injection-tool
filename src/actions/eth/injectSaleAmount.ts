@@ -58,7 +58,6 @@ export const injectSaleAmount = async (cmd: Command) => {
     }
 
     const startingNonce = await w3.eth.getTransactionCount(txParams.from);
-    // const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
 
     let processSize = Math.min(10, destinations.length);
     let numOfTimes = Math.ceil(destinations.length / processSize);
