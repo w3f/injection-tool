@@ -9,8 +9,8 @@ const w3Util = (new Web3()).utils;
 const claims = require('../../../build/contracts/Claims.json');
 
 export const initclaims = async (address: string, provider: string) => {
-  const w3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/c5d80b09947b436eb315bea244f31ce3'));
-  // const w3 = new Web3(new Web3.providers.WebsocketProvider(provider));
+  // const w3 = new Web3(new Web3.providers.HttpProvider(provider));
+  const w3 = new Web3(new Web3.providers.WebsocketProvider(provider));
   return await new w3.eth.Contract(claims.abi, address);
 }
 
@@ -28,7 +28,7 @@ export const checkAmount = async (cmd: Command) => {
     amounts.push(amount);
   });
 
-  const provider = new Api.Provider.Ws(providerUrl);
+  // const provider = new Api.Provider.Ws(providerUrl);
   const total: any = destinations.length;
   let count: any = 0;
 
@@ -41,7 +41,7 @@ export const checkAmount = async (cmd: Command) => {
 
       if (index > -1) {
         if (amounts[index] !== newTotal) {
-          console.log(`Warning: ${destinations[index]}'s amount defined in csv is not same as the one on-chain. csv:${amounts[index]} , on-chain:${newTotal}`);
+          console.log(`Warning: ${destinations[index]}'s amount defined in csv is not same as the one on-chain. csv:${amounts[index]} , on-chain:${(newTotal / 1000).toFixed(3) }`);
         }
         destinations.splice(index, 1);
         amounts.splice(index, 1);

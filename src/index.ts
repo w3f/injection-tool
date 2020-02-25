@@ -241,6 +241,7 @@ program
   .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
   .option('--startBlock <startBlock>', 'The start of the block number you would like to scan.', '9430800')
   .option('--endBlock <endBlock>', 'The end of the block number you would like to scan.', '9431000')
+  .option('-y --noConfirm', 'Skips the confirmation prompt.')
   .action((cmd) => errorCatcher(cmd, checkAmount));
 
   program
@@ -248,6 +249,7 @@ program
   .option('--csv <filepath>', 'A CSV file formatted <dotHolder> on each line.')
   .option('--claims <address>', 'The address of DOT Claims.', '0xa2CBa0190290aF37b7e154AEdB06d16100Ff5907')
   .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
+  .option('-y --noConfirm', 'Skips the confirmation prompt.')
   .action((cmd) => errorCatcher(cmd, querySecondSaleBalance));
 
 program.parse(process.argv);
