@@ -14,7 +14,6 @@ const utils = (new Web3()).utils;
 const claims = require('../../../build/contracts/Claims.json');
 
 export const initclaims = async (address: string, provider: string) => {
-  // const w3 = new Web3(new Web3.providers.HttpProvider(provider));
   const w3 = new Web3(new Web3.providers.WebsocketProvider(provider));
   return await new w3.eth.Contract(claims.abi, address);
 }
