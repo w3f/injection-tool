@@ -33,7 +33,7 @@
     "ts-node": "^8.5.4",
     "typescript": "^3.5.3",
     "web3": "^1.2.6",
-    "yarn": "^1.21.1"
+    "yarn": "^1.22.0"
   },
   "scripts": {
     "amend": "ts-node src/index eth:amendments",
