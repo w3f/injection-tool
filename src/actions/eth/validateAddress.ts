@@ -52,7 +52,6 @@ export const validateAddress = async (cmd: Command) => {
     throw new Error('Attempted to supply arrays of non-equal lengths to `validateAddress`!');
   }
 
-  // const provider = new Api.Provider.Ws(providerUrl);
   let counter = 0;
 
   for (let i=0; i<destinations.length; i++) {
