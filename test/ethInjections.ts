@@ -38,6 +38,7 @@ const w3 = new Web3(server.provider);
 const test = async () => {
   const accounts = await w3.eth.getAccounts();
 
+  console.log('account list:', accounts)
   /// Create a new account for testing purposes.
   const testOwner = await w3.eth.personal.newAccount('tester');
   await w3.eth.sendTransaction({

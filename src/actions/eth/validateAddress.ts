@@ -4,6 +4,8 @@
 import { Command } from 'commander';
 import * as fs from "fs";
 import Web3 from 'web3';
+import parse from 'csv-parse/lib/sync';
+
 // @ts-ignore
 import Api from '@parity/api';
 
@@ -12,9 +14,23 @@ const utils = (new Web3()).utils;
 const claims = require('../../../build/contracts/Claims.json');
 
 export const initclaims = async (address: string, provider: string) => {
-  const w3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/c5d80b09947b436eb315bea244f31ce3'));
-  // const w3 = new Web3(new Web3.providers.WebsocketProvider(provider));
+  const w3 = new Web3(new Web3.providers.WebsocketProvider(provider));
   return await new w3.eth.Contract(claims.abi, address);
+}
+
+export const convertFromDecimalString = (decimalString: any) => {
+  if (decimalString.indexOf('.') == -1) {
+    return decimalString.concat('000');
+  }
+  
+  let [ units, decimals ] = decimalString.split('.');
+  if (decimals.length > 3) {
+    throw new Error('Incorrect input ' + decimalString + ' given to convertFromDecimalString');
+  }
+  if (decimals.length < 3) {
+    decimals = decimals.padEnd(3, '0');
+  }
+  return units.concat(decimals).replace(/^0+/, '');
 }
 
 export const validateAddress = async (cmd: Command) => {
@@ -27,15 +43,14 @@ export const validateAddress = async (cmd: Command) => {
   const w3 = new Web3(new Web3.providers.WebsocketProvider(providerUrl));
   const claimsContract = await initclaims(claims, providerUrl);
 
-  let destinations: any[] = [];
-  let amounts: any[] = [];
-  fs.readFileSync(csv, { encoding: 'utf-8' }).split('\n').forEach((entry: any) => {
-    const [destination, amount] = entry.split(',');
-    destinations.push(destination);
-    amounts.push(amount);
-  });
+  const csvParsed = parse(fs.readFileSync(csv, { encoding: 'utf-8' }));
+  const destinations = csvParsed.map((entry: any) => entry[0]);
+  const amounts = csvParsed.map((entry: any) => convertFromDecimalString(entry[1]));
 
-  const provider = new Api.Provider.Ws(providerUrl);
+  if (destinations.length != amounts.length) {
+    throw new Error('Attempted to supply arrays of non-equal lengths to `validateAddress`!');
+  }
+
   let counter = 0;
 
   for (let i=0; i<destinations.length; i++) {
@@ -63,5 +78,7 @@ export const validateAddress = async (cmd: Command) => {
   } else {
     console.log('All good!');
   }
+
+  return counter;
 
 }
