@@ -23,7 +23,8 @@ export const makeTransfers = async (cmd: Command) => {
   const signer = keyring.addFromUri(suri);
   console.log(`Sending from ${signer.address}\n`);
 
-  let startingNonce = await api.query.system.accountNonce(signer.address);
+  //@ts-ignore
+  let startingNonce = (await api.query.system.account(signer.address)).nonce.toNumber();
   let counter = 0;
   for (const entry of csvParsed) {
     //@ts-ignore
