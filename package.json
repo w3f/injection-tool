@@ -1,10 +1,10 @@
 {
-  "name": "injection-tool",
+  "name": "@w3f/injection-tool",
   "version": "1.0.0",
   "description": "Utility scripts for interacting with Kusama and Polkadot.",
   "main": "index.js",
   "bin": {
-    "injection-tool": "./src/index"
+    "injection-tool": "./lib/index.js"
   },
   "devDependencies": {
     "@types/jest": "^25.1.2",
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@parity/api": "^5.1.12",
-    "@polkadot/api": "^0.100.0-beta.26",
+    "@polkadot/api": "^1.6.2",
     "@polkadot/keyring": "^1.7.1",
     "@polkadot/util": "^1.4.1",
     "@types/bn.js": "^4.11.5",
@@ -38,6 +38,7 @@
   "scripts": {
     "amend": "ts-node src/index eth:amendments",
     "assign-indices": "ts-node src/index eth:indices",
+    "build": "tsc",
     "bond-and-validate": "ts-node src/index bond-and-validate",
     "claims-deploy": "ts-node src/index eth:claims-deploy",
     "dot-allocate": "ts-node src/index eth:dot-allocations",

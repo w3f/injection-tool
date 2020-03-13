@@ -13,7 +13,7 @@ const parseCSV = (filepath: string) => {
 }
 
 export const makeTransfers = async (cmd: Command) => {
-  const { csv, cryptoType, suri, wsEndpoint } = cmd;
+  const { csv, cryptoType, dry, suri, wsEndpoint } = cmd;
 
   const csvParsed = parseCSV(csv);
 
@@ -23,8 +23,8 @@ export const makeTransfers = async (cmd: Command) => {
   const signer = keyring.addFromUri(suri);
   console.log(`Sending from ${signer.address}\n`);
 
-  //@ts-ignore
-  let startingNonce = (await api.query.system.account(signer.address)).nonce.toNumber();
+  let accountData = await api.query.system.account(signer.address)
+  let startingNonce = accountData.nonce.toNumber();
   let counter = 0;
   for (const entry of csvParsed) {
     //@ts-ignore
@@ -35,24 +35,27 @@ export const makeTransfers = async (cmd: Command) => {
     const era = createType(api.registry, 'ExtrinsicEra', new GenericImmortalEra(api.registry));
 
     console.log(`${trace}Sending transaction Balances::transfer from ${signer.address} to ${dest} for amount ${amount}.`);
-    //@ts-ignore
-    const unsub = await api.tx.balances.transfer(dest, amount).signAndSend(
-      signer,
-      { blockHash: api.genesisHash, era, nonce },
-      (result: any) => {
-        const { status } = result;
+    if (dry) {
+      console.log(`${trace} dry run turned on - transaction stubbed.`);
+    } else {
+      const unsub = await api.tx.balances.transfer(dest, amount).signAndSend(
+        signer,
+        { blockHash: api.genesisHash, era, nonce },
+        (result: any) => {
+          const { status } = result;
 
-        console.log(`${trace}Current status is ${status.type}.`);
-        if (status.isFinalized) {
-          console.log(`${trace}Transaction included at block hash ${status.asFinalized}.`);
-          unsub();
-          if (nonce == csvParsed.length + Number(startingNonce)-1) {
-            console.log('\nDONE! Closing...');
-            process.exit(0);
+          console.log(`${trace}Current status is ${status.type}.`);
+          if (status.isFinalized) {
+            console.log(`${trace}Transaction included at block hash ${status.asFinalized}.`);
+            unsub();
+            if (nonce == csvParsed.length + Number(startingNonce)-1) {
+              console.log('\nDONE! Closing...');
+              process.exit(0);
+            }
           }
         }
-      }
-    );
+      );
+    }
     counter++;
     await sleep(1000);
   }

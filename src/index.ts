@@ -91,6 +91,7 @@ program
   .command('transfer')
   .option('--csv <filepath[,filepath,...]>', 'One or more CSV files formatted <destination>,<amount> on each line.')
   .option('--cryptoType <type>', 'One of ed25519 or sr25519, depending on the crypto used to derive your keys.', 'sr25519')
+  .option('--dry', 'Runs in dry run mode.')
   .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect.', 'wss://kusama-rpc.polkadot.io/')
   .option('--suri <suri>', 'The secret URI for the signer key.')
   .action((cmd) => errorCatcher(cmd, makeTransfers));
