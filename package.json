@@ -1,11 +1,9 @@
 {
   "name": "@w3f/injection-tool",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "Utility scripts for interacting with Kusama and Polkadot.",
   "main": "index.js",
-  "bin": {
-    "injection-tool": "./lib/index.js"
-  },
+  "bin":  "./bin/index.js",
   "devDependencies": {
     "@types/jest": "^25.1.2",
     "@typescript-eslint/eslint-plugin": "^2.19.0",
@@ -39,6 +37,7 @@
     "amend": "ts-node src/index eth:amendments",
     "assign-indices": "ts-node src/index eth:indices",
     "build": "tsc",
+    "build-and-publish": "yarn build;cp build lib; npm publish --access public",
     "bond-and-validate": "ts-node src/index bond-and-validate",
     "claims-deploy": "ts-node src/index eth:claims-deploy",
     "dot-allocate": "ts-node src/index eth:dot-allocations",
