@@ -118,7 +118,7 @@ program
   .option('--gas <amount>', 'Amount of gas to send.', '2000000')
   .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '8500000000')
   .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
-  .option('--start <number>', 'The index of the list to startt on.', 0)
+  .option('--start <number>', 'The index of the list to startt on.', '0')
   .option('-y --noConfirm', 'Skips the confirmation prompt.')
   .action((cmd) => errorCatcher(cmd, makeAmendments));
 
@@ -181,7 +181,7 @@ program
   .option('--gas <amount>', 'Amount of gas to send.', '3000000')
   .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '5000000000')
   .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
-  .option('--start <number>', 'The index of the list to startt on.', 0)
+  .option('--start <number>', 'The index of the list to startt on.', '0')
   .option('-y --noConfirm', 'Skips the confirmation prompt.')
   .action((cmd) => errorCatcher(cmd, assignIndices));
 
@@ -208,7 +208,7 @@ program
   .option('--gas <amount>', 'Amount of gas to send.', '2000000')
   .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '5000000000')
   .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
-  .option('--start <number>', 'The index of the list to startt on.', 0)
+  .option('--start <number>', 'The index of the list to startt on.', '0')
   .option('-y --noConfirm', 'Skips the confirmation prompt.')
   .action((cmd) => errorCatcher(cmd, doClaims));
 
