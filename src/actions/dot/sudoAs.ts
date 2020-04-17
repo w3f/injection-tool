@@ -19,7 +19,7 @@ const getApi = (endpoint: string = KusamaCanaryEndpoint): Promise<ApiPromise> =>
 }
 
 export const sudoAs = async (cmd: Command) => {
-  const { endpoint, csv, cryptoType, mnemonic, suri, jsonPath } = cmd;
+  const { wsEndpoint, csv, cryptoType, mnemonic, suri, jsonPath, prevHashes } = cmd;
 
   const csvParsed = fs.readFileSync(csv, { encoding: 'utf-8' }).split('\n').map((line) => {
     const [whom, almostCompleteJson] = line.split(',{');
@@ -29,7 +29,9 @@ export const sudoAs = async (cmd: Command) => {
     }
   });
 
-  const api = await getApi(endpoint);
+  const prevHashesParsed = fs.readFileSync(prevHashes, { encoding: 'utf-8' }).split('\n');
+
+  const api = await getApi(wsEndpoint);
   const keyring = new pdKeyring({ type: cryptoType });
 
   let sudoKey: any;
@@ -68,6 +70,8 @@ export const sudoAs = async (cmd: Command) => {
       const logString = `Sending transaction ${section}::${method} from ${whom} with sudo key ${sudoKey.address} and nonce: ${nonce}.`;
       console.log(logString);
 
+      let thisIndex = index;
+
       const unsub = await api.tx.sudo.sudoAs(whom, proposal).signAndSend(sudoKey, { blockHash: api.genesisHash, era, nonce }, (result) => {
         const { events, status } = result;
 
@@ -76,6 +80,7 @@ export const sudoAs = async (cmd: Command) => {
 
         if (status.isFinalized) {
           console.log(`Transaction included at blockHash ${status.asFinalized}`);
+          fs.appendFileSync('sudoAs.hashes.map.log', `${logString}\t${status.asFinalized.toString()}\t${prevHashesParsed[thisIndex]}\n`);
           fs.appendFileSync('sudoAs.hashes.log', logString + '\n' + status.asFinalized.toString() + '\n');
           // Loop through Vec<EventRecord> to display all events
           events.forEach(({ phase, event: { data, method, section } }) => {

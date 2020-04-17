@@ -107,6 +107,17 @@ program
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
   .action((cmd) => errorCatcher(cmd, bondAndValidate));
 
+program
+  .command('sudo-as')
+  .option('--csv <filepath>')
+  .option('--prevHashes <filepath>', 'A file of previous hashes of the extrinsics.')
+  .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
+  .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
+  .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
+  .option('--suri <suri>', 'The secret URI for the signer key.')
+  .option('-y --noConfirm', 'Skips the confirmation prompt.')
+  .action((cmd) => errorCatcher(cmd, bondAndValidate));
+
 /* Ethereum */
 program
   .command('eth:amend')
