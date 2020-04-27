@@ -1,0 +1,17 @@
+node_modules
+kusama.json
+*.csv
+kusama.json
+internal
+src/test.ts
+*.logarchive
+archive
+pos_runtime.compact.wasm
+quickReverse.js
+test.injection.sh
+src/actions/kusamaCc3.ts
+tmp.txt
+*.txt
+*.log
+total.md
+lib

@@ -1,0 +1,88 @@
+import { Command } from "commander";
+import Web3 from "web3";
+import parse from "csv-parse/lib/sync";
+import * as fs from "fs";
+
+import { sleep } from "../../helpers";
+
+const utils = new Web3().utils;
+
+const FrozenToken = require("../../../build/contracts/FrozenToken.json");
+
+export const initFrozenToken = (address: string, provider: string) => {
+  const w3 = new Web3(new Web3.providers.WebsocketProvider(provider));
+  return new w3.eth.Contract(FrozenToken.abi, address);
+};
+
+export const convertFromDecimalString = (decimalString: any) => {
+  if (decimalString.indexOf(".") == -1) {
+    return decimalString.concat("000");
+  }
+
+  let [units, decimals] = decimalString.split(".");
+  if (decimals.length > 3) {
+    throw new Error(
+      "Incorrect input " + decimalString + " given to convertFromDecimalString"
+    );
+  }
+  if (decimals.length < 3) {
+    decimals = decimals.padEnd(3, "0");
+  }
+  return units.concat(decimals).replace(/^0+/, "");
+};
+
+export const dotAllocations = async (cmd: Command) => {
+  const { csv, frozenToken, providerUrl, from, gas, gasPrice, password } = cmd;
+  if (!from) {
+    throw new Error("A `from` address is required!");
+  }
+
+  const w3 = new Web3(new Web3.providers.WebsocketProvider(providerUrl));
+  const frozenTokenContract = initFrozenToken(frozenToken, providerUrl);
+
+  const csvParsed = parse(fs.readFileSync(csv, { encoding: "utf-8" }));
+  const destinations = csvParsed.map((entry: any) => entry[0]);
+  const amounts = csvParsed.map((entry: any) =>
+    convertFromDecimalString(entry[1])
+  );
+
+  const txParams: any = {
+    from,
+    gas,
+    gasPrice,
+  };
+
+  if (destinations.length != amounts.length) {
+    throw new Error(
+      "Attempted to supply arrays of non-equal lengths to `injectAllocations`!"
+    );
+  }
+
+  const startingNonce = await w3.eth.getTransactionCount(txParams.from);
+
+  let i = 0;
+  while (i < destinations.length) {
+    console.log(
+      `Sending transfer of ${amounts[i]} FrozenToken to ${
+        destinations[i]
+      }. Has nonce ${startingNonce + i}`
+    );
+
+    const encoded = frozenTokenContract.methods
+      .transfer(destinations[i], amounts[i])
+      .encodeABI();
+    const tx = Object.assign(txParams, {
+      data: encoded,
+      to: frozenTokenContract.options.address,
+      nonce: startingNonce + i,
+    });
+
+    const txHash = await w3.eth.personal.sendTransaction(tx, password);
+
+    console.log(`Hash: ${txHash}`);
+
+    await sleep(500);
+    i++;
+  }
+  console.log("TotalAllocationCount:", i);
+};
