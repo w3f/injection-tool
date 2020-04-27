@@ -79,7 +79,6 @@ export const sudoAs = async (cmd: Command) => {
         util.hexToU8a(callIndex)
       );
 
-      // @ts-ignore
       const vals = Object.values(args);
       const proposal = api.tx[section][method](...vals);
       const nonce = Number(startingNonce) + index;

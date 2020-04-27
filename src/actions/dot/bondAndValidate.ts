@@ -78,7 +78,10 @@ export const bondAndValidate = async (cmd: Command) => {
   let sessionIndex = 0;
   for (const controller of controllers) {
     console.log(sessionKeys[sessionIndex]);
-    const proposal = api.tx.session.setKeys(sessionKeys[sessionIndex] as any, "0x");
+    const proposal = api.tx.session.setKeys(
+      sessionKeys[sessionIndex] as any,
+      "0x"
+    );
     const nonce = Number(startingNonce) + index;
     const trace = `Index ${nonce} | `;
 
@@ -112,8 +115,9 @@ export const bondAndValidate = async (cmd: Command) => {
   await sleep(7000);
 
   for (const controller of controllers) {
-    
-    const proposal = api.tx.staking.validate({ validatorPayment: FiftyKSM } as any);
+    const proposal = api.tx.staking.validate({
+      validatorPayment: FiftyKSM,
+    } as any);
     const nonce = Number(startingNonce) + index;
     const trace = `Index ${nonce} | `;
 

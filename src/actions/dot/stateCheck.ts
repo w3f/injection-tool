@@ -74,8 +74,8 @@ export const stateCheck = async (cmd: Command) => {
   };
 
   const shortCheck = async () => {
-    const stakersOne = await apiOne.query.staking.validators() as any;
-    const stakersTwo = await apiTwo.query.staking.validators() as any;
+    const stakersOne = (await apiOne.query.staking.validators()) as any;
+    const stakersTwo = (await apiTwo.query.staking.validators()) as any;
     stakersOne[0].forEach(async (stash: any, index: any) => {
       stash = stash.toString();
       if (stash !== stakersTwo[0][index].toString()) {
