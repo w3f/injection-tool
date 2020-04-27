@@ -1,10 +1,9 @@
 import Keyring from "@polkadot/keyring";
 import { createType, GenericImmortalEra } from "@polkadot/types";
 import { Command } from "commander";
-import { initApi, sleep } from "../../helpers";
+import { initApi, sleep, apiHandler } from "../../helpers";
 import parse from "csv-parse/lib/sync";
 import * as fs from "fs";
-import { decodeAddress } from "@polkadot/keyring";
 
 const parseCSV = (filepath: string) => {
   // The CSV file be formatted <dest>,<amount>
@@ -17,7 +16,10 @@ export const makeTransfers = async (cmd: Command) => {
 
   const csvParsed = parseCSV(csv);
 
-  const api = await initApi(wsEndpoint);
+  const handler = await apiHandler.create(wsEndpoint);
+  const blockHash = await handler.api.rpc.chain.getBlockHash();
+  const api = await handler.ensureMeta(blockHash.toString());
+
   const keyring = new Keyring({ type: cryptoType });
 
   const signer = keyring.addFromUri(suri);

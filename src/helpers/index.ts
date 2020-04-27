@@ -1,5 +1,8 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import Keyring from "@polkadot/keyring";
+import ApiHandler from "./apiHandler";
+
+export const apiHandler = ApiHandler;
 
 export const assert = (condition: boolean, message: string): void => {
   if (!condition) throw new Error(message);

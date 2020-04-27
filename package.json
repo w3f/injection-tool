@@ -24,6 +24,7 @@
     "@parity/api": "^5.1.12",
     "@polkadot/api": "^1.11.2",
     "@polkadot/keyring": "^2.8.1",
+    "@polkadot/types": "^1.11.2",
     "@polkadot/util": "^2.8.1",
     "bn.js": "^5.0.0",
     "camelcase": "^6.0.0",
