@@ -98,7 +98,8 @@ const main = async (cmd: any) => {
         process.exit(1);
       }
     } else {
-      let { moduleId, callId } = json;
+      const { callId } = json;
+      let { moduleId } = json;
 
       if (moduleId == "electionsphragmen") moduleId = "electionsPhragmen";
 
@@ -212,7 +213,6 @@ const main = async (cmd: any) => {
             }
           }
         } else if (moduleId === "sudo" && callId === "sudo") {
-
           const innerJson = JSON.parse(json.params);
           if (innerJson.length > 1) {
             throw new Error("length error woah");

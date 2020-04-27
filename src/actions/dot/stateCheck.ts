@@ -52,12 +52,13 @@ export const stateCheck = async (cmd: Command) => {
 
       const numToBN = (num: number): BN => util.hexToBn(util.numberToHex(num));
 
-      //@ts-ignore
-      const balOne = (await apiOne.query.balances.freeBalance(check))
+      const balOne = util
+        .hexToBn((await apiOne.query.balances.freeBalance(check)).toHex())
         .div(numToBN(10 ** 12))
         .toString();
-      //@ts-ignore
-      const balTwo = (await apiTwo.query.balances.freeBalance(check))
+
+      const balTwo = util
+        .hexToBn((await apiTwo.query.balances.freeBalance(check)).toHex())
         .div(numToBN(10 ** 12))
         .toString();
 
@@ -73,16 +74,13 @@ export const stateCheck = async (cmd: Command) => {
   };
 
   const shortCheck = async () => {
-    const stakersOne = await apiOne.query.staking.validators();
-    const stakersTwo = await apiTwo.query.staking.validators();
-    //@ts-ignore
-    stakersOne[0].forEach(async (stash, index) => {
+    const stakersOne = await apiOne.query.staking.validators() as any;
+    const stakersTwo = await apiTwo.query.staking.validators() as any;
+    stakersOne[0].forEach(async (stash: any, index: any) => {
       stash = stash.toString();
-      //@ts-ignore
       if (stash !== stakersTwo[0][index].toString()) {
         console.log("nop");
         console.log(stash);
-        //@ts-ignore
         console.log(stakersTwo[0][index].toString());
       } else {
         console.log("yip");

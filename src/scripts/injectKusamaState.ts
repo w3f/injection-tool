@@ -47,7 +47,6 @@
 
 //     if (callIndex === CallIndices.Claim) {
 //       try {
-//         //@ts-ignore
 //         const hash = await api.tx.claims.claim(args.dest, args.ethereum_signature).send();
 //         console.log(`${trace} | Claims sent: ${hash}!`);
 //         await sleep(3000);
@@ -57,7 +56,6 @@
 //       const method;
 //       const section;
 
-//       //@ts-ignore
 //       const vals = Object.values(args);
 //       const proposal = api.tx[section][method](...vals);
 //       const nonce = Number(startingNonce) + index;

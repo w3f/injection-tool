@@ -44,9 +44,7 @@ export const forceTransfers = async (cmd: Command) => {
   const startingNonce = await api.query.system.accountNonce(sudoKey.address);
   let counter = 0;
   for (const entry of csvParsed) {
-    //@ts-ignore
     const [dest, amount] = entry;
-    // console.log(dest, amount);
 
     const proposal = api.tx.balances.forceTransfer(source, dest, amount);
     const nonce = Number(startingNonce) + counter;

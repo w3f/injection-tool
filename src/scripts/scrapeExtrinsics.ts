@@ -30,7 +30,6 @@
 //       }
 
 //       // Set the new block as this one's parent.
-//       //@ts-ignore
 //       block = await api.rpc.chain.getBlock(block.header.parentHash);
 //     });
 //   }

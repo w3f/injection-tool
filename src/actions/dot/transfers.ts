@@ -27,7 +27,6 @@ export const makeTransfers = async (cmd: Command) => {
   const startingNonce = accountData.nonce.toNumber();
   let counter = 0;
   for (const entry of csvParsed) {
-    //@ts-ignore
     const [dest, amount] = entry;
     const nonce = Number(startingNonce) + counter;
     const trace = `Line ${counter + 1} | Nonce ${nonce} | `;
