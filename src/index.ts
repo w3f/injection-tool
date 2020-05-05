@@ -94,6 +94,7 @@ program
   .option('--dry', 'Runs in dry run mode.')
   .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect.', 'wss://kusama-rpc.polkadot.io/')
   .option('--suri <suri>', 'The secret URI for the signer key.')
+  .option('--types <json>', 'A JSON configuration of types for the node.', '')
   .option('-y --noConfirm', 'Skips the confirmation prompt.')
   .action((cmd) => errorCatcher(cmd, makeTransfers));
 

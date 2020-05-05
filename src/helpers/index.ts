@@ -14,9 +14,13 @@ export const getSigner = (cryptoType: "ed25519" | "sr25519", suri: string) => {
 };
 
 export const initApi = (
-  wsEndpoint = "ws://localhost:9944"
+  wsEndpoint = "ws://localhost:9944",
+  types?: any
 ): Promise<ApiPromise> => {
   const provider = new WsProvider(wsEndpoint);
+
+  if (typeof types === 'string') types = JSON.parse(types);
+
   // @ts-ignore
   return ApiPromise.create({
     provider,
@@ -25,6 +29,7 @@ export const initApi = (
         Keys: "SessionKeys5",
       },
     },
+    types,
   });
 };
 
