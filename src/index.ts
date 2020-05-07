@@ -17,6 +17,7 @@ import {
   validateAddress,
   checkAmount,
   querySecondSaleBalance,
+  sudoAs,
 } from './actions';
 
 import Package from '../package.json';
@@ -68,7 +69,7 @@ const errorCatcher = async (cmd: Command, wrappedFunction: any) => {
     process.exit(1);
   } finally {
     console.log('Finished without error. Exiting...');
-    process.exit(0);
+    // process.exit(0);
   }
 }
 
@@ -116,8 +117,9 @@ program
   .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
   .option('--mnemonic <string>', 'Pass in the mnemonic for the Sudo key.')
   .option('--suri <suri>', 'The secret URI for the signer key.')
+  .option('--types <json>', 'A JSON configuration of types for the node.', '')
   .option('-y --noConfirm', 'Skips the confirmation prompt.')
-  .action((cmd) => errorCatcher(cmd, bondAndValidate));
+  .action((cmd) => errorCatcher(cmd, sudoAs));
 
 /* Ethereum */
 program
