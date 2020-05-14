@@ -2,11 +2,6 @@ import { Command } from "commander";
 import * as fs from "fs";
 import Web3 from "web3";
 
-// @ts-ignore
-import Api from "@parity/api";
-
-const utils = new Web3().utils;
-
 const claims = require("../../../build/contracts/Claims.json");
 
 export const initclaims = (address: string, provider: string) => {
@@ -15,7 +10,7 @@ export const initclaims = (address: string, provider: string) => {
 };
 
 export const makeAmendments = async (cmd: Command) => {
-  const { csv, claims, providerUrl, from, gas, gasPrice, password } = cmd;
+  const { csv, claims, providerUrl, from, gas, gasPrice, nonce, output, password } = cmd;
   if (!from) {
     throw new Error("A `from` address is required!");
   }
@@ -39,9 +34,6 @@ export const makeAmendments = async (cmd: Command) => {
     gasPrice,
   };
 
-  const provider = new Api.Provider.Ws(providerUrl);
-  const api = new Api(provider);
-
   if (originals.length != amends.length) {
     throw new Error(
       "Attempted to supply arrays of non-equal lengths to `injectAllocations`!"
@@ -50,9 +42,8 @@ export const makeAmendments = async (cmd: Command) => {
 
   const step = Math.min(50, originals.length);
 
-  const startingNonce = utils.hexToNumber(
-    await api.parity.nextNonce(txParams.from)
-  );
+  const startingNonce = Number(nonce);
+
   let nonceCounter = 0;
 
   const start = 0;
@@ -66,21 +57,26 @@ export const makeAmendments = async (cmd: Command) => {
     const originalsArg = originals.slice(i, end);
     const amendsArg = amends.slice(i, end);
 
-    // console.log(originalsArg)
-    // console.log(amendsArg)
     const encoded = claimsContract.methods
       .amend(originalsArg, amendsArg)
       .encodeABI();
+
     const tx = Object.assign(txParams, {
       data: encoded,
       to: claimsContract.options.address,
       nonce: startingNonce + nonceCounter,
     });
 
-    const txHash = await w3.eth.personal.sendTransaction(tx, password);
+    const accounts = await w3.eth.personal.getAccounts();
+    console.log(accounts);
+    console.log(tx.from)
 
-    console.log(`Hash: ${txHash}`);
+    const txObj = await w3.eth.personal.signTransaction(tx, password);
+
+    fs.appendFileSync(output, txObj.raw + '\n');
 
     nonceCounter++;
   }
+
+  console.log('Next nonce:', startingNonce + nonceCounter);
 };

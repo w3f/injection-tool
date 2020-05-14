@@ -37,7 +37,7 @@ export const checkIfDuplicateExists = (w: Array<any>) => {
 };
 
 export const increaseVesting = async (cmd: Command) => {
-  const { csv, claims, providerUrl, from, gas, gasPrice, password } = cmd;
+  const { csv, claims, providerUrl, from, gas, gasPrice, nonce, output, password } = cmd;
 
   if (!from) {
     throw new Error("A `from` address is required!");
@@ -64,17 +64,13 @@ export const increaseVesting = async (cmd: Command) => {
     gasPrice,
   };
 
-  const provider = new Api.Provider.Ws(providerUrl);
-  const api = new Api(provider);
-
   if (destinations.length != amounts.length) {
     throw new Error(
       "Attempted to supply arrays of non-equal lengths to `increaseVesting`!"
     );
   }
 
-  const startingNonce = await w3.eth.getTransactionCount(txParams.from);
-  // const startingNonce = utils.hexToNumber(await api.parity.nextNonce(txParams.from));
+  const startingNonce = Number(nonce)
 
   const processSize = Math.min(10, destinations.length);
   const numOfTimes = Math.ceil(destinations.length / processSize);
@@ -86,21 +82,19 @@ export const increaseVesting = async (cmd: Command) => {
     const vestingArg = destinations.slice(start, end);
     const amtArg = amounts.slice(start, end);
 
-    console.log(vestingArg);
-    console.log(amtArg);
-
     const encoded = claimsContract.methods
       .increaseVesting(vestingArg, amtArg)
       .encodeABI();
+
     const tx = Object.assign(txParams, {
       data: encoded,
       to: claimsContract.options.address,
       nonce: startingNonce + i,
     });
 
-    const txHash = await w3.eth.personal.sendTransaction(tx, password);
+    const txObj = await w3.eth.personal.signTransaction(tx, password);
 
-    console.log(`Hash: ${txHash}`);
+    fs.appendFileSync(output, txObj.raw + '\n');
 
     start = end;
     end = Math.min(end + processSize, destinations.length);
@@ -110,4 +104,6 @@ export const increaseVesting = async (cmd: Command) => {
 
     i++;
   }
+  console.log('Next nonce:', startingNonce + i);
+
 };

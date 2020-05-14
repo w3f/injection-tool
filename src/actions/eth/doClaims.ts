@@ -2,12 +2,6 @@ import { Command } from "commander";
 import * as fs from "fs";
 import Web3 from "web3";
 
-// @ts-ignore
-import Api from "@parity/api";
-import { sleep } from "../../helpers";
-
-const utils = new Web3().utils;
-
 const claims = require("../../../build/contracts/Claims.json");
 
 export const initclaims = (address: string, provider: string) => {
@@ -16,7 +10,7 @@ export const initclaims = (address: string, provider: string) => {
 };
 
 export const doClaims = async (cmd: Command) => {
-  const { csv, claims, providerUrl, from, gas, gasPrice, password } = cmd;
+  const { csv, claims, providerUrl, from, gas, gasPrice, nonce, output, password } = cmd;
   if (!from) {
     throw new Error("A `from` address is required!");
   }
@@ -40,19 +34,15 @@ export const doClaims = async (cmd: Command) => {
     gasPrice,
   };
 
-  const provider = new Api.Provider.Ws(providerUrl);
-  const api = new Api(provider);
-
   if (destinations.length != pubKeys.length) {
     throw new Error(
       "Attempted to supply arrays of non-equal lengths to `injectAllocations`!"
     );
   }
 
-  const startingNonce = utils.hexToNumber(
-    await api.parity.nextNonce(txParams.from)
-  );
+  const startingNonce = Number(nonce);
 
+  let nonceCounter = 0;
   for (let i = 0; i < destinations.length; i++) {
     console.log(
       `Sending claim for allocation at ${destinations[i]} for pubkey ${
@@ -63,16 +53,18 @@ export const doClaims = async (cmd: Command) => {
     const encoded = claimsContract.methods
       .claim(destinations[i], pubKeys[i])
       .encodeABI();
+
     const tx = Object.assign(txParams, {
       data: encoded,
       to: claimsContract.options.address,
       nonce: startingNonce + i,
     });
 
-    const txHash = await w3.eth.personal.sendTransaction(tx, password);
+    const txObj = await w3.eth.personal.signTransaction(tx, password);
 
-    console.log("Hash:", txHash);
-
-    await sleep(2000);
+    fs.appendFileSync(output, txObj.raw + '\n');
+    nonceCounter++;
   }
+
+  console.log('Next nonce:', startingNonce + nonceCounter);
 };

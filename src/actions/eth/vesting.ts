@@ -3,11 +3,6 @@ import Web3 from "web3";
 import parse from "csv-parse/lib/sync";
 import * as fs from "fs";
 
-// @ts-ignore
-import Api from "@parity/api";
-
-const utils = new Web3().utils;
-
 const claims = require("../../../build/contracts/Claims.json");
 
 export const initclaims = (address: string, provider: string) => {
@@ -37,7 +32,7 @@ export const checkIfDuplicateExists = (w: Array<any>) => {
 };
 
 export const vesting = async (cmd: Command) => {
-  const { csv, claims, providerUrl, from, gas, gasPrice, password } = cmd;
+  const { csv, claims, providerUrl, from, gas, gasPrice, nonce, output, password } = cmd;
   if (!from) {
     throw new Error("A `from` address is required!");
   }
@@ -63,9 +58,6 @@ export const vesting = async (cmd: Command) => {
     gasPrice,
   };
 
-  const provider = new Api.Provider.Ws(providerUrl);
-  const api = new Api(provider);
-
   if (destinations.length != amounts.length) {
     throw new Error(
       "Attempted to supply arrays of non-equal lengths to `setVesting`!"
@@ -74,9 +66,9 @@ export const vesting = async (cmd: Command) => {
 
   const step = Math.min(50, destinations.length);
 
-  const startingNonce = await w3.eth.getTransactionCount(txParams.from);
-  let nonceCounter = 0;
+  const startingNonce = Number(nonce);
 
+  let nonceCounter = 0;
   const start = 0;
   for (
     let i = start, end = step;
@@ -99,10 +91,12 @@ export const vesting = async (cmd: Command) => {
       nonce: startingNonce + nonceCounter,
     });
 
-    const txHash = await w3.eth.personal.sendTransaction(tx, password);
+    const txObj = await w3.eth.personal.signTransaction(tx, password);
 
-    console.log(`Hash: ${txHash}`);
+    fs.appendFileSync(output, txObj.raw + '\n');
 
     nonceCounter++;
   }
+
+  console.log('Next nonce:', startingNonce + nonceCounter);
 };

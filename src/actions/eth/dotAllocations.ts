@@ -3,10 +3,6 @@ import Web3 from "web3";
 import parse from "csv-parse/lib/sync";
 import * as fs from "fs";
 
-import { sleep } from "../../helpers";
-
-const utils = new Web3().utils;
-
 const FrozenToken = require("../../../build/contracts/FrozenToken.json");
 
 export const initFrozenToken = (address: string, provider: string) => {
@@ -32,7 +28,7 @@ export const convertFromDecimalString = (decimalString: any) => {
 };
 
 export const dotAllocations = async (cmd: Command) => {
-  const { csv, frozenToken, providerUrl, from, gas, gasPrice, password } = cmd;
+  const { csv, frozenToken, providerUrl, from, gas, gasPrice, nonce, output, password } = cmd;
   if (!from) {
     throw new Error("A `from` address is required!");
   }
@@ -58,7 +54,7 @@ export const dotAllocations = async (cmd: Command) => {
     );
   }
 
-  const startingNonce = await w3.eth.getTransactionCount(txParams.from);
+  const startingNonce = Number(nonce);
 
   let i = 0;
   while (i < destinations.length) {
@@ -71,18 +67,20 @@ export const dotAllocations = async (cmd: Command) => {
     const encoded = frozenTokenContract.methods
       .transfer(destinations[i], amounts[i])
       .encodeABI();
+
     const tx = Object.assign(txParams, {
       data: encoded,
       to: frozenTokenContract.options.address,
       nonce: startingNonce + i,
     });
 
-    const txHash = await w3.eth.personal.sendTransaction(tx, password);
+    const txObj = await w3.eth.personal.signTransaction(tx, password);
 
-    console.log(`Hash: ${txHash}`);
+    fs.appendFileSync(output, txObj.raw + '\n');
 
-    await sleep(500);
     i++;
   }
   console.log("TotalAllocationCount:", i);
+  console.log('Next nonce:', startingNonce + i);
+
 };

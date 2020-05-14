@@ -4,9 +4,6 @@ import Web3 from "web3";
 
 import { sleep } from "../../helpers";
 
-// @ts-ignore
-import Api from "@parity/api";
-
 const w3Util = new Web3().utils;
 
 const Claims = require("../../../build/contracts/Claims.json");
@@ -21,6 +18,8 @@ export const assignIndices = async (cmd: Command) => {
     password,
     providerUrl,
     start,
+    nonce,
+    output
   } = cmd;
 
   const txParams = {
@@ -29,13 +28,7 @@ export const assignIndices = async (cmd: Command) => {
     gasPrice,
   };
 
-  // @ts-ignore
   const addresses = fs.readFileSync(csv, { encoding: "utf-8" }).split("\n");
-  // console.log(addresses)
-
-  // Parity instantiation.
-  const provider = new Api.Provider.Ws(providerUrl);
-  const api = new Api(provider);
 
   // Web3.js instantiation.
   const w3Provider = new Web3.providers.WebsocketProvider(providerUrl);
@@ -45,9 +38,8 @@ export const assignIndices = async (cmd: Command) => {
 
   const step = Math.min(50, addresses.length);
 
-  const startingNonce = w3Util.hexToNumber(
-    await api.parity.nextNonce(txParams.from)
-  );
+  const startingNonce = Number(nonce);
+
   let nonceCounter = 0;
 
   for (
@@ -65,16 +57,19 @@ export const assignIndices = async (cmd: Command) => {
     const encoded = claimsContract.methods
       .assignIndices(indicesArg)
       .encodeABI();
+
     const tx = Object.assign(txParams, {
       data: encoded,
       to: claims,
       nonce: currentNonce,
     });
 
-    const txHash = await w3.eth.personal.sendTransaction(tx, password);
+    const txObj = await w3.eth.personal.signTransaction(tx, password);
 
-    console.log(`Hash: ${txHash}`);
+    fs.appendFileSync(output, txObj.raw + '\n');
+
     nonceCounter++;
-    await sleep(2000);
   }
+
+  console.log('Next nonce:', startingNonce + nonceCounter);
 };

@@ -10,9 +10,11 @@ import { vesting } from "./vesting";
 import { validateAddress } from "./validateAddress";
 import { checkAmount } from "./checkAmount";
 import { querySecondSaleBalance } from "./querySecondSaleBalance";
+import broadcast from "./broadcast";
 
 export {
   assignIndices,
+  broadcast,
   claimsDeploy,
   doClaims,
   dotAllocations,

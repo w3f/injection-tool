@@ -33,6 +33,7 @@
     "commander": "^5.1.0",
     "csv-parse": "^4.9.0",
     "ethereumjs-wallet": "^0.6.3",
+    "ethers": "^4.0.47",
     "node-gyp": "^6.1.0",
     "web3": "^1.2.7",
     "yarn": "^1.22.0"
