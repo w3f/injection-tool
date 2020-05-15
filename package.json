@@ -41,6 +41,7 @@
   "scripts": {
     "amend": "ts-node src/index eth:amendments",
     "assign-indices": "ts-node src/index eth:indices",
+    "broadcast": "ts-node src/index broadcast",
     "build": "tsc",
     "build-and-publish": "yarn build;cp build lib; npm publish --access public",
     "bond-and-validate": "ts-node src/index bond-and-validate",

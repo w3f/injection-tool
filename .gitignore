@@ -15,3 +15,5 @@ tmp.txt
 *.log
 total.md
 lib
+receipts
+*.raw.tx

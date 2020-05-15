@@ -142,3 +142,73 @@ Options:
 ```sh
 ts-node src/index eth:vesting --csv test.csv --from 0xd84b338b06222295a9ac1f1e81722f0c3a354884 --password 1234
 ```
+
+## Walkthrough
+
+This walkthrough will proceed through each of the core utilities of the 
+Ethereum side of the tool using `openethereum` v3.0.0. The tool was updated
+to separate the signing and the broadcasting functionality so it may work
+differently than the behavior you expected in the past.
+
+### Using `openethereum`
+
+Set up a new account in the local keystore. For this walkthrough we'll be using
+the Goerli test network.
+
+```zsh
+openethereum account new --chain goerli
+```
+
+Type your password in twice and you will be given a fresh and newly generated
+account.
+
+```zsh
+Please note that password is NOT RECOVERABLE.
+Type password: 
+Repeat password: 
+0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2
+```
+
+Now since we will only be using openethereum for its keystore, we can start
+the service using the following flags to disable networking and syncing.
+
+```zsh
+openethereum --chain goerli --max-peers 0 --ws-apis all
+```
+
+### Using injection-tool
+
+Now open a new terminal, we'll be using most of the Ethereum functionality
+in injection-tool now to manage our own deployment of a `FrozenToken` and
+`Claims` contract.
+
+```zsh
+ts-node src/index eth:frozenToken-deploy --nonce 0 --output frozen.raw.tx --owner 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+```
+
+Now we can submit this to the network using the broadcast command.
+
+```zsh
+ts-node src/index eth:broadcast --csv frozen.raw.tx --providerUrl wss://goerli.infura.io/ws/v3/7121204aac9a45dcb9c2cc825fb85159
+```
+
+The transaction will be broadcast to the node and the script will wait until
+it's mined and a receipt is received. It will then print this receipt to a 
+`receipts` file and close the process.
+
+In the receipts file ctrl-f and look for `transactionHash` copy the hash that's
+given there and enter it into a block explorer like Etherscan to see the details. If everything went right, you should see the transaction succeeded.
+
+Now we will deploy the claims contract. From the deployment transaction before
+we can grab the address for our token (the "dot indicator") from Etherscan.
+Use the address for the `--dotIndicator` option below.
+
+```zsh
+ts-node src/index eth:claims-deploy --nonce 1 --output claims.raw.tx --dotIndicator 0x10068eBE0665BB6d7a58deBB0C1c262849613505 --owner 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+```
+
+Use the broadcast command like before:
+
+```zsh
+ts-node src/index eth:broadcast --csv claims.raw.tx --providerUrl wss://goerli.infura.io/ws/v3/7121204aac9a45dcb9c2cc825fb85159
+```
