@@ -182,6 +182,12 @@ Now open a new terminal, we'll be using most of the Ethereum functionality
 in injection-tool now to manage our own deployment of a `FrozenToken` and
 `Claims` contract.
 
+> Note: The instruction below assume you have the injection-tool source code
+> locally and that you're using `ts-node` to run the commands. An alternative
+> is to install the injection-tool from NPM with `npm i @w3f/injection-tool -g`.
+> After installing you would replace `ts-node src/index` in the commands below
+> with the `injection-tool` command.
+
 ```zsh
 ts-node src/index eth:frozenToken-deploy --nonce 0 --output frozen.raw.tx --owner 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
 ```
@@ -211,4 +217,47 @@ Use the broadcast command like before:
 
 ```zsh
 ts-node src/index eth:broadcast --csv claims.raw.tx --providerUrl wss://goerli.infura.io/ws/v3/7121204aac9a45dcb9c2cc825fb85159
+```
+
+#### Allocations
+
+```zsh
+ts-node src/index eth:dot-allocations --nonce 2 --output allocations.raw.tx --csv allocations.csv --frozenToken 0x10068eBE0665BB6d7a58deBB0C1c262849613505 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+```
+
+and 
+
+```zsh
+ts-node src/index eth:broadcast --csv allocations.raw.tx --providerUrl wss://goerli.infura.io/ws/v3/7121204aac9a45dcb9c2cc825fb85159
+```
+
+#### Amendments
+
+```zsh
+ts-node src/index eth:amend --nonce 12 --output amendments.raw.tx --csv amend.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+```
+
+#### Vesting
+
+##### Set vesting
+
+Set vesting can only be called on an address that has not claimed yet, and is
+not already vested. If you need to increase the vesting on an account, use 
+`increaseVesting` instead.
+
+```zsh
+ts-node src/index eth:set-vesting --nonce 12 --output amendments.raw.tx --csv amend.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+
+```
+
+##### Increase vesting
+
+```zsh
+ts-node src/index eth:increase-vesting --nonce 12 --output amendments.raw.tx --csv amend.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+```
+
+#### Making Claims
+
+```zsh
+ts-node src/index eth:make-claims --nonce 12 --output amendments.raw.tx --csv amend.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
 ```

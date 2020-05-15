@@ -59,7 +59,7 @@ export const dotAllocations = async (cmd: Command) => {
   let i = 0;
   while (i < destinations.length) {
     console.log(
-      `Sending transfer of ${amounts[i]} FrozenToken to ${
+      `Signing transfer of ${amounts[i]} FrozenToken to ${
         destinations[i]
       }. Has nonce ${startingNonce + i}`
     );
