@@ -1,6 +1,5 @@
 node_modules
 kusama.json
-*.csv
 kusama.json
 internal
 src/test.ts

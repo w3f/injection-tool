@@ -35,6 +35,7 @@ const broadcast = async (opts: BroadcastOptions) => {
       .on('receipt', (receipt: any) => {
         fs.appendFileSync('receipts', `${rawTx} :: ${JSON.stringify(receipt)}`)
       });
+      submissionCount++;
     }
   }
 }

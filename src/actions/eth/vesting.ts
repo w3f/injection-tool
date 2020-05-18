@@ -75,7 +75,7 @@ export const vesting = async (cmd: Command) => {
     i < destinations.length;
     i += step, end = Math.min(end + step, destinations.length)
   ) {
-    console.log(`Vesting | i: ${i} | end: ${end - 1} | Sending...`);
+    console.log(`Vesting | i: ${i} | end: ${end - 1} | Signing...`);
 
     const vestingArg = destinations.slice(i, end);
     const amtArg = amounts.slice(i, end);

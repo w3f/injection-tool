@@ -246,18 +246,17 @@ not already vested. If you need to increase the vesting on an account, use
 `increaseVesting` instead.
 
 ```zsh
-ts-node src/index eth:set-vesting --nonce 12 --output amendments.raw.tx --csv amend.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
-
+ts-node src/index eth:set-vesting --nonce 13 --output vesting.raw.tx --csv vesting.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
 ```
 
 ##### Increase vesting
 
 ```zsh
-ts-node src/index eth:increase-vesting --nonce 12 --output amendments.raw.tx --csv amend.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+ts-node src/index eth:increase-vesting --nonce 14 --output incVesting.raw.tx --csv incVesting.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
 ```
 
 #### Making Claims
 
 ```zsh
-ts-node src/index eth:make-claims --nonce 12 --output amendments.raw.tx --csv amend.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+ts-node src/index eth:make-claims --nonce 15 --output claims.raw.tx --csv claims.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
 ```

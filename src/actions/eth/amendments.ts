@@ -52,7 +52,7 @@ export const makeAmendments = async (cmd: Command) => {
     i < originals.length;
     i += step, end = Math.min(end + step, originals.length)
   ) {
-    console.log(`Amendments | i: ${i} | end: ${end - 1} | Sending...`);
+    console.log(`Amendments | i: ${i} | end: ${end - 1} | Signing...`);
 
     const originalsArg = originals.slice(i, end);
     const amendsArg = amends.slice(i, end);
@@ -68,8 +68,6 @@ export const makeAmendments = async (cmd: Command) => {
     });
 
     const accounts = await w3.eth.personal.getAccounts();
-    console.log(accounts);
-    console.log(tx.from)
 
     const txObj = await w3.eth.personal.signTransaction(tx, password);
 
