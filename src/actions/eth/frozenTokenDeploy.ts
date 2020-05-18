@@ -1,10 +1,11 @@
 import Web3 from "web3";
 import { Command } from "commander";
+import * as fs from "fs";
 
 const FrozenToken = require("../../../build/contracts/FrozenToken.json");
 
 export const frozenTokenDeploy = async (cmd: Command) => {
-  const { from, gas, gasPrice, owner, password, providerUrl } = cmd;
+  const { from, gas, gasPrice, owner, password, nonce, output, providerUrl } = cmd;
 
   const w3 = new Web3(new Web3.providers.WebsocketProvider(providerUrl));
 
@@ -14,7 +15,6 @@ export const frozenTokenDeploy = async (cmd: Command) => {
     gasPrice,
   };
 
-  console.log("Now deploying the FrozenToken contract to Ethereum.");
   const encoded = new w3.eth.Contract(FrozenToken.abi)
     .deploy({
       data: FrozenToken.bytecode,
@@ -25,8 +25,12 @@ export const frozenTokenDeploy = async (cmd: Command) => {
     })
     .encodeABI();
 
-  const tx = Object.assign(txParams, { data: encoded });
-  const claimsHash = await w3.eth.personal.sendTransaction(tx, password);
+  const tx = Object.assign(txParams, { data: encoded, nonce: Number(nonce) });
+  const txObj = await w3.eth.personal.signTransaction(tx, password);
 
-  console.log(`FrozenToken transaction hash: ${claimsHash}`);
+  fs.writeFileSync(output, txObj.raw);
+
+  console.log(`Raw transaction written out to ${output}.`);
+  console.log("Use the injection-tool broadcast command to broadcast this to the network.")
+  console.log(`If you are generating more transactions use --nonce ${Number(nonce) + 1}`)
 };

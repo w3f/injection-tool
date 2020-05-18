@@ -1,6 +1,6 @@
 {
   "name": "@w3f/injection-tool",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Utility scripts for interacting with Kusama and Polkadot.",
   "main": "index.js",
   "bin": "./bin/index.js",
@@ -33,6 +33,7 @@
     "commander": "^5.1.0",
     "csv-parse": "^4.9.0",
     "ethereumjs-wallet": "^0.6.3",
+    "ethers": "^4.0.47",
     "node-gyp": "^6.1.0",
     "web3": "^1.2.7",
     "yarn": "^1.22.0"
@@ -40,6 +41,7 @@
   "scripts": {
     "amend": "ts-node src/index eth:amendments",
     "assign-indices": "ts-node src/index eth:indices",
+    "broadcast": "ts-node src/index broadcast",
     "build": "tsc",
     "build-and-publish": "yarn build;cp build lib; npm publish --access public",
     "bond-and-validate": "ts-node src/index bond-and-validate",

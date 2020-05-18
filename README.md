@@ -10,6 +10,22 @@ After cloning the repository run `yarn` at the root to install the dependencies 
 
 ## Installing
 
+### Using npm
+
+You can run the injection tool commands using `npx` (this will ensure you're always using the latest version).
+
+```
+npx @w3f/injection-tool transfer ...
+```
+
+Or by installing the latest version using `npm`.
+
+```
+npm i @w3f/injection-tool -g
+```
+
+### From source
+
 The injection-tool requires some dependencies to be installed on your system such as [nodeJS](https://nodejs.org)
 and the accompanying package manager [npm](https://npmjs.org). On most systems these can be installed from your
 operating system's package manager such as Homebrew for MacOS or apt for Ubuntu.
@@ -95,50 +111,123 @@ Options:
 $ yarn force-transfers --csv test.csv.example --wsEndpoint ws://localhost:9944 --mnemonic 'one two three four' --source 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 ```
 
-## DOT Allocations (On Ethereum)
+## Walkthrough (Ethereum functionality)
 
-### Usage
+This walkthrough will proceed through each of the core utilities of the 
+Ethereum side of the tool using `openethereum` v3.0.0. The tool was updated
+to separate the signing and the broadcasting functionality so it may work
+differently than the behavior you expected in the past.
 
-```sh
-Usage: eth:dot-allocations [options]
+### Using `openethereum`
 
-Options:
-  --csv <filepath>           A CSV file formatted <address>,<amount> on each line.
-  --frozenToken <address>    The address of the Frozen Token (default: "0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907")
-  --providerUrl <url>        A WebSockets provider for an Ethereum node. (default: "ws://localhost:8546")
-  --from <address>           Sender of the transactions.
-  --gas <amount>             Amount of gas to send. (default: "50000")
-  --gasPrice <price_in_wei>  Amount to pay in wei per each unit of gas (default: "29500000000")
-  --password <string>        The password to unlock personal_* RPC methods on the node.
-  -h, --help                 output usage information
+Set up a new account in the local keystore. For this walkthrough we'll be using
+the Goerli test network.
+
+```zsh
+openethereum account new --chain goerli
 ```
 
-### Example
+Type your password in twice and you will be given a fresh and newly generated
+account.
 
-```sh
-$ yarn dot-allocate --csv allocations.csv.test --from 0xd84b338b06222295a9ac1f1e81722f0c3a354884 --password 1234
+```zsh
+Please note that password is NOT RECOVERABLE.
+Type password: 
+Repeat password: 
+0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2
 ```
 
-## Vesting (On Ethereum)
+Now since we will only be using openethereum for its keystore, we can start
+the service using the following flags to disable networking and syncing.
 
-### Usage 
-
-```sh
-Usage: eth:vesting [options]
-
-Options:
-  --csv <filepath>           A CSV file formatted <address>,<amount> on each line.
-  --claims <address>         The address of the Claims contract. (default: "0x9a1B58399EdEBd0606420045fEa0347c24fB86c2")
-  --providerUrl <url>        A WebSockets provider for an Ethereum node. (default: "ws://localhost:8545")
-  --from <address>           Sender of the transactions.
-  --gas <amount>             Amount of gas to send. (default: "2000000")
-  --gasPrice <price_in_wei>  Amount to pay in wei per each unit of gas (default: "29500000000")
-  --password <string>        The password to unlock personal_* RPC methods on the node.
-  -h, --help                 output usage information
+```zsh
+openethereum --chain goerli --max-peers 0 --ws-apis all
 ```
 
-### Example
+You may need some Goerli eth for the newly generated account, please see the
+available options on [goerli.net](https://goerli.net).
 
-```sh
-ts-node src/index eth:vesting --csv test.csv --from 0xd84b338b06222295a9ac1f1e81722f0c3a354884 --password 1234
+### Using injection-tool
+
+Now open a new terminal, we'll be using most of the Ethereum functionality
+in injection-tool now to manage our own deployment of a `FrozenToken` and
+`Claims` contract.
+
+> Note: The instruction below assume you have the injection-tool source code
+> locally and that you're using `ts-node` to run the commands. An alternative
+> is to install the injection-tool from NPM with `npm i @w3f/injection-tool -g`.
+> After installing you would replace `ts-node src/index` in the commands below
+> with the `injection-tool` command.
+
+```zsh
+ts-node src/index eth:frozenToken-deploy --nonce 0 --output frozen.raw.tx --owner 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+```
+
+Now we can submit this to the network using the broadcast command.
+
+```zsh
+ts-node src/index eth:broadcast --csv frozen.raw.tx --providerUrl wss://goerli.infura.io/ws/v3/7121204aac9a45dcb9c2cc825fb85159
+```
+
+The transaction will be broadcast to the node and the script will wait until
+it's mined and a receipt is received. It will then print this receipt to a 
+`receipts` file and close the process.
+
+In the receipts file ctrl-f and look for `transactionHash` copy the hash that's
+given there and enter it into a block explorer like Etherscan to see the details. If everything went right, you should see the transaction succeeded.
+
+Now we will deploy the claims contract. From the deployment transaction before
+we can grab the address for our token (the "dot indicator") from Etherscan.
+Use the address for the `--dotIndicator` option below.
+
+```zsh
+ts-node src/index eth:claims-deploy --nonce 1 --output claims.raw.tx --dotIndicator 0x10068eBE0665BB6d7a58deBB0C1c262849613505 --owner 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+```
+
+Use the broadcast command like before:
+
+```zsh
+ts-node src/index eth:broadcast --csv claims.raw.tx --providerUrl wss://goerli.infura.io/ws/v3/7121204aac9a45dcb9c2cc825fb85159
+```
+
+#### Allocations
+
+```zsh
+ts-node src/index eth:dot-allocations --nonce 2 --output allocations.raw.tx --csv allocations.csv --frozenToken 0x10068eBE0665BB6d7a58deBB0C1c262849613505 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+```
+
+and 
+
+```zsh
+ts-node src/index eth:broadcast --csv allocations.raw.tx --providerUrl wss://goerli.infura.io/ws/v3/7121204aac9a45dcb9c2cc825fb85159
+```
+
+#### Amendments
+
+```zsh
+ts-node src/index eth:amend --nonce 12 --output amendments.raw.tx --csv amend.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+```
+
+#### Vesting
+
+##### Set vesting
+
+Set vesting can only be called on an address that has not claimed yet, and is
+not already vested. If you need to increase the vesting on an account, use 
+`increaseVesting` instead.
+
+```zsh
+ts-node src/index eth:set-vesting --nonce 13 --output vesting.raw.tx --csv vesting.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+```
+
+##### Increase vesting
+
+```zsh
+ts-node src/index eth:increase-vesting --nonce 14 --output incVesting.raw.tx --csv incVesting.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
+```
+
+#### Making Claims
+
+```zsh
+ts-node src/index eth:make-claims --nonce 15 --output claims.raw.tx --csv claims.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
 ```

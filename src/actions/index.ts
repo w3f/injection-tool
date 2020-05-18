@@ -1,5 +1,6 @@
 import {
   assignIndices,
+  broadcast,
   claimsDeploy,
   doClaims,
   dotAllocations,
@@ -25,6 +26,7 @@ import {
 
 export {
   assignIndices,
+  broadcast,
   bondAndValidate,
   claimsDeploy,
   frozenTokenDeploy,

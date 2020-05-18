@@ -1,5 +1,6 @@
 import Web3 from "web3";
 import { Command } from "commander";
+import * as fs from "fs";
 
 const Claims = require("../../../build/contracts/Claims.json");
 
@@ -11,6 +12,8 @@ export const claimsDeploy = async (cmd: Command) => {
     gasPrice,
     owner,
     password,
+    nonce,
+    output,
     providerUrl,
   } = cmd;
 
@@ -29,13 +32,17 @@ export const claimsDeploy = async (cmd: Command) => {
       arguments: [
         owner,
         dotIndicator,
-        "5000", // Five thousand blocks set up delay.
+        "5", // Five blocks set up delay.
       ],
     })
     .encodeABI();
 
-  const tx = Object.assign(txParams, { data: encoded });
-  const claimsHash = await w3.eth.personal.sendTransaction(tx, password);
+  const tx = Object.assign(txParams, { data: encoded, nonce: Number(nonce) });
+  const txObj = await w3.eth.personal.signTransaction(tx, password);
 
-  console.log(`Claims transaction hash: ${claimsHash}`);
+  fs.writeFileSync(output, txObj.raw);
+
+  console.log(`Raw transaction written out to ${output}.`);
+  console.log("Use the injection-tool broadcast command to broadcast this to the network.")
+  console.log(`If you are generating more transactions use --nonce ${Number(nonce) + 1}`)
 };
