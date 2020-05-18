@@ -10,6 +10,22 @@ After cloning the repository run `yarn` at the root to install the dependencies 
 
 ## Installing
 
+### Using npm
+
+You can run the injection tool commands using `npx` (this will ensure you're always using the latest version).
+
+```
+npx @w3f/injection-tool transfer ...
+```
+
+Or by installing the latest version using `npm`.
+
+```
+npm i @w3f/injection-tool -g
+```
+
+### From source
+
 The injection-tool requires some dependencies to be installed on your system such as [nodeJS](https://nodejs.org)
 and the accompanying package manager [npm](https://npmjs.org). On most systems these can be installed from your
 operating system's package manager such as Homebrew for MacOS or apt for Ubuntu.
