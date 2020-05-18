@@ -144,6 +144,9 @@ the service using the following flags to disable networking and syncing.
 openethereum --chain goerli --max-peers 0 --ws-apis all
 ```
 
+You may need some Goerli eth for the newly generated account, please see the
+available options on [goerli.net](https://goerli.net).
+
 ### Using injection-tool
 
 Now open a new terminal, we'll be using most of the Ethereum functionality
