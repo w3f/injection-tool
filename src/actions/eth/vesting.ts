@@ -80,8 +80,6 @@ export const vesting = async (cmd: Command) => {
     const vestingArg = destinations.slice(i, end);
     const amtArg = amounts.slice(i, end);
 
-    console.log(vestingArg);
-    console.log(amtArg);
     const encoded = claimsContract.methods
       .setVesting(vestingArg, amtArg)
       .encodeABI();
