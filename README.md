@@ -95,55 +95,7 @@ Options:
 $ yarn force-transfers --csv test.csv.example --wsEndpoint ws://localhost:9944 --mnemonic 'one two three four' --source 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 ```
 
-## DOT Allocations (On Ethereum)
-
-### Usage
-
-```sh
-Usage: eth:dot-allocations [options]
-
-Options:
-  --csv <filepath>           A CSV file formatted <address>,<amount> on each line.
-  --frozenToken <address>    The address of the Frozen Token (default: "0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907")
-  --providerUrl <url>        A WebSockets provider for an Ethereum node. (default: "ws://localhost:8546")
-  --from <address>           Sender of the transactions.
-  --gas <amount>             Amount of gas to send. (default: "50000")
-  --gasPrice <price_in_wei>  Amount to pay in wei per each unit of gas (default: "29500000000")
-  --password <string>        The password to unlock personal_* RPC methods on the node.
-  -h, --help                 output usage information
-```
-
-### Example
-
-```sh
-$ yarn dot-allocate --csv allocations.csv.test --from 0xd84b338b06222295a9ac1f1e81722f0c3a354884 --password 1234
-```
-
-## Vesting (On Ethereum)
-
-### Usage 
-
-```sh
-Usage: eth:vesting [options]
-
-Options:
-  --csv <filepath>           A CSV file formatted <address>,<amount> on each line.
-  --claims <address>         The address of the Claims contract. (default: "0x9a1B58399EdEBd0606420045fEa0347c24fB86c2")
-  --providerUrl <url>        A WebSockets provider for an Ethereum node. (default: "ws://localhost:8545")
-  --from <address>           Sender of the transactions.
-  --gas <amount>             Amount of gas to send. (default: "2000000")
-  --gasPrice <price_in_wei>  Amount to pay in wei per each unit of gas (default: "29500000000")
-  --password <string>        The password to unlock personal_* RPC methods on the node.
-  -h, --help                 output usage information
-```
-
-### Example
-
-```sh
-ts-node src/index eth:vesting --csv test.csv --from 0xd84b338b06222295a9ac1f1e81722f0c3a354884 --password 1234
-```
-
-## Walkthrough
+## Walkthrough (Ethereum functionality)
 
 This walkthrough will proceed through each of the core utilities of the 
 Ethereum side of the tool using `openethereum` v3.0.0. The tool was updated
