@@ -11,12 +11,13 @@ const splitCsvs = (csv: string): string[] => {
 }
 
 type BroadcastOptions = {
+  batch: string;
   csv: string;
   providerUrl: string;
 }
 
 const broadcast = async (opts: BroadcastOptions) => {
-  const { csv, providerUrl } = opts;
+  const { batch, csv, providerUrl } = opts;
 
   const csvs = splitCsvs(csv);
 
@@ -35,13 +36,18 @@ const broadcast = async (opts: BroadcastOptions) => {
         const promise = w3.eth.sendSignedTransaction(rawTx)
         .on('receipt', (receipt: any) => {
           fs.appendFileSync('receipts', `${rawTx} :: ${JSON.stringify(receipt)}`)
-        }).on("error", (msg: any) => console.log(msg))
+        });
 
-        if (submissionCount % 10 === 0) {
-          console.log("waiting")
+        if (Number(batch) <=1) {
+          await promise;
+        } else if (submissionCount % Number(batch) === 0) {
+          console.log("Waiting for batch to complete.")
           await promise;
         }
-      } catch (err) { console.error(err) ;}
+      } catch (err) {
+        console.error(err);
+      }
+
       submissionCount++;
     }
   }

@@ -158,6 +158,7 @@ program
 program
   .command("eth:broadcast")
   .description("Broadcast raw and signed transactions to the network.")
+  .option("--batch <num>", "How many transaction to broadcast in a batch.", "0")
   .option("--csv <filepath[,filepath,...]>", "One or more CSV files formatted with a single raw and signed transaction in hex on each line.", "")
   .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', "https://mainnet.infura.io/v3/7121204aac9a45dcb9c2cc825fb85159")
   .action((opts: { csv: string }) => errorCatcher(opts, broadcast));

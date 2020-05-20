@@ -1,6 +1,6 @@
 {
   "name": "@w3f/injection-tool",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Utility scripts for interacting with Kusama and Polkadot.",
   "main": "index.js",
   "bin": "./bin/index.js",
