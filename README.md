@@ -231,3 +231,7 @@ ts-node src/index eth:increase-vesting --nonce 14 --output incVesting.raw.tx --c
 ```zsh
 ts-node src/index eth:make-claims --nonce 15 --output claims.raw.tx --csv claims.csv --claims 0x2f0C597Ce268d8dBFD8a7C33639d34A4bBd1ec41 --from 0x5b01b9990cd3d7b4ddaff97665eff702d1ccb2a2 --password <your_password>
 ```
+
+#### Broadcast Batching
+
+You can pass the `--batch <num>` flag to the broadcast transaction.
