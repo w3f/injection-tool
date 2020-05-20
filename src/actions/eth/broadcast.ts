@@ -31,10 +31,17 @@ const broadcast = async (opts: BroadcastOptions) => {
     for (const rawTx of rawTxs) {
       console.log(`Broadcasting ${submissionCount} - ${rawTx.slice(0, 12)}...${rawTx.slice(-10)}`);
 
-      await w3.eth.sendSignedTransaction(rawTx)
-      .on('receipt', (receipt: any) => {
-        fs.appendFileSync('receipts', `${rawTx} :: ${JSON.stringify(receipt)}`)
-      });
+      try {
+        const promise = w3.eth.sendSignedTransaction(rawTx)
+        .on('receipt', (receipt: any) => {
+          fs.appendFileSync('receipts', `${rawTx} :: ${JSON.stringify(receipt)}`)
+        }).on("error", (msg: any) => console.log(msg))
+
+        if (submissionCount % 10 === 0) {
+          console.log("waiting")
+          await promise;
+        }
+      } catch (err) { console.error(err) ;}
       submissionCount++;
     }
   }

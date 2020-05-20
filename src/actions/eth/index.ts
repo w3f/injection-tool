@@ -11,6 +11,7 @@ import { validateAddress } from "./validateAddress";
 import { checkAmount } from "./checkAmount";
 import { querySecondSaleBalance } from "./querySecondSaleBalance";
 import broadcast from "./broadcast";
+import { checkCsv } from "./checkCsv";
 
 export {
   assignIndices,
@@ -26,4 +27,5 @@ export {
   validateAddress,
   checkAmount,
   querySecondSaleBalance,
+  checkCsv,
 };

@@ -12,6 +12,7 @@ import {
   validateAddress,
   checkAmount,
   querySecondSaleBalance,
+  checkCsv,
 } from "./eth";
 
 import {
@@ -45,4 +46,5 @@ export {
   querySecondSaleBalance,
   stateCheck,
   sudoAs,
+  checkCsv,
 };
