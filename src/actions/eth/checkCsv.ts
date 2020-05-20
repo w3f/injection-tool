@@ -18,7 +18,6 @@ export const initToken = async (address: string, provider: string) => {
   return await new w3.eth.Contract(FrozenToken.abi, address);
 }
 
-
 enum CsvFileType {
   Amendments,
   Claim,
@@ -60,23 +59,51 @@ export const checkCsv = async (opts: Options) => {
     case CsvFileType.Amendments: {
       const file = fs.readFileSync(csv, { encoding: "utf-8" });
       let counter = 0;
+      let errors = 0;
       for (const line of file.split("\n").filter(line => line !== "")) {
         const [old,amended] = line.split(",");
         const result = await claims.methods.amended(old).call();
         if (result.toLowerCase() !== amended.toLowerCase()) {
           console.log(`|${counter}| Failed! ADDRESS: ${old} GOT ${result} EXPECTED ${amended}`);
-
+          errors++;
         } else {
           console.log(`|${counter}| OK`);
         }
+        console.log(`DONE\nERRORS FOUND: ${errors}`);
+
         counter++
       }
       break;
     }
     case CsvFileType.Claim: {
+      const file = fs.readFileSync(csv, { encoding: "utf-8" });
+      let counter = 0;
+      let errors = 0;
+      for (const line of file.split("\n").filter(line => line !== "")) {
+        const [ethAddr, pubKey] = line.split(",");
+        const result = await claims.methods.claims(ethAddr).call();
+        // console.log(result);
+        if (result.pubKey.toLowerCase() !== pubKey.toLowerCase()) {
+          console.log(`|${counter}| Failed! ADDRESS ${ethAddr} GOT ${result.pubKey} EXPECTED ${pubKey}`);
+          errors++;
+        } else {
+          console.log(`|${counter}| OK`);
+        }
+        counter++;
+      }
+      console.log(`DONE\nERRORS FOUND: ${errors}`);
       break;
     }
     case CsvFileType.IncreaseVested: {
+      const file =fs.readFileSync(csv, { encoding: "utf-8" });
+      let counter = 0;
+      let error = 0;
+      for (const line of file.split("\n").filter(line => line !== "")) {
+        const [ethAddr, amt] = line.split(",");
+        const result = await claims.methods.claims(ethAddr).call();
+        console.log(result);
+      }
+
       break;
     }
     case CsvFileType.Indices: {
