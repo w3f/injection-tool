@@ -11,12 +11,13 @@ const splitCsvs = (csv: string): string[] => {
 }
 
 type BroadcastOptions = {
+  batch: string;
   csv: string;
   providerUrl: string;
 }
 
 const broadcast = async (opts: BroadcastOptions) => {
-  const { csv, providerUrl } = opts;
+  const { batch, csv, providerUrl } = opts;
 
   const csvs = splitCsvs(csv);
 
@@ -31,10 +32,23 @@ const broadcast = async (opts: BroadcastOptions) => {
     for (const rawTx of rawTxs) {
       console.log(`Broadcasting ${submissionCount} - ${rawTx.slice(0, 12)}...${rawTx.slice(-10)}`);
 
-      await w3.eth.sendSignedTransaction(rawTx)
-      .on('receipt', (receipt: any) => {
-        fs.appendFileSync('receipts', `${rawTx} :: ${JSON.stringify(receipt)}`)
-      });
+
+      try {
+        const promise = w3.eth.sendSignedTransaction(rawTx)
+        .on('receipt', (receipt: any) => {
+          fs.appendFileSync('receipts', `${rawTx} :: ${JSON.stringify(receipt)}`)
+        });
+
+        if (Number(batch) <=1) {
+          await promise;
+        } else if (submissionCount % Number(batch) === 0) {
+          console.log("Waiting for batch to complete.")
+          await promise;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
       submissionCount++;
     }
   }
