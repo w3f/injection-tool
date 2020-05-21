@@ -43,6 +43,9 @@ const broadcast = async (opts: BroadcastOptions) => {
         } else if (submissionCount % Number(batch) === 0) {
           console.log("Waiting for batch to complete.")
           await promise;
+        } else if (submissionCount === rawTxs.length - 1) {
+          console.log("Waiting for final broadcast to complete.")
+          await promise;
         }
       } catch (err) {
         console.error(err);
