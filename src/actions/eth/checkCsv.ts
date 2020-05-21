@@ -100,7 +100,6 @@ export const checkCsv = async (opts: Options) => {
         const [ethAddr, amt] = line.split(",");
         const amount = convertFromDecimalString(amt);
         const result = await claims.methods.claims(ethAddr).call();
-        console.log(result);
         if (result.vested.toString() !== amount) {
           console.log(`|${counter}| Failed! ADDRESS ${ethAddr} GOT ${result.vested.toString()} EXPECTED ${amount}`);
           errors++;
@@ -119,7 +118,6 @@ export const checkCsv = async (opts: Options) => {
       for (const line of file.split("\n").filter(line => line !== "")) {
         const ethAddr = line;
         const result = await claims.methods.claims(ethAddr).call();
-        console.log(result);
         if (Number(result.index) !== counter) {
           console.log(`|${counter}| Failed! ADDRESS ${ethAddr} GOT ${Number(result.index)} EXPECTED ${counter}`);
           errors++;
@@ -140,7 +138,6 @@ export const checkCsv = async (opts: Options) => {
         const [ethAddr, amt] = line.split(",");
         const amount = convertFromDecimalString(amt);
         const result = await frozenToken.methods.balanceOf(ethAddr).call();
-        console.log(result);
         if (result.toString() !== amount) {
           console.log(`|${counter}| Failed! ADDRESS ${ethAddr} GOT ${result.toString()} EXPECTED ${amount}`);
           errors++;
@@ -161,7 +158,6 @@ export const checkCsv = async (opts: Options) => {
         const [ethAddr,amt] = line.split(",");
         const amount = convertFromDecimalString(amt);
         const result = await claims.methods.claims(ethAddr).call();
-        console.log(result);
         if (result.vested.toString() !== amount) {
           console.log(`|${counter}| Failed! ADDRESS ${ethAddr} GOT ${result.vested.toString()} EXPECTED ${amount}`);
           errors++;

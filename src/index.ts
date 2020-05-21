@@ -300,6 +300,7 @@ program
 program
   .command("eth:check-csv")
   .option("--claimAddress <addr>", "The address of DOT Claims contract.", "0xa2CBa0190290aF37b7e154AEdB06d16100Ff5907")
+  .option("--frozenTokenAddress <addr>", "The address of Frozen Token.", "0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907")
   .option("--csvFileType <type>", "The type of csv file you're passing in.", "")
   .option("--csv <path>", "The path of the csv file to check.", "")
   .option("--providerUrl <url>", "A WebSockets provider for an Ethereum node.", "wss://mainnet.infura.io/ws/v3/7121204aac9a45dcb9c2cc825fb85159")
