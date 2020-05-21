@@ -22,6 +22,7 @@ export const makeAmendments = async (cmd: Command) => {
   const amends: any[] = [];
   fs.readFileSync(csv, { encoding: "utf-8" })
     .split("\n")
+    .filter((line: any) => line !== "")
     .forEach((entry: any) => {
       const [original, amend] = entry.split(",");
       originals.push(original);

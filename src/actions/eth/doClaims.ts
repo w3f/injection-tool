@@ -22,6 +22,7 @@ export const doClaims = async (cmd: Command) => {
   const pubKeys: any[] = [];
   fs.readFileSync(csv, { encoding: "utf-8" })
     .split("\n")
+    .filter((line: any) => line !== "")
     .forEach((entry: any) => {
       const [destination, pubKey] = entry.split(",");
       destinations.push(destination);

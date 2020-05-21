@@ -1,6 +1,5 @@
 import { Command } from "commander";
 import Web3 from "web3";
-import parse from "csv-parse/lib/sync";
 import * as fs from "fs";
 
 const claims = require("../../../build/contracts/Claims.json");
@@ -40,7 +39,7 @@ export const vesting = async (cmd: Command) => {
   const w3 = new Web3(new Web3.providers.WebsocketProvider(providerUrl));
   const claimsContract = initclaims(claims, providerUrl);
 
-  const csvParsed = parse(fs.readFileSync(csv, { encoding: "utf-8" }));
+  const csvParsed = fs.readFileSync(csv, { encoding: "utf-8" }).split("\n").filter((line: any) => line !== "");
   const destinations = csvParsed.map((entry: any) => entry[0]);
   const amounts = csvParsed.map((entry: any) =>
     convertFromDecimalString(entry[1])

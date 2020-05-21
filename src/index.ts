@@ -125,7 +125,7 @@ program
 program
   .command('eth:amend')
   .description('Make amendments on the Claims contract.')
-  .option("--nonce <starting_nonce>", "The starting nonce for transactions. Use 'auto' to read from chain state.", "0")
+  .option("--nonce <starting_nonce>", "The starting nonce for transactions.", "0")
   .option("--output <filepath>", "The file to write the raw transactions.", "raw_tx.csv")
   .option('--csv <filepath[,filepath,...]>', 'One or more CSV files formatted <original>,<amended> on each line.')
   .option('--claims <address>', 'The address of DOT Claims.', '0xa2CBa0190290aF37b7e154AEdB06d16100Ff5907')
@@ -141,7 +141,7 @@ program
 program
   .command('eth:indices')
   .description('Assign a batch of indices to frozen token holders.')
-  .option("--nonce <starting_nonce>", "The starting nonce for transactions. Use 'auto' to read from chain state.", "0")
+  .option("--nonce <starting_nonce>", "The starting nonce for transactions.", "0")
   .option("--output <filepath>", "The file to write the raw transactions.", "raw_tx.csv")
   .option('--csv <filepath[,filepath,...]>', 'One or more CSV files formatted <address> on each line.')
   .option('--claims <address>', 'The address of DOT Claims.', '0xa2CBa0190290aF37b7e154AEdB06d16100Ff5907')
@@ -165,7 +165,7 @@ program
 program
   .command('eth:claims-deploy')
   .description('Deploy the Claims smart contract.')
-  .option("--nonce <starting_nonce>", "The starting nonce for transactions. Use 'auto' to read from chain state.", "0")
+  .option("--nonce <starting_nonce>", "The starting nonce for transactions.", "0")
   .option("--output <filepath>", "The file to write the raw transactions.", "raw_tx.csv")
   .option('--dotIndicator <address>', 'Address of the DOT indicator contract.', '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907')
   .option('--owner <address>', 'Address of the owner of the Claims contract.')
@@ -179,7 +179,7 @@ program
 program
   .command('eth:make-claims')
   .description('Make claims from the sending address. Useful mostly in combination with eth:amend.')
-  .option("--nonce <starting_nonce>", "The starting nonce for transactions. Use 'auto' to read from chain state.", "0")
+  .option("--nonce <starting_nonce>", "The starting nonce for transactions.", "0")
   .option("--output <filepath>", "The file to write the raw transactions.", "raw_tx.csv")
   .option('--csv <filepath[,filepath,...]>', 'One or more CSV files formatted <dotHolder>,<pubKey> on each line.')
   .option('--claims <address>', 'The address of DOT Claims.', '0xa2CBa0190290aF37b7e154AEdB06d16100Ff5907')
@@ -195,7 +195,7 @@ program
 program
   .command('eth:dot-allocations')
   .description('Make transfers of Frozen Token (must send from a liquid account).')
-  .option("--nonce <starting_nonce>", "The starting nonce for transactions. Use 'auto' to read from chain state.", "0")
+  .option("--nonce <starting_nonce>", "The starting nonce for transactions.", "0")
   .option("--output <filepath>", "The file to write the raw transactions.", "raw_tx.csv")
   .option('--csv <filepath[,filepath,...]>', 'One or more CSV files formatted <address>,<amount> on each line.')
   .option('--frozenToken <address>', 'The address of the Frozen Token', '0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907')
@@ -210,7 +210,7 @@ program
 program
   .command('eth:frozenToken-deploy')
   .description('Deploy the Frozen Token contract.')
-  .option("--nonce <starting_nonce>", "The starting nonce for transactions. Use 'auto' to read from chain state.", "0")
+  .option("--nonce <starting_nonce>", "The starting nonce for transactions.", "0")
   .option("--output <filepath>", "The file to write the raw transactions.", "raw_tx.csv")
   .option('--owner <address>', 'Address of the owner of the Claims contract.')
   .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
@@ -223,7 +223,7 @@ program
 program
   .command('eth:increase-vesting')
   .description('Increase the vested amount of token holders on the Claims contract.')
-  .option("--nonce <starting_nonce>", "The starting nonce for transactions. Use 'auto' to read from chain state.", "0")
+  .option("--nonce <starting_nonce>", "The starting nonce for transactions.", "0")
   .option("--output <filepath>", "The file to write the raw transactions.", "raw_tx.csv")
   .option('--csv <filepath[,filepath,...]>', 'One or more CSV files formatted <address>,<amount> on each line.')
   .option('--claims <address>', 'The address of the Claims contract.', '0xa2CBa0190290aF37b7e154AEdB06d16100Ff5907')
@@ -238,7 +238,7 @@ program
 program
   .command('eth:inject-sale') // allocation + vesting amount
   .description('Inject the sale data to the Claims contract.')
-  .option("--nonce <starting_nonce>", "The starting nonce for transactions. Use 'auto' to read from chain state.", "0")
+  .option("--nonce <starting_nonce>", "The starting nonce for transactions.", "0")
   .option("--output <filepath>", "The file to write the raw transactions.", "raw_tx.csv")
   .option('--csv <filepath[,filepath,...]>', 'One or more CSV file formatted <address>,<amount> on each line.')
   .option('--claims <address>', 'The address of the Claims contract.', '0xa2CBa0190290aF37b7e154AEdB06d16100Ff5907')
@@ -253,7 +253,7 @@ program
 program
   .command('eth:set-vesting')
   .description('Set the vested amount of token holders on the Claims contract (can only be called once on an address, otherwise use eth:increase-vesting).')
-  .option("--nonce <starting_nonce>", "The starting nonce for transactions. Use 'auto' to read from chain state.", "0")
+  .option("--nonce <starting_nonce>", "The starting nonce for transactions.", "0")
   .option("--output <filepath>", "The file to write the raw transactions.", "raw_tx.csv")
   .option('--csv <filepath[,filepath,...]>', 'One or more CSV files formatted <address>,<amount> on each line.')
   .option('--claims <address>', 'The address of the Claims contract.', '0xa2CBa0190290aF37b7e154AEdB06d16100Ff5907')
@@ -268,7 +268,7 @@ program
 program
   .command('eth:validation')
   .description('Validate a list of frozen token holders.')
-  .option("--nonce <starting_nonce>", "The starting nonce for transactions. Use 'auto' to read from chain state.", "0")
+  .option("--nonce <starting_nonce>", "The starting nonce for transactions.", "0")
   .option("--output <filepath>", "The file to write the raw transactions.", "raw_tx.csv")
   .option('--csv <filepath[,filepath,...]>', 'One or more CSV files formatted <dotHolder> on each line.')
   .option('--claims <address>', 'The address of DOT Claims.', '0xa2CBa0190290aF37b7e154AEdB06d16100Ff5907')
