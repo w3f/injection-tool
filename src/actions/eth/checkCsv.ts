@@ -69,10 +69,10 @@ export const checkCsv = async (opts: Options) => {
         } else {
           console.log(`|${counter}| OK`);
         }
-        console.log(`DONE\nERRORS FOUND: ${errors}`);
-
         counter++
       }
+      
+      console.log(`DONE\nERRORS FOUND: ${errors}`);
       break;
     }
     case CsvFileType.Claim: {
