@@ -35,7 +35,7 @@ export const dotAllocations = async (cmd: Command) => {
   const w3 = new Web3(new Web3.providers.WebsocketProvider(providerUrl));
   const frozenTokenContract = initFrozenToken(frozenToken, providerUrl);
 
-  const csvParsed = fs.readFileSync(csv, { encoding: "utf-8" }).split("\n").filter((line: any) => line !== "");
+  const csvParsed = fs.readFileSync(csv, { encoding: "utf-8" }).split("\n").filter((line: any) => line !== "").map((line: any) => line.split(','));
   const destinations = csvParsed.map((entry: any) => entry[0]);
   const amounts = csvParsed.map((entry: any) =>
     convertFromDecimalString(entry[1])
