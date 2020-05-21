@@ -18,6 +18,7 @@ import {
   checkAmount,
   querySecondSaleBalance,
   sudoAs,
+  checkCsv,
 } from './actions';
 
 import Package from '../package.json';
@@ -185,7 +186,7 @@ program
   .option('--claims <address>', 'The address of DOT Claims.', '0xa2CBa0190290aF37b7e154AEdB06d16100Ff5907')
   .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
   .option('--from <address>', 'Sender of the transactions.')
-  .option('--gas <amount>', 'Amount of gas to send.', '2000000')
+  .option('--gas <amount>', 'Amount of gas to send.', '200000')
   .option('--gasPrice <price_in_wei>', 'Amount to pay in wei per each unit of gas', '5000000000')
   .option('--password <string>', 'The password to unlock personal_* RPC methods on the node.')
   .option('--start <number>', 'The index of the list to startt on.', '0')
@@ -295,5 +296,15 @@ program
   .option('--providerUrl <url>', 'A WebSockets provider for an Ethereum node.', 'ws://localhost:8546')
   .option('-y --noConfirm', 'Skips the confirmation prompt.')
   .action((cmd) => errorCatcher(cmd, querySecondSaleBalance));
+
+program
+  .command("eth:check-csv")
+  .option("--claimAddress <addr>", "The address of DOT Claims contract.", "0xa2CBa0190290aF37b7e154AEdB06d16100Ff5907")
+  .option("--frozenTokenAddress <addr>", "The address of Frozen Token.", "0xb59f67A8BfF5d8Cd03f6AC17265c550Ed8F33907")
+  .option("--csvFileType <type>", "The type of csv file you're passing in.", "")
+  .option("--csv <path>", "The path of the csv file to check.", "")
+  .option("--providerUrl <url>", "A WebSockets provider for an Ethereum node.", "wss://mainnet.infura.io/ws/v3/7121204aac9a45dcb9c2cc825fb85159")
+  .option('-y --noConfirm', 'Skips the confirmation prompt.')
+  .action((opts) => errorCatcher(opts, checkCsv))
 
 program.parse(process.argv);

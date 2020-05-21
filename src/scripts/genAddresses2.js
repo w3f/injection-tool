@@ -25,7 +25,7 @@ const main = async (file) => {
     //  - Amendment: generated -> w3f
     //  - Claim
     fs.appendFileSync(`stash/allocation_${file}.csv`, `${ethAddress},${amount}\n`);
-    fs.appendFileSync(`stash/amendment_${file}.csv`, `${ethAddress},0xOUR_ADDRESS\n`);
+    fs.appendFileSync(`stash/amendment_${file}.csv`, `${ethAddress},0x00b46c2526e227482e2EbB8f4C69E4674d262E75\n`);
     fs.appendFileSync(`stash/claims_${file}.csv`, `${ethAddress},${decoded}\n`);
   }
 }

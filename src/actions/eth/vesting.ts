@@ -9,7 +9,7 @@ export const initclaims = (address: string, provider: string) => {
   return new w3.eth.Contract(claims.abi, address);
 };
 
-export const convertFromDecimalString = (decimalString: any) => {
+export const convertFromDecimalString = (decimalString: any): string => {
   if (decimalString.indexOf(".") == -1) {
     return decimalString.concat("000");
   }

@@ -68,8 +68,6 @@ export const makeAmendments = async (cmd: Command) => {
       nonce: startingNonce + nonceCounter,
     });
 
-    const accounts = await w3.eth.personal.getAccounts();
-
     const txObj = await w3.eth.personal.signTransaction(tx, password);
 
     fs.appendFileSync(output, txObj.raw + '\n');
