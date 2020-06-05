@@ -5,6 +5,10 @@ import { Command } from "commander";
 import * as fs from "fs";
 import { initApi } from "../../helpers";
 
+import { encodeAddress } from "@polkadot/util-crypto";
+import { nominate } from "./nominate";
+
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -45,7 +49,9 @@ export const sudoAs = async (cmd: Command) => {
     .readFileSync(prevHashes, { encoding: "utf-8" })
     .split("\n");
 
-  const api = await initApi(wsEndpoint, types);
+  // const api = await initApi(wsEndpoint, types);
+  const api = await initApi(wsEndpoint);
+
   const keyring = new pdKeyring({ type: cryptoType });
 
   let sudoKey: any;
@@ -61,79 +67,118 @@ export const sudoAs = async (cmd: Command) => {
     throw Error("Failed to pass in a method to get the address.");
   }
 
-  if (sudoKey.address !== (await api.query.sudo.key()).toString()) {
-    console.log(sudoKey.address);
+  const polkadotPrefixAddr = encodeAddress(sudoKey.address, 0);
+
+  if (polkadotPrefixAddr !== (await api.query.sudo.key()).toString()) {
+    console.log(polkadotPrefixAddr);
     console.log((await api.query.sudo.key()).toString());
     throw Error("This is not the secret for the Sudo key.");
   }
 
-  const accountData = await api.query.system.account(sudoKey.address);
+  const accountData = await api.query.system.account(polkadotPrefixAddr);
   const startingNonce = accountData.nonce.toNumber();
 
   let index = 0;
   try {
     for (const entry of csvParsed) {
       if (!entry) continue;
-
       const { method, source, args } = entry;
       const [s,m] = method.split('.');
 
-      const proposal = api.tx[s][m](...args);
-      const nonce = Number(startingNonce) + index;
+      let proposal;
 
-      const era = createType(
-        api.registry,
-        "ExtrinsicEra",
-        new GenericImmortalEra(api.registry)
-      );
-
-      const logString = `Sending transaction ${s}::${m} from ${source} with sudo key ${sudoKey.address} and nonce: ${nonce}.`;
-      console.log(logString);
-
-      const thisIndex = index;
-
-      const unsub = await api.tx.sudo
-        .sudoAs(source, proposal)
-        .signAndSend(
-          sudoKey,
-          { blockHash: api.genesisHash, era, nonce },
-          (result) => {
-            const { status } = result;
-
-            console.log("Current status is", status.type);
-            fs.appendFileSync(
-              "sudAs.hashes.log",
-              logString + "\n" + "Current status is" + status.type + "\n"
-            );
-
-            if (status.isFinalized) {
-              console.log(
-                `Transaction included at blockHash ${status.asFinalized}`
-              );
-              fs.appendFileSync(
-                "sudoAs.hashes.map.log",
-                `${logString}\t${status.asFinalized.toString()}\t${
-                  prevHashesParsed[thisIndex]
-                }\n`
-              );
-              fs.appendFileSync(
-                "sudoAs.hashes.log",
-                logString + "\n" + status.asFinalized.toString() + "\n"
-              );
-              // Loop through Vec<EventRecord> to display all events
-              // events.forEach(({ phase, event: { data, method, section } }) => {
-              //   fs.appendFileSync(
-              //     "sudoAs.hashes.log",
-              //     `\t' ${phase}: ${section}.${method}:: ${data}\n`
-              //   );
-              // });
-              unsub();
-            }
+      switch (m) {
+        case 'claimAttest': 
+          try {
+            const unsub = await api.tx.claims[m](source, ...args)
+              .send((result: any) => {
+                const { status } = result;
+  
+                console.log(`Current status is ${status.type}.`);
+                if (status.isFinalized) {
+                  console.log(
+                    `Transaction included at block hash ${status.asFinalized}`
+                  );
+                  unsub();
+                }
+              });
+          } catch (err) {
+            console.error(`Submitting unsigned tx: \t${err}`);
           }
-        );
+          break;
+        default:
+          switch (m) {
+            case 'nominate':
+              proposal = api.tx[s][m](args);
+              break;
+            case 'sudo':
+              proposal = api.tx[s][m]((args[0], (args[1], args[2], args[3]) ));
+              console.log("new what is proposal :", proposal.toString())
+              break;
+            case 'validate':
+              proposal = api.tx[s][m]({commission: args[0]});
+              break;
+            default:
+              proposal = api.tx[s][m](...args);
+          }
 
-      index++;
+          const nonce = Number(startingNonce) + index;
+
+          const era = createType(
+            api.registry,
+            "ExtrinsicEra",
+            new GenericImmortalEra(api.registry)
+          );
+  
+          const logString = `Sending transaction ${s}::${m} from ${source} with sudo key ${polkadotPrefixAddr} and nonce: ${nonce}.`;
+          console.log(logString);
+  
+          const thisIndex = index;
+  
+          const unsub = await api.tx.sudo
+            .sudoAs(source, proposal)
+            .signAndSend(
+              sudoKey,
+              { blockHash: api.genesisHash, era, nonce },
+              (result) => {
+                const { status } = result;
+  
+                console.log("Current status is", status.type);
+                fs.appendFileSync(
+                  "sudAs.hashes.log",
+                  logString + "\n" + "Current status is" + status.type + "\n"
+                );
+  
+                if (status.isFinalized) {
+                  console.log(
+                    `Transaction included at blockHash ${status.asFinalized}`
+                  );
+                  fs.appendFileSync(
+                    "sudoAs.hashes.map.log",
+                    `${logString}\t${status.asFinalized.toString()}\t${
+                      prevHashesParsed[thisIndex]
+                    }\n`
+                  );
+                  fs.appendFileSync(
+                    "sudoAs.hashes.log",
+                    logString + "\n" + status.asFinalized.toString() + "\n"
+                  );
+                  // Loop through Vec<EventRecord> to display all events
+                  // events.forEach(({ phase, event: { data, method, section } }) => {
+                  //   fs.appendFileSync(
+                  //     "sudoAs.hashes.log",
+                  //     `\t' ${phase}: ${section}.${method}:: ${data}\n`
+                  //   );
+                  // });
+                  unsub();
+                }
+              }
+            );
+  
+          index++;
+      }
       await sleep(1000);
+
     }
   } catch (e) {
     console.log(e);
