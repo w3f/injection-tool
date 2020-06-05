@@ -112,8 +112,8 @@ export const sudoAs = async (cmd: Command) => {
               proposal = api.tx[s][m](args);
               break;
             case 'sudo':
+              // TODO: need to test & verify
               proposal = api.tx[s][m]((args[0], (args[1], args[2], args[3]) ));
-              console.log("new what is proposal :", proposal.toString())
               break;
             case 'validate':
               proposal = api.tx[s][m]({commission: args[0]});
