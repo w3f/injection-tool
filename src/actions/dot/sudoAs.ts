@@ -5,7 +5,8 @@ import { Command } from "commander";
 import * as fs from "fs";
 import { initApi } from "../../helpers";
 
-import { encodeAddress } from "@polkadot/util-crypto";
+import { encodeAddress, decodeAddress } from "@polkadot/util-crypto";
+import { u8aToHex, hexToU8a } from "@polkadot/util";
 import { nominate } from "./nominate";
 
 
@@ -115,8 +116,21 @@ export const sudoAs = async (cmd: Command) => {
               // TODO: need to test & verify
               proposal = api.tx[s][m]((args[0], (args[1], args[2], args[3]) ));
               break;
+            case 'setKeys':
+              const key1 = u8aToHex(decodeAddress(args[0]))
+              const key2 = u8aToHex(decodeAddress(args[1])).slice(2)
+              const key3 = u8aToHex(decodeAddress(args[2])).slice(2)
+              const key4 = u8aToHex(decodeAddress(args[3])).slice(2)
+              const key5 = u8aToHex(decodeAddress(args[4])).slice(2)
+              const sessionKeys = key1 + key2 + key3 + key4 + key5
+              proposal = api.tx[s][m](sessionKeys, args[5]);
+              break;
             case 'validate':
               proposal = api.tx[s][m]({commission: args[0]});
+              break;
+            case 'utility.batch':
+              proposal = api.tx[s][m](args[0]);
+
               break;
             default:
               proposal = api.tx[s][m](...args);
