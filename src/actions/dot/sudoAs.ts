@@ -81,6 +81,16 @@ export const sudoAs = async (cmd: Command) => {
   const accountData = await api.query.system.account(polkadotPrefixAddr);
   const startingNonce = accountData.nonce.toNumber();
 
+  const constructSessionKey = (args: any) => {    
+    const key1 = u8aToHex(decodeAddress(args[0]))
+    const key2 = u8aToHex(decodeAddress(args[1])).slice(2)
+    const key3 = u8aToHex(decodeAddress(args[2])).slice(2)
+    const key4 = u8aToHex(decodeAddress(args[3])).slice(2)
+    const key5 = u8aToHex(decodeAddress(args[4])).slice(2)
+    const sessionKeys = key1 + key2 + key3 + key4 + key5
+    return sessionKeys
+  }
+
   let index = 0;
   try {
     for (const entry of csvParsed) {
@@ -90,7 +100,7 @@ export const sudoAs = async (cmd: Command) => {
 
       let proposal: any;
 
-      switch (m) {
+      switch (m) {  // check whether this is unsigned or signed tx action
         case 'claimAttest': 
           try {
             const unsub = await api.tx.claims[m](source, ...args)
@@ -116,23 +126,38 @@ export const sudoAs = async (cmd: Command) => {
               break;
             case 'sudo':
               // TODO: need to test & verify
-              proposal = api.tx[s][m]((args[0], (args[1], args[2], args[3]) ));
+              proposal = api.tx[s][m]((args[0], (args[1], args[2], args[3])));
               break;
             case 'setKeys':
-              const key1 = u8aToHex(decodeAddress(args[0]))
-              const key2 = u8aToHex(decodeAddress(args[1])).slice(2)
-              const key3 = u8aToHex(decodeAddress(args[2])).slice(2)
-              const key4 = u8aToHex(decodeAddress(args[3])).slice(2)
-              const key5 = u8aToHex(decodeAddress(args[4])).slice(2)
-              const sessionKeys = key1 + key2 + key3 + key4 + key5
+              const sessionKeys = constructSessionKey(args);
               proposal = api.tx[s][m](sessionKeys, args[5]);
               break;
             case 'validate':
               proposal = api.tx[s][m]({commission: args[0]});
               break;
-            case 'utility.batch':
-              proposal = api.tx[s][m](args[0]);
+            case 'batch': // restruct the batchCalls
+              const functionCalls = JSON.parse(`[${args}]`)
+              const batchCalls : any = [];
 
+              functionCalls.forEach((txDetails : any) => {
+                const { method, section } = api.registry.findMetaCall(hexToU8a(txDetails.callIndex));
+                if (method === "bond") {
+                  proposal = api.tx[section][method](txDetails.controller, 
+                    txDetails.valueBonded, txDetails.paymentDestination);
+                } else if (method === "nominate") {
+                  proposal = api.tx[section][method](txDetails.candidates);
+                } else if (method === "setController") {
+                  proposal = api.tx[section][method](txDetails.controller);
+                } else if (method === "setKeys") {
+                  const sessionKeys = constructSessionKey(txDetails.keys);
+                  proposal = api.tx[section][method](sessionKeys, txDetails.proof);
+                } else if (method === "validate") {
+                  proposal = api.tx[section][method]({ commission: txDetails.commission });
+                }
+                batchCalls.push(proposal);
+              })
+
+              proposal = api.tx[s][m](batchCalls);
               break;
             default:
               proposal = api.tx[s][m](...args);
