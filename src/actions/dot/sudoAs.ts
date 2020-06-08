@@ -39,10 +39,12 @@ export const sudoAs = async (cmd: Command) => {
       const [method, rest] = line.split(/,(.+)/);
       const [ source, args ] = rest.split(/,(.+)/);
 
+      const propArgs = method === "utility.batch" ? args : args.split(",");
+
       return {
         method,
         source,
-        args: args.split(","),
+        args: propArgs,
       };
     });
 
@@ -83,10 +85,10 @@ export const sudoAs = async (cmd: Command) => {
   try {
     for (const entry of csvParsed) {
       if (!entry) continue;
-      const { method, source, args } = entry;
+      const { method, source, args } = entry as any;
       const [s,m] = method.split('.');
 
-      let proposal;
+      let proposal: any;
 
       switch (m) {
         case 'claimAttest': 
