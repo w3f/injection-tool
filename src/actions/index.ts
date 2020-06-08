@@ -16,6 +16,7 @@ import {
 } from "./eth";
 
 import {
+  batchTransfer,
   bondAndValidate,
   forceTransfers,
   injectClaims,
@@ -27,6 +28,7 @@ import {
 
 export {
   assignIndices,
+  batchTransfer,
   broadcast,
   bondAndValidate,
   claimsDeploy,

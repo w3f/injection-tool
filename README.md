@@ -105,6 +105,29 @@ Options:
   -h, --help                   output usage information
 ```
 
+## Batch-Proxy-Sudo-Force-Transfers
+
+```zsh
+Usage: index batch-proxy-sudo-force-transfers [options]
+
+Options:
+  --cryptoType <type>              One of ed25519 or sr25519. (default: "sr25519")
+  --csv <filepath[,filepath,...]>  One or more CSV files formatted <dest>,<amount> on each line.
+  --dry                            Runs in dry run mode.
+  --source <source>                The address from which funds will be force transferred from.
+  --suri <suri>                    Pass in the suri for the Sudo key.
+  --types <json>                   A JSON configuration of types for the node. (default: "{}")
+  --wsEndpoint <url>               The endpoint of the WebSockets to connect with. (default: "wss://canary-4.kusama.network")
+  -h, --help                       display help for command
+```
+
+### Example
+
+```zsh
+ts-node src/index batch-proxy-sudo-force-transfers --csv dot_transfers.csv --source 15oF4uVJwmo4TdGW7VfQxNLavjCXviqxT9S1MgbjMNHr6Sp5 --suri <secret> --wsEndpoint ws://localhost:9944
+```
+
+
 ### Example
 
 ```sh

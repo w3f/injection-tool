@@ -1,6 +1,7 @@
 import program, { Command } from 'commander';
 
 import {
+  batchTransfer,
   broadcast,
   claimsDeploy,
   vesting,
@@ -88,6 +89,17 @@ program
   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
   .option('--jsonPath <pathToKeystore>', 'Pass in the path to the JSON keystore for the Sudo key.')
   .action((cmd) => errorCatcher(cmd, forceTransfers));
+
+program
+  .command('batch-proxy-sudo-force-transfers')
+  .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
+  .option('--csv <filepath[,filepath,...]>', 'One or more CSV files formatted <dest>,<amount> on each line.')
+  .option('--dry', 'Runs in dry run mode.')
+  .option('--source <source>', 'The address from which funds will be force transferred from.')
+  .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
+  .option('--types <json>', 'A JSON configuration of types for the node.', '{}')
+  .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://canary-4.kusama.network')
+  .action((cmd) => errorCatcher(cmd, batchTransfer));
 
 program
   .command('transfer')

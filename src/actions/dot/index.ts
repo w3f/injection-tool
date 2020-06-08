@@ -1,3 +1,4 @@
+import { batchTransfer } from "./batch";
 import { bondAndValidate } from "./bondAndValidate";
 import { forceTransfers } from "./forceTransfers";
 import { injectClaims } from "./injectClaims";
@@ -7,6 +8,7 @@ import { stateCheck } from "./stateCheck";
 import { sudoAs } from "./sudoAs";
 
 export {
+  batchTransfer,
   bondAndValidate,
   forceTransfers,
   injectClaims,
