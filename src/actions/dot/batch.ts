@@ -55,7 +55,8 @@ export const batchTransfer = async (opts: Options) => {
   const nonceStr = `Nonce: ${startingNonce} |> `;
 
   if (dry) {
-    const cost = await api.rpc.payment.queryInfo(api.tx.utility.batch(calls).toHex());
+    const callHex = api.tx.utility.batch(calls).toHex();
+    const cost = await api.rpc.payment.queryInfo(callHex);
 
     console.log("Cost:", cost.toString())
     return;
