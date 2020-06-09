@@ -127,6 +127,8 @@ Options:
 ts-node src/index batch-proxy-sudo-force-transfers --csv dot_transfers.csv --source 15oF4uVJwmo4TdGW7VfQxNLavjCXviqxT9S1MgbjMNHr6Sp5 --suri <secret> --wsEndpoint ws://localhost:9944
 ```
 
+Add the `--dry` flag to the command to run a cost estimation of submitting the transaction.
+
 
 ### Example
 
