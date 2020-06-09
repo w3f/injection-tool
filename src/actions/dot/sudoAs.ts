@@ -38,7 +38,6 @@ export const sudoAs = async (cmd: Command) => {
 
       const [method, rest] = line.split(/,(.+)/);
       const [ source, args ] = rest.split(/,(.+)/);
-
       const propArgs = method === "utility.batch" ? args : args.split(",");
 
       return {
@@ -121,6 +120,10 @@ export const sudoAs = async (cmd: Command) => {
           break;
         default:
           switch (m) {
+            case 'chill':
+              console.log("calling chill :", args)
+              proposal = api.tx[s][m]();
+              break;
             case 'nominate':
               proposal = api.tx[s][m](args);
               break;
