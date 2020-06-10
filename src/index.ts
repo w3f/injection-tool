@@ -19,6 +19,7 @@ import {
   querySecondSaleBalance,
   sudoAs,
   checkCsv,
+  migrate,
 } from './actions';
 
 import Package from '../package.json';
@@ -121,6 +122,11 @@ program
   .option('--types <json>', 'A JSON configuration of types for the node.', '{}')
   .option('-y --noConfirm', 'Skips the confirmation prompt.')
   .action((cmd) => errorCatcher(cmd, sudoAs));
+
+program
+  .command("migrate")
+  .option("--dbPath <path>", "The path to the scraped.db from subscraper.", "")
+  .action((cmd) => errorCatcher(cmd, migrate));
 
 /* Ethereum */
 program
