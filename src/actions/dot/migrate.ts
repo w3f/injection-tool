@@ -37,14 +37,37 @@ type Block = {
 type Options = {
   dbPath: string;
   ensureComplete: bool;
+  suri: string;
+  wsEndpoint: string;
 }
+
+type CryptoType = "sr25519" | "ed25519" | "ecdsa" | undefined;
 
 const IgnoreMethods = [
   "timestamp.set",
 ];
 
+const initializeSigner = (suri: string, cryptoType: CryptoType = "sr25519") => {
+  const keyring = new pdKeyring({ type: cryptoType })
+  return keyring.addFromUri(suri);
+}
+
+const sendHandler = (result: any, unsub: any) => {
+  const { status } = result;
+
+  console.log(`Current status is ${status.type}`);
+  if (status.isFinalized) {
+    console.log(`Included in block hash ${status.asFinalized}`);
+    unsub();
+  }
+}
+
 export const migrate = async (opts: Options) => {
-  const { dbPath, ensureComplete } = opts;
+  const { dbPath, ensureComplete, suri, wsEndpoint } = opts;
+
+  // const signer = initializeSigner(suri);
+  // console.log(`Signer address: ${signer.address}`)
+  const api = await initApi(wsEndpoint);
 
   // Get the database contents, sort it by block number and filter the transactions
   // we don't want.
@@ -69,7 +92,15 @@ export const migrate = async (opts: Options) => {
       }
 
       const [module, txType] = method.split('.');
-
+      if (txType == "claimAttest") {
+        try {
+          const unsub = await api.tx[module][txType](...args).send((result) => {
+            sendHandler(result, unsub);
+          });
+        } catch (err) {
+          throw new Error(`Failed submitting transfaction: ${err}`);
+        }
+      }
     }
   }
 
