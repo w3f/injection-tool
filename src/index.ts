@@ -139,6 +139,10 @@ program
 program
   .command("migrate")
   .option("--dbPath <path>", "The path to the scraped.db from subscraper.", "")
+  .option("--dry", "Runs in print-only mode when enabled.", false)
+  .option("--ensureComplete", "TODO documentation", false)
+  .option("--suri <secret>", "The secret for the Sudo signer.", "")
+  .option("--wsEndpoint <url>", "The WebSockets endpoint for Polkadot.", "wss://rpc.polkadot.io")
   .action((cmd) => errorCatcher(cmd, migrate));
 
 program

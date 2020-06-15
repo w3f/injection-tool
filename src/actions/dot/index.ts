@@ -6,7 +6,7 @@ import { makeTransfers } from "./transfers";
 import { nominate } from "./nominate";
 import { stateCheck } from "./stateCheck";
 import { sudoAs } from "./sudoAs";
-import { migrate } from "./migrate";
+import migrate from "./migrate/index";
 
 export {
   batchTransfer,
