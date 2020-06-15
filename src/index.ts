@@ -20,6 +20,7 @@ import {
   querySecondSaleBalance,
   sudoAs,
   checkCsv,
+  check,
 } from './actions';
 
 import Package from '../package.json';
@@ -133,6 +134,15 @@ program
   .option('--types <json>', 'A JSON configuration of types for the node.', '{}')
   .option('-y --noConfirm', 'Skips the confirmation prompt.')
   .action((cmd) => errorCatcher(cmd, sudoAs));
+
+program
+  .command('check')
+  .option("--csv <filepath>", "" ,"")
+  .option("--failHard", "", false)
+  .option("--types <json|string>", "", "{}")
+  .option("--wsEndpoint <url>", "", "wss://rpc.polkadot.io")
+  .option('-y --noConfirm', 'Skips the confirmation prompt.')
+  .action((cmd) => errorCatcher(cmd, check));
 
 /* Ethereum */
 program

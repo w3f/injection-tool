@@ -26,7 +26,10 @@ import {
   sudoAs,
 } from "./dot";
 
+import { check } from "./check";
+
 export {
+  check,
   assignIndices,
   batchTransfer,
   broadcast,

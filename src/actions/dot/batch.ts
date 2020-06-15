@@ -1,14 +1,6 @@
 import Keyring from "@polkadot/keyring";
 import * as fs from "fs";
-import { initApi, sleep } from "../../helpers";
-
-const parseCsv = (filepath: string) => {
-  const csvRead = fs.readFileSync(filepath, { encoding: 'utf-8' });
-  return csvRead
-    .split("\n")
-    .filter(line => line !== "")
-    .map(line => line.split(','));
-}
+import { initApi, parseCsv, sleep } from "../../helpers";
 
 type Options = {
   cryptoType: "ed25519" | "sr25519" | "ecdsa" | undefined;
