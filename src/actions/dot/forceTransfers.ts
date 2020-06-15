@@ -41,7 +41,7 @@ export const forceTransfers = async (cmd: Command) => {
     throw Error("This is not the secret for the Sudo key.");
   }
 
-  const startingNonce = await api.query.system.accountNonce(sudoKey.address);
+  const startingNonce = (await api.query.system.account(sudoKey.address)).nonce;
   let counter = 0;
   for (const entry of csvParsed) {
     const [dest, amount] = entry;

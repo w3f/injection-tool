@@ -1,0 +1,1 @@
+ts-node src/index batch-proxy-sudo-force-transfers --csv dot_transfers.csv --source 15oF4uVJwmo4TdGW7VfQxNLavjCXviqxT9S1MgbjMNHr6Sp5 --suri 0x398f0c28f98885e046333d4a41c19cee4c37368a9832c6502f6cfd182e2aef89 --wsEndpoint wss://rpc.polkadot.io 
