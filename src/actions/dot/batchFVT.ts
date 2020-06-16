@@ -1,6 +1,10 @@
 import Keyring from "@polkadot/keyring";
-import * as fs from "fs";
 import { initApi, parseCsv, sleep } from "../../helpers";
+import Web3 from "web3";
+
+const w3Util = new Web3().utils;
+
+const VestingLength = w3Util.toBN(Math.ceil(24 * 30 * 24 * 60 * (60 / 6)));
 
 type Options = {
   cryptoType: "ed25519" | "sr25519" | "ecdsa" | undefined;
@@ -10,9 +14,10 @@ type Options = {
   suri: string;
   types: any;
   wsEndpoint: string;
+  startingBlock: string;
 };
 
-export const batchTransfer = async (opts: Options) => {
+export const batchVestedTransfer = async (opts: Options) => {
   const {
     csv,
     cryptoType,
@@ -20,7 +25,8 @@ export const batchTransfer = async (opts: Options) => {
     source,
     suri,
     types,
-    wsEndpoint
+    wsEndpoint,
+    startingBlock,
   } = opts;
 
   const input = parseCsv(csv);
@@ -35,9 +41,15 @@ export const batchTransfer = async (opts: Options) => {
   const calls = input.map((entry: any) => {
     const [dest, amount] = entry;
 
-    const forceTransfer = api.tx.balances.forceTransfer(source, dest, amount);
-    const sudoCall = api.tx.sudo.sudo(forceTransfer);
-    const proxyCall = api.tx.proxy.proxy(sudo, "sudobalances", sudoCall);
+    const perBlock = w3Util.toBN(amount).divRound(VestingLength);
+
+    const vestedTransfer = api.tx.vesting.forceVestedTransfer(source, dest, {
+      locked: amount,
+      perBlock,
+      startingBlock: 0,
+    });
+    const sudoCall = api.tx.sudo.sudo(vestedTransfer);
+    const proxyCall = api.tx.proxy.proxy(sudo, "any", sudoCall);
     return proxyCall;
   });
 
