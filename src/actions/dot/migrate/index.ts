@@ -66,6 +66,9 @@ const createCall = (api: ApiPromise, details: CallDetails): any => {
       const calls = args.calls.map((call: CallDetails) => createCall(api, call));
       return api.tx[section][method](calls);
     }
+    case "anonymous": {
+      return api.tx[section][method](args.proxy_type, args.index);
+    }
     default: {
       throw new Error(`############### Method missing to check ############# : ${section} ${method}`);
     }

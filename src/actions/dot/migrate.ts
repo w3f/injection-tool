@@ -7,56 +7,6 @@ import { initApi, sleep } from "../../helpers";
 import { encodeAddress, decodeAddress } from "@polkadot/util-crypto";
 import { u8aToHex, hexToU8a } from "@polkadot/util";
 
-type Extrinsic = {
-  method: string;
-  signature: any | null;
-  nonce: number;
-  args: any[];
-  tip: number;
-  hash: string;
-  events: any[];
-  success: bool;
-}
-
-type Log = {
-  type: string;
-  index: number;
-  value: any[];
-}
-
-type Block = {
-  number: number;
-  hash: string;
-  parentHash: string;
-  stateRoot: string;
-  extrinsicsRoot: string;
-  logs: Log[];
-  extrinsics: Extrinsic[];
-}
-
-type Options = {
-  dbPath: string;
-  ensureComplete: bool;
-  suri: string;
-  wsEndpoint: string;
-}
-
-type CryptoType = "sr25519" | "ed25519" | "ecdsa" | undefined;
-
-const IgnoreMethods = [
-  "timestamp.set",
-  "parachains.setHeads",
-  "finalityTracker.finalHint",
-  "imOnline.heartbeat",
-  "staking.submitElectionSolutionUnsigned",
-  "sudo.setKey",
-];
-
-const initializeSigner = (suri: string, cryptoType: CryptoType = "sr25519") => {
-  const keyring = new pdKeyring({ type: cryptoType })
-  return keyring.addFromUri(suri);
-}
-
 const sendHandler = (result: any, unsub: any) => {
   const { status } = result;
 
