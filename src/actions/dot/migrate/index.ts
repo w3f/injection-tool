@@ -1,19 +1,19 @@
-import Keyring from "@polkadot/keyring";
+import { ApiPromise } from "@polkadot/api";
+import { hexToU8a } from "@polkadot/util";
 import * as fs from "fs";
 
 import { initApi } from "../../../helpers";
 import { Block } from "./types";
 import { IgnoreMethods } from "./consts";
 import { initializeSigner } from "./helpers";
-import { ApiPromise } from "@polkadot/api";
-import { hexToU8a } from "@polkadot/util";
 
-const sendHandler = (result: any, unsub: any) => {
+
+const sendHandler = (result: any, unsub: any, nonceStr: string = "", pastHash?: any) => {
   const { status } = result;
 
-  console.log(`Current status is ${status.type}`);
+  console.log(`${nonceStr} Current status is ${status.type}`);
   if (status.isFinalized) {
-    console.log(`Included in block hash ${status.asFinalized}`);
+    console.log(`${nonceStr} Included in block hash ${status.asFinalized}`);
     unsub();
   }
 }
@@ -33,8 +33,6 @@ const createCall = (api: ApiPromise, details: CallDetails): any => {
   const { method, section } = api.registry.findMetaCall(
     hexToU8a(callIndex),
   );
-
-  console.log(details);
 
   switch (method) {
     case "killStorage":
@@ -75,12 +73,6 @@ const createCall = (api: ApiPromise, details: CallDetails): any => {
   }
 }
 
-// class Logger {
-//   constructor(dry = false) {
-
-//   }
-// }
-
 type Options = {
   dbPath: string;
   dry: boolean;
@@ -104,17 +96,17 @@ const migrate = async (opts: Options) => {
       return a.number - b.number;
     });
     
-  const signer = initializeSigner(suri);
-  console.log(`Signer address: ${signer.address}`);
+  const mySigner = initializeSigner(suri);
+  console.log(`Signer address: ${mySigner.address}`);
 
   const sudo = await api.query.sudo.key();
-  if (!dry && (signer.address !== sudo.toString())) {
+  if (!dry && (mySigner.address !== sudo.toString())) {
     throw new Error(
-`NOT SUDO SIGNER.. GOT ${signer.address} EXPECTED ${sudo.toString()}`
+`NOT SUDO SIGNER.. GOT ${mySigner.address} EXPECTED ${sudo.toString()}`
     );
   }
 
-  const { nonce } = await api.query.system.account(signer.address);
+  const { nonce } = await api.query.system.account(mySigner.address);
   const startingNonce: number = nonce.toNumber();
 
   // Now cycle through blocks ascending and inject new transactions.
@@ -141,9 +133,13 @@ const migrate = async (opts: Options) => {
       if (txType === "claimAttest") {
         // The only unsigned transaction.
         try {
-          // const unsub = await api.tx[module][txType](...args).send((result) => {
-          //   sendHandler(result, unsub);
-          // });
+          if (!dry) {
+            const unsub = await api.tx[module][txType](...args).send((result) => {
+              sendHandler(result, unsub);
+            });
+          } else {
+            console.log("Stubbing unsigned transaction.");
+          }
         } catch (err) {
           throw new Error(`Failed submitting transfaction: ${err}`);
         } 
@@ -152,10 +148,6 @@ const migrate = async (opts: Options) => {
         const currentNonce = Number(startingNonce) + index;
         const nonceStr = `Nonce: ${currentNonce} |`;
         const logStr = `${nonceStr} Migrating transaction ${module}.${txType} originally sent by ${signer}.`;
-
-        console.log(logStr);
-        console.log(extrinsic);
-        console.log(`Args: ${JSON.stringify(args)}`);
         
         /// Construct the proposal.
         let proposal = null;
@@ -181,6 +173,16 @@ const migrate = async (opts: Options) => {
           }
           default:
             proposal = api.tx[module][txType](...args);
+        }
+
+        console.log(logStr);
+
+        if (!dry) {
+          const unsub: any = await api.tx.sudo.sudoAs(signer, proposal)
+            .signAndSend(
+              mySigner,
+              (result) => sendHandler(result, unsub, nonceStr, hash)
+            );
         }
       }
     }
