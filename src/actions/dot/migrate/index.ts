@@ -1,6 +1,8 @@
 import { ApiPromise } from "@polkadot/api";
 import { hexToU8a } from "@polkadot/util";
 import * as fs from "fs";
+import { encodeAddress, decodeAddress } from "@polkadot/util-crypto";
+import { createType, GenericImmortalEra, bool } from "@polkadot/types";
 
 import { initApi, sleep } from "../../../helpers";
 import { Block } from "./types";
@@ -108,16 +110,18 @@ const migrate = async (opts: Options) => {
   }
     
   const mySigner = initializeSigner(suri);
-  console.log(`Signer address: ${mySigner.address}`);
+  const sudoAddress = encodeAddress(mySigner.address, 0);
+  console.log(`Signer address: ${sudoAddress}`);
 
   const sudo = await api.query.sudo.key();
-  if (!dry && (mySigner.address !== sudo.toString())) {
+  console.log("what's susdo address :", sudo.toString())
+  if (!dry && (sudoAddress !== sudo.toString())) {
     throw new Error(
-`NOT SUDO SIGNER.. GOT ${mySigner.address} EXPECTED ${sudo.toString()}`
+`NOT SUDO SIGNER.. GOT ${sudoAddress} EXPECTED ${sudo.toString()}`
     );
   }
 
-  const { nonce } = await api.query.system.account(mySigner.address);
+  const { nonce } = await api.query.system.account(sudoAddress);
   const startingNonce: number = nonce.toNumber();
 
   // Now cycle through blocks ascending and inject new transactions.
@@ -185,15 +189,24 @@ const migrate = async (opts: Options) => {
             break;
           }
           default:
+            console.log(" what is that :", ...args)
             proposal = api.tx[module][txType](...args);
         }
 
         console.log(logStr);
 
+        const era = createType(
+          api.registry,
+          "ExtrinsicEra",
+          new GenericImmortalEra(api.registry)
+        );
+
         if (!dry) {
+
           const unsub: any = await api.tx.sudo.sudoAs(signer, proposal)
             .signAndSend(
               mySigner,
+              { blockHash: api.genesisHash, era, nonce: currentNonce },
               (result) => sendHandler(result, unsub, nonceStr, hash)
             );
 
