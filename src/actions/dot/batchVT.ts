@@ -1,5 +1,4 @@
 import Keyring from "@polkadot/keyring";
-import * as fs from "fs";
 import { initApi, parseCsv, sleep } from "../../helpers";
 
 type Options = {
@@ -10,9 +9,11 @@ type Options = {
   suri: string;
   types: any;
   wsEndpoint: string;
+  startingBlock: string;
+  perBlock: string;
 };
 
-export const batchTransfer = async (opts: Options) => {
+export const batchVestedTransfer = async (opts: Options) => {
   const {
     csv,
     cryptoType,
@@ -20,7 +21,9 @@ export const batchTransfer = async (opts: Options) => {
     source,
     suri,
     types,
-    wsEndpoint
+    wsEndpoint,
+    perBlock,
+    startingBlock,
   } = opts;
 
   const input = parseCsv(csv);
@@ -35,9 +38,13 @@ export const batchTransfer = async (opts: Options) => {
   const calls = input.map((entry: any) => {
     const [dest, amount] = entry;
 
-    const forceTransfer = api.tx.balances.forceTransfer(source, dest, amount);
-    const sudoCall = api.tx.sudo.sudo(forceTransfer);
-    const proxyCall = api.tx.proxy.proxy(sudo, "sudobalances", sudoCall);
+    const vestedTransfer = api.tx.vesting.vestedTransfer(dest, {
+      locked: amount,
+      perBlock,
+      startingBlock,
+    });
+    const sudoCall = api.tx.sudo.sudo(vestedTransfer);
+    const proxyCall = api.tx.proxy.proxy(sudo, "any", sudoCall);
     return proxyCall;
   });
 

@@ -2,6 +2,7 @@ import program, { Command } from 'commander';
 
 import {
   batchTransfer,
+  batchVestedTransfer,
   broadcast,
   claimsDeploy,
   vesting,
@@ -100,6 +101,19 @@ program
   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
   .option('--types <json>', 'A JSON configuration of types for the node.', '{}')
   .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://rpc.polkadot.io')
+  .action((cmd) => errorCatcher(cmd, batchTransfer));
+
+program
+  .command('batch-proxy-sudo-vested-transfers')
+  .option('--cryptoType <type>', 'One of ed25519 or sr25519.', 'sr25519')
+  .option('--csv <filepath[,filepath,...]>', 'One or more CSV files formatted <dest>,<amount> on each line.')
+  .option('--dry', 'Runs in dry run mode.')
+  .option('--source <source>', 'The address from which funds will be force transferred from.')
+  .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
+  .option('--types <json>', 'A JSON configuration of types for the node.', '{}')
+  .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://rpc.polkadot.io')
+  .option("--perBlock <num>", "The amount to be vested per block.", "0")
+  .option("--startingBlock <num>", "The block to begin the vesting schedule.", "0")
   .action((cmd) => errorCatcher(cmd, batchTransfer));
 
 program

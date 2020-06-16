@@ -17,6 +17,7 @@ import {
 
 import {
   batchTransfer,
+  batchVestedTransfer,
   bondAndValidate,
   forceTransfers,
   injectClaims,
@@ -32,6 +33,7 @@ export {
   check,
   assignIndices,
   batchTransfer,
+  batchVestedTransfer,
   broadcast,
   bondAndValidate,
   claimsDeploy,
