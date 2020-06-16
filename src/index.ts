@@ -114,7 +114,7 @@ program
   .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://rpc.polkadot.io')
   .option("--perBlock <num>", "The amount to be vested per block.", "0")
   .option("--startingBlock <num>", "The block to begin the vesting schedule.", "0")
-  .action((cmd) => errorCatcher(cmd, batchTransfer));
+  .action((cmd) => errorCatcher(cmd, batchVestedTransfer));
 
 program
   .command('transfer')

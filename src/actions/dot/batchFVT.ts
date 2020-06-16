@@ -43,12 +43,12 @@ export const batchVestedTransfer = async (opts: Options) => {
 
     const perBlock = w3Util.toBN(amount).divRound(VestingLength);
 
-    const vestedTransfer = api.tx.vesting.vestedTransfer(dest, {
+    const vestedTransfer = api.tx.vesting.forceVestedTransfer(source, dest, {
       locked: amount,
       perBlock,
       startingBlock: 0,
     });
-    const sudoCall = api.tx.sudo.sudoAs(sudo, vestedTransfer);
+    const sudoCall = api.tx.sudo.sudo(vestedTransfer);
     const proxyCall = api.tx.proxy.proxy(sudo, "any", sudoCall);
     return proxyCall;
   });

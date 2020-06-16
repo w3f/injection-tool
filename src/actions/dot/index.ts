@@ -1,5 +1,5 @@
 import { batchTransfer } from "./batch";
-import { batchVestedTransfer } from "./batchVT";
+import { batchVestedTransfer } from "./batchFVT";
 import { bondAndValidate } from "./bondAndValidate";
 import { forceTransfers } from "./forceTransfers";
 import { injectClaims } from "./injectClaims";
