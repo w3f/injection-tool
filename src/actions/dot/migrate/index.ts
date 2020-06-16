@@ -189,7 +189,6 @@ const migrate = async (opts: Options) => {
             break;
           }
           default:
-            console.log(" what is that :", ...args)
             proposal = api.tx[module][txType](...args);
         }
 
