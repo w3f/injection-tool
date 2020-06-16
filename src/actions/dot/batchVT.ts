@@ -1,5 +1,10 @@
 import Keyring from "@polkadot/keyring";
 import { initApi, parseCsv, sleep } from "../../helpers";
+import Web3 from "web3";
+
+const w3Util = new Web3().utils;
+
+const VestingLength = w3Util.toBN(Math.ceil(24 * 30 * 24 * 60 * (60 / 6)));
 
 type Options = {
   cryptoType: "ed25519" | "sr25519" | "ecdsa" | undefined;
@@ -10,7 +15,6 @@ type Options = {
   types: any;
   wsEndpoint: string;
   startingBlock: string;
-  perBlock: string;
 };
 
 export const batchVestedTransfer = async (opts: Options) => {
@@ -22,7 +26,6 @@ export const batchVestedTransfer = async (opts: Options) => {
     suri,
     types,
     wsEndpoint,
-    perBlock,
     startingBlock,
   } = opts;
 
@@ -38,12 +41,14 @@ export const batchVestedTransfer = async (opts: Options) => {
   const calls = input.map((entry: any) => {
     const [dest, amount] = entry;
 
+    const perBlock = w3Util.toBN(amount).divRound(VestingLength);
+
     const vestedTransfer = api.tx.vesting.vestedTransfer(dest, {
       locked: amount,
       perBlock,
-      startingBlock,
+      startingBlock: 0,
     });
-    const sudoCall = api.tx.sudo.sudo(vestedTransfer);
+    const sudoCall = api.tx.sudo.sudoAs(sudo, vestedTransfer);
     const proxyCall = api.tx.proxy.proxy(sudo, "any", sudoCall);
     return proxyCall;
   });
