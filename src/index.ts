@@ -140,7 +140,8 @@ program
   .command("migrate")
   .option("--dbPath <path>", "The path to the scraped.db from subscraper.", "")
   .option("--dry", "Runs in print-only mode when enabled.", false)
-  .option("--ensureComplete", "TODO documentation", false)
+  .option("--ensureComplete", "Throw an error if you're missing a block's data.", false)
+  .option("--trickle", "Waits six seconds between blocks in which something was injected.", false)
   .option("--suri <secret>", "The secret for the Sudo signer.", "")
   .option("--wsEndpoint <url>", "The WebSockets endpoint for Polkadot.", "wss://rpc.polkadot.io")
   .action((cmd) => errorCatcher(cmd, migrate));

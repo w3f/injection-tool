@@ -2,11 +2,10 @@ import { ApiPromise } from "@polkadot/api";
 import { hexToU8a } from "@polkadot/util";
 import * as fs from "fs";
 
-import { initApi } from "../../../helpers";
+import { initApi, sleep } from "../../../helpers";
 import { Block } from "./types";
 import { IgnoreMethods } from "./consts";
 import { initializeSigner } from "./helpers";
-
 
 const sendHandler = (result: any, unsub: any, nonceStr: string = "", pastHash?: any) => {
   const { status } = result;
@@ -77,12 +76,13 @@ type Options = {
   dbPath: string;
   dry: boolean;
   ensureComplete: boolean;
+  trickle: boolean;
   suri: string;
   wsEndpoint: string;
 }
 
 const migrate = async (opts: Options) => {
-  const { dbPath, dry, ensureComplete, suri, wsEndpoint } = opts;
+  const { dbPath, dry, ensureComplete, trickle, suri, wsEndpoint } = opts;
 
   const api = await initApi(wsEndpoint);
 
@@ -95,6 +95,16 @@ const migrate = async (opts: Options) => {
     .sort((a: any, b: any) => {     // sort them in ascending
       return a.number - b.number;
     });
+
+  if (ensureComplete) {
+    let count = 1;
+    while (count < blocks.length) {
+      if (Number(blocks[count-1].number) !== count) {
+        throw new Error(`Missing a block: ${count} GOT: ${blocks[count].number}`);
+      }
+      count++;
+    }
+  }
     
   const mySigner = initializeSigner(suri);
   console.log(`Signer address: ${mySigner.address}`);
@@ -111,6 +121,7 @@ const migrate = async (opts: Options) => {
 
   // Now cycle through blocks ascending and inject new transactions.
   let index = 0;
+  let wait = false;
   for (const block of blocks) {
     const { extrinsics, number } = block;
     console.log(`Checking block ${number}`);
@@ -137,6 +148,7 @@ const migrate = async (opts: Options) => {
             const unsub = await api.tx[module][txType](...args).send((result) => {
               sendHandler(result, unsub);
             });
+            if (trickle) wait = true;
           } else {
             console.log("Stubbing unsigned transaction.");
           }
@@ -183,8 +195,15 @@ const migrate = async (opts: Options) => {
               mySigner,
               (result) => sendHandler(result, unsub, nonceStr, hash)
             );
+
+          if (trickle) wait = true;
         }
+        index++;
       }
+    }
+
+    if (wait) {
+      await sleep(6000); // (block time)
     }
   }
 }
