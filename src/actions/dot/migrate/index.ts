@@ -6,6 +6,7 @@ import { initApi, sleep } from "../../../helpers";
 import { Block } from "./types";
 import { IgnoreMethods } from "./consts";
 import { initializeSigner } from "./helpers";
+import logger from "../../../logger";
 
 const sendHandler = (result: any, unsub: any, nonceStr: string = "", pastHash?: any) => {
   const { status } = result;
