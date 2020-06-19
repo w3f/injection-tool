@@ -1,13 +1,15 @@
 import winston from "winston";
 
-const format = winston.format.printf(({ level, message, label, timestamp }) => {
-  return `${timestamp} [${label}] ${level}: ${message}`;
+const format = winston.format.printf(({ level, message }) => {
+  return `${level}: ${message}`;
 });
 
 const logger = winston.createLogger({
   format,
   transports: [
-    new winston.transports.File({ filename: 'injection-tool.log' }),
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'hash.log', level: 'info' }),
+    new winston.transports.File({ filename: 'injection-tool.log', level: 'debug' }),
     new winston.transports.Console(),
   ],
 });

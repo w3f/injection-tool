@@ -1,7 +1,7 @@
 import { ApiPromise } from "@polkadot/api";
 import { hexToU8a } from "@polkadot/util";
 import * as fs from "fs";
-import { encodeAddress, decodeAddress } from "@polkadot/util-crypto";
+import { encodeAddress } from "@polkadot/util-crypto";
 import { createType, GenericImmortalEra, bool } from "@polkadot/types";
 
 import { initApi, sleep } from "../../../helpers";
@@ -15,7 +15,7 @@ const sendHandler = (result: any, unsub: any, nonceStr: string = "", pastHash?: 
 
   console.log(`${nonceStr} Current status is ${status.type}`);
   if (status.isFinalized) {
-    console.log(`${nonceStr} Included in block hash ${status.asFinalized}`);
+    logger.log('info', `${nonceStr} Included in block hash ${status.asFinalized}`);
     unsub();
   }
 }
@@ -69,8 +69,21 @@ const createCall = (api: ApiPromise, details: CallDetails): any => {
     case "anonymous": {
       return api.tx[section][method](args.proxy_type, args.index);
     }
+    case "addRegistrar": {
+      return api.tx[section][method](args.account);
+    }
+    case "claim": {
+      return api.tx[section][method](args.index);
+    }
+    case "addProxy": {
+      return api.tx[section][method](args.proxy, args.proxy_type);
+    }
+    case "free": {
+      return api.tx[section][method](args.index);
+    }
     default: {
-      throw new Error(`############### Method missing to check ############# : ${section} ${method}`);
+      logger.log('error', `############### Method missing to check ############# : ${section} ${method} ${JSON.stringify(args)}`);
+      throw new Error(`############### Method missing to check ############# : ${section} ${method} ${JSON.stringify(args)}`);
     }
   }
 }
@@ -103,6 +116,7 @@ const migrate = async (opts: Options) => {
     let count = 1;
     while (count < blocks.length) {
       if (Number(blocks[count-1].number) !== count) {
+        logger.error(`Missing a block: ${count} GOT: ${blocks[count].number}`);
         throw new Error(`Missing a block: ${count} GOT: ${blocks[count].number}`);
       }
       count++;
@@ -114,7 +128,6 @@ const migrate = async (opts: Options) => {
   console.log(`Signer address: ${sudoAddress}`);
 
   const sudo = await api.query.sudo.key();
-  console.log("what's susdo address :", sudo.toString())
   if (!dry && (sudoAddress !== sudo.toString())) {
     throw new Error(
 `NOT SUDO SIGNER.. GOT ${sudoAddress} EXPECTED ${sudo.toString()}`
@@ -129,13 +142,13 @@ const migrate = async (opts: Options) => {
   let wait = false;
   for (const block of blocks) {
     const { extrinsics, number } = block;
-    console.log(`Checking block ${number}`);
+    // console.log(`Checking block ${number}`);
 
     for (const extrinsic of extrinsics) {
       const { args, hash, method, signature } = extrinsic;
       
       if (IgnoreMethods.includes(method)) {
-        console.log(`Skipping ignore method: ${method}`)
+        // console.log(`Skipping ignore method: ${method}`)
         continue;
       }
 
@@ -146,7 +159,7 @@ const migrate = async (opts: Options) => {
         continue;
       }
 
-      if (txType === "claimAttest") {
+      if (txType === "claimAttest" || (module === 'claims' && txType === "claim")) {
         // The only unsigned transaction.
         try {
           if (!dry) {
@@ -158,13 +171,14 @@ const migrate = async (opts: Options) => {
             console.log("Stubbing unsigned transaction.");
           }
         } catch (err) {
+          logger.log('error', `Failed submitting transfaction: ${err}`);
           throw new Error(`Failed submitting transfaction: ${err}`);
         } 
       } else {
         const { signer } = signature;
         const currentNonce = Number(startingNonce) + index;
         const nonceStr = `Nonce: ${currentNonce} |`;
-        const logStr = `${nonceStr} Migrating transaction ${module}.${txType} originally sent by ${signer}.`;
+        const logStr = `${nonceStr} Migrating transaction ${module}.${txType} originally sent by ${signer} at block ${number}.`;
         
         /// Construct the proposal.
         let proposal = null;
@@ -188,11 +202,15 @@ const migrate = async (opts: Options) => {
             proposal = api.tx[module][txType](args[0], args[1], args[2], createCall(api, args[3]));
             break;
           }
+          case "proxy": {
+            proposal = api.tx[module][txType](args[0], args[1], createCall(api, args[2]));
+            break;
+          }
           default:
             proposal = api.tx[module][txType](...args);
         }
 
-        console.log(logStr);
+        logger.log('debug', logStr);
 
         const era = createType(
           api.registry,
