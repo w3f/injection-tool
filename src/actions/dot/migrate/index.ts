@@ -158,13 +158,13 @@ const migrate = async (opts: Options) => {
   let wait = false;
   for (const block of blocks) {
     const { extrinsics, number } = block;
-    // console.log(`Checking block ${number}`);
+    console.log(`Checking block ${number}`);
 
     for (const extrinsic of extrinsics) {
       const { args, hash, method, signature } = extrinsic;
       
       if (IgnoreMethods.includes(method)) {
-        // console.log(`Skipping ignore method: ${method}`)
+        console.log(`Skipping ignore method: ${method}`)
         continue;
       }
 
