@@ -75,11 +75,27 @@ const createCall = (api: ApiPromise, details: CallDetails): any => {
     case "claim": {
       return api.tx[section][method](args.index);
     }
-    case "addProxy": {
+    case "addProxy":
+    case "removeProxy": {
       return api.tx[section][method](args.proxy, args.proxy_type);
     }
     case "free": {
       return api.tx[section][method](args.index);
+    }
+    case "mintClaim": {
+      return api.tx[section][method](args.who, args.value, args.vesting_schedule, args.statement);
+    }
+    case "forceVestedTransfer": {
+      return api.tx[section][method](args.source, args.target, args.schedule);
+    }
+    case "setBalance": {
+      return api.tx[section][method](args.who, args.new_free, args.new_reserved);
+    }
+    case "setValidatorCount": {
+      return api.tx[section][method](args.new);
+    }
+    case "scheduleNamed": {
+      return api.tx[section][method](args.id, args.when, args.maybe_periodic, args.priority, createCall(api, args.call));
     }
     default: {
       logger.log('error', `############### Method missing to check ############# : ${section} ${method} ${JSON.stringify(args)}`);
@@ -199,11 +215,15 @@ const migrate = async (opts: Options) => {
             break;
           }
           case "asMulti": {
-            proposal = api.tx[module][txType](args[0], args[1], args[2], createCall(api, args[3]));
+            proposal = api.tx[module][txType](args[0], args[1], args[2], createCall(api, args[3]), false, 0);
             break;
           }
           case "proxy": {
             proposal = api.tx[module][txType](args[0], args[1], createCall(api, args[2]));
+            break;
+          }
+          case "approveAsMulti": {
+            proposal = api.tx[module][txType](args[0], args[1], args[2], args[3], 0);
             break;
           }
           default:
