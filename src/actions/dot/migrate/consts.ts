@@ -4,5 +4,8 @@ export const IgnoreMethods = [
   "finalityTracker.finalHint",
   "imOnline.heartbeat",
   "staking.submitElectionSolutionUnsigned",
+  "staking.scaleValidatorCount",
+  "staking.increaseValidatorCount",
+  "staking.setValidatorCount",
   "sudo.setKey",
 ];

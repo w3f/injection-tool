@@ -76,6 +76,8 @@ const createCall = (api: ApiPromise, details: CallDetails): any => {
       return api.tx[section][method](args.index);
     }
     case "addProxy":
+      // Intentionally falls through to the below return statement, since these two functions
+      // have the same call arguments.
     case "removeProxy": {
       return api.tx[section][method](args.proxy, args.proxy_type);
     }
@@ -92,14 +94,14 @@ const createCall = (api: ApiPromise, details: CallDetails): any => {
       return api.tx[section][method](args.who, args.new_free, args.new_reserved);
     }
     case "setValidatorCount": {
-      return api.tx[section][method](args.new);
+      throw new Error("SKIP METHOD");
     }
     case "scheduleNamed": {
       return api.tx[section][method](args.id, args.when, args.maybe_periodic, args.priority, createCall(api, args.call));
     }
     default: {
-      logger.log('error', `############### Method missing to check ############# : ${section} ${method} ${JSON.stringify(args)}`);
-      throw new Error(`############### Method missing to check ############# : ${section} ${method} ${JSON.stringify(args)}`);
+      logger.log('error', `############### [createCall]: method is not registered ############# : ${section} ${method} ${JSON.stringify(args)}`);
+      throw new Error(`############### [createCall]: method is not registered ############# : ${section} ${method} ${JSON.stringify(args)}`);
     }
   }
 }
@@ -196,38 +198,53 @@ const migrate = async (opts: Options) => {
         const nonceStr = `Nonce: ${currentNonce} |`;
         const logStr = `${nonceStr} Migrating transaction ${module}.${txType} originally sent by ${signer} at block ${number}.`;
         
-        /// Construct the proposal.
+        // Construct the proposal.
+        // The try-catch block is here to catch errors we throw for methods
+        // we want to skip in the `createCall` area.
         let proposal = null;
-        switch (txType) {
-          case "batch": {
-            const calls = args[0].map((details: CallDetails) => {
-              return createCall(api, details);
-            });
-            proposal = api.tx[module][txType](calls);
-            break;
+        try {
+          switch (txType) {
+            case "batch": {
+              const calls = args[0].map((details: CallDetails) => {
+                return createCall(api, details);
+              });
+              proposal = api.tx[module][txType](calls);
+              break;
+            }
+            case "sudo": {
+              proposal = api.tx[module][txType](createCall(api, args[0])); 
+              break;
+            }
+            case "sudoUncheckedWeight": {
+              proposal = api.tx[module][txType](createCall(api, args[0]), args[1]);
+              break;
+            }
+            case "asMulti": {
+              proposal = api.tx[module][txType](args[0], args[1], args[2], createCall(api, args[3]), false, 0);
+              break;
+            }
+            case "proxy": {
+              proposal = api.tx[module][txType](args[0], args[1], createCall(api, args[2]));
+              break;
+            }
+            case "approveAsMulti": {
+              proposal = api.tx[module][txType](args[0], args[1], args[2], args[3], 0);
+              break;
+            }
+            default:
+              proposal = api.tx[module][txType](...args);
           }
-          case "sudo": {
-            proposal = api.tx[module][txType](createCall(api, args[0])); 
-            break;
+        } catch (err) {
+          if (err.toString().indexOf("SKIP METHOD")) {
+            continue;
           }
-          case "sudoUncheckedWeight": {
-            proposal = api.tx[module][txType](createCall(api, args[0]), args[1]);
-            break;
-          }
-          case "asMulti": {
-            proposal = api.tx[module][txType](args[0], args[1], args[2], createCall(api, args[3]), false, 0);
-            break;
-          }
-          case "proxy": {
-            proposal = api.tx[module][txType](args[0], args[1], createCall(api, args[2]));
-            break;
-          }
-          case "approveAsMulti": {
-            proposal = api.tx[module][txType](args[0], args[1], args[2], args[3], 0);
-            break;
-          }
-          default:
-            proposal = api.tx[module][txType](...args);
+
+          throw new Error(err);
+        }
+
+        if (!proposal) {
+          // Proposal is still null for some reason, throw Error.
+          throw new Error("Found null proposal, something must be seriously wrong.");
         }
 
         logger.log('debug', logStr);
