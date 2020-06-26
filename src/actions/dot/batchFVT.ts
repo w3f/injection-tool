@@ -49,7 +49,7 @@ export const batchVestedTransfer = async (opts: Options) => {
 
     const vestedTransfer = api.tx.vesting.forceVestedTransfer(source, dest, {
       locked: amount,
-      perBlock: perBlock === 'auto' ? w3Util.toBN(amount).divRound(VestingLength) : amount;
+      perBlock: perBlock === 'auto' ? w3Util.toBN(amount).divRound(VestingLength) : amount,
       startingBlock: Number(startingBlock) || 0,
     });
     const sudoCall = api.tx.sudo.sudo(vestedTransfer);
