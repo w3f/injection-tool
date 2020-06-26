@@ -112,6 +112,8 @@ program
   .option('--suri <suri>', 'Pass in the suri for the Sudo key.')
   .option('--types <json>', 'A JSON configuration of types for the node.', '{}')
   .option('--wsEndpoint <url>', 'The endpoint of the WebSockets to connect with.', 'wss://rpc.polkadot.io')
+  .option('--startingBlock <num>', 'The block to start the linear vesting.', '0')
+  .option('--perBlock <[all,auto]>', 'How to calculate perBlock. auto: standard 2 year schedule, all: single block unlock', 'auto')
   .action((cmd) => errorCatcher(cmd, batchVestedTransfer));
 
 program
