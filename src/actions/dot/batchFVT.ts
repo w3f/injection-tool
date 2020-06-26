@@ -15,6 +15,7 @@ type Options = {
   types: any;
   wsEndpoint: string;
   startingBlock: string;
+  perBlock: "auto" | "all";
 };
 
 export const batchVestedTransfer = async (opts: Options) => {
@@ -27,7 +28,12 @@ export const batchVestedTransfer = async (opts: Options) => {
     types,
     wsEndpoint,
     startingBlock,
+    perBlock,
   } = opts;
+
+  if (perBlock !== 'auto' && perBlock !== 'all') {
+    throw new Error(`--perBlock must be set to either auto or all | Set: ${perBlock}`);
+  }
 
   const input = parseCsv(csv);
   const api = await initApi(wsEndpoint, types);
@@ -41,12 +47,10 @@ export const batchVestedTransfer = async (opts: Options) => {
   const calls = input.map((entry: any) => {
     const [dest, amount] = entry;
 
-    const perBlock = w3Util.toBN(amount).divRound(VestingLength);
-
     const vestedTransfer = api.tx.vesting.forceVestedTransfer(source, dest, {
       locked: amount,
-      perBlock,
-      startingBlock: 0,
+      perBlock: perBlock === 'auto' ? w3Util.toBN(amount).divRound(VestingLength) : amount;
+      startingBlock: Number(startingBlock) || 0,
     });
     const sudoCall = api.tx.sudo.sudo(vestedTransfer);
     const proxyCall = api.tx.proxy.proxy(sudo, "any", sudoCall);
