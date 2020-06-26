@@ -31,6 +31,10 @@ export const batchVestedTransfer = async (opts: Options) => {
     perBlock,
   } = opts;
 
+  if (perBlock !== 'auto' && perBlock !== 'all') {
+    throw new Error(`--perBlock must be set to either auto or all | Set: ${perBlock}`);
+  }
+
   const input = parseCsv(csv);
   const api = await initApi(wsEndpoint, types);
   const keyring = new Keyring({ type: cryptoType });
