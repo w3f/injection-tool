@@ -24,11 +24,12 @@
   },
   "dependencies": {
     "@parity/api": "^5.1.12",
-    "@polkadot/api": "^1.18.1",
-    "@polkadot/keyring": "^2.13.1",
-    "@polkadot/types": "^1.18.1",
-    "@polkadot/util": "^2.13.1",
-    "bn.js": "^5.1.2",
+    "@polkadot/api": "^1.22.0-beta.3",
+    "@polkadot/keyring": "^2.15.1",
+    "@polkadot/types": "^1.22.0-beta.3",
+    "@polkadot/util": "^2.15.1",
+    "@polkadot/util-crypto": "^2.15.1",
+    "bn.js": "^5.0.0",
     "camelcase": "^6.0.0",
     "commander": "^5.1.0",
     "csv-parse": "^4.10.1",
@@ -36,6 +37,7 @@
     "ethers": "^4.0.47",
     "node-gyp": "^7.0.0",
     "web3": "^1.2.8",
+    "winston": "^3.2.1",
     "yarn": "^1.22.0"
   },
   "scripts": {

@@ -21,6 +21,7 @@ import {
   querySecondSaleBalance,
   sudoAs,
   checkCsv,
+  migrate,
   check,
 } from './actions';
 
@@ -148,6 +149,16 @@ program
   .option('--types <json>', 'A JSON configuration of types for the node.', '{}')
   .option('-y --noConfirm', 'Skips the confirmation prompt.')
   .action((cmd) => errorCatcher(cmd, sudoAs));
+
+program
+  .command("migrate")
+  .option("--dbPath <path>", "The path to the scraped.db from subscraper.", "")
+  .option("--dry", "Runs in print-only mode when enabled.", false)
+  .option("--ensureComplete", "Throw an error if you're missing a block's data.", false)
+  .option("--trickle", "Waits six seconds between blocks in which something was injected.", false)
+  .option("--suri <secret>", "The secret for the Sudo signer.", "")
+  .option("--wsEndpoint <url>", "The WebSockets endpoint for Polkadot.", "wss://rpc.polkadot.io")
+  .action((cmd) => errorCatcher(cmd, migrate));
 
 program
   .command('check')

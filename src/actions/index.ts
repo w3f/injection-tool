@@ -25,6 +25,7 @@ import {
   nominate,
   stateCheck,
   sudoAs,
+  migrate,
 } from "./dot";
 
 import { check } from "./check";
@@ -54,4 +55,5 @@ export {
   stateCheck,
   sudoAs,
   checkCsv,
+  migrate,
 };
