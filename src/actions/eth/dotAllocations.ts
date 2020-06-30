@@ -11,7 +11,7 @@ export const initFrozenToken = (address: string, provider: string) => {
 
 export const convertFromDecimalString = (decimalString: any) => {
   if (decimalString.indexOf(".") == -1) {
-    return decimalString.concat("000"),
+    return decimalString.concat("000");
   }
 
   let [units, decimals] = decimalString.split(".");
