@@ -158,7 +158,12 @@ class ApiHandler {
         const meta = await api.rpc.state.getMetadata(hash);
         const chain = await api.rpc.system.chain();
         api.registry.register(
-          getSpecTypes(api.registry, chain, runtimeVersion.specName, blockSpecVersion)
+          getSpecTypes(
+            api.registry,
+            chain,
+            runtimeVersion.specName,
+            blockSpecVersion
+          )
         );
         api.registry.setMetadata(meta);
       }

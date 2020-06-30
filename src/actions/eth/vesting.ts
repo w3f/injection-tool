@@ -31,7 +31,17 @@ export const checkIfDuplicateExists = (w: Array<any>) => {
 };
 
 export const vesting = async (cmd: Command) => {
-  const { csv, claims, providerUrl, from, gas, gasPrice, nonce, output, password } = cmd;
+  const {
+    csv,
+    claims,
+    providerUrl,
+    from,
+    gas,
+    gasPrice,
+    nonce,
+    output,
+    password,
+  } = cmd;
   if (!from) {
     throw new Error("A `from` address is required!");
   }
@@ -39,7 +49,11 @@ export const vesting = async (cmd: Command) => {
   const w3 = new Web3(new Web3.providers.WebsocketProvider(providerUrl));
   const claimsContract = initclaims(claims, providerUrl);
 
-  const csvParsed = fs.readFileSync(csv, { encoding: "utf-8" }).split("\n").filter((line: any) => line !== "").map((line: any) => line.split(','));
+  const csvParsed = fs
+    .readFileSync(csv, { encoding: "utf-8" })
+    .split("\n")
+    .filter((line: any) => line !== "")
+    .map((line: any) => line.split(","));
   const destinations = csvParsed.map((entry: any) => entry[0]);
   const amounts = csvParsed.map((entry: any) =>
     convertFromDecimalString(entry[1])
@@ -90,10 +104,10 @@ export const vesting = async (cmd: Command) => {
 
     const txObj = await w3.eth.personal.signTransaction(tx, password);
 
-    fs.appendFileSync(output, txObj.raw + '\n');
+    fs.appendFileSync(output, txObj.raw + "\n");
 
     nonceCounter++;
   }
 
-  console.log('Next nonce:', startingNonce + nonceCounter);
+  console.log("Next nonce:", startingNonce + nonceCounter);
 };

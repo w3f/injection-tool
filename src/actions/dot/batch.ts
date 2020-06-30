@@ -13,15 +13,7 @@ type Options = {
 };
 
 export const batchTransfer = async (opts: Options) => {
-  const {
-    csv,
-    cryptoType,
-    dry,
-    source,
-    suri,
-    types,
-    wsEndpoint
-  } = opts;
+  const { csv, cryptoType, dry, source, suri, types, wsEndpoint } = opts;
 
   const input = parseCsv(csv);
   const api = await initApi(wsEndpoint, types);
@@ -49,17 +41,16 @@ export const batchTransfer = async (opts: Options) => {
     const callHex = api.tx.utility.batch(calls).toHex();
     const cost = await api.rpc.payment.queryInfo(callHex);
 
-    console.log("Cost:", cost.toString())
+    console.log("Cost:", cost.toString());
     return;
   }
 
   console.log(
     `${nonceStr}Sending transaction Utility::batch from ${signer.address}.`
   );
-  const unsub = await api.tx.utility.batch(calls).signAndSend(
-    signer,
-    { nonce: startingNonce },
-    (result: any) => {
+  const unsub = await api.tx.utility
+    .batch(calls)
+    .signAndSend(signer, { nonce: startingNonce }, (result: any) => {
       const { status } = result;
 
       console.log(`${nonceStr}Current status is ${status.type}`);
@@ -69,9 +60,7 @@ export const batchTransfer = async (opts: Options) => {
         );
         unsub();
       }
-    }
-  );
+    });
 
-  await sleep(20000)
-
-}
+  await sleep(20000);
+};

@@ -43,6 +43,10 @@ export const claimsDeploy = async (cmd: Command) => {
   fs.writeFileSync(output, txObj.raw);
 
   console.log(`Raw transaction written out to ${output}.`);
-  console.log("Use the injection-tool broadcast command to broadcast this to the network.")
-  console.log(`If you are generating more transactions use --nonce ${Number(nonce) + 1}`)
+  console.log(
+    "Use the injection-tool broadcast command to broadcast this to the network."
+  );
+  console.log(
+    `If you are generating more transactions use --nonce ${Number(nonce) + 1}`
+  );
 };
