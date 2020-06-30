@@ -10,7 +10,17 @@ export const initclaims = (address: string, provider: string) => {
 };
 
 export const doClaims = async (cmd: Command) => {
-  const { csv, claims, providerUrl, from, gas, gasPrice, nonce, output, password } = cmd;
+  const {
+    csv,
+    claims,
+    providerUrl,
+    from,
+    gas,
+    gasPrice,
+    nonce,
+    output,
+    password,
+  } = cmd;
   if (!from) {
     throw new Error("A `from` address is required!");
   }
@@ -63,9 +73,9 @@ export const doClaims = async (cmd: Command) => {
 
     const txObj = await w3.eth.personal.signTransaction(tx, password);
 
-    fs.appendFileSync(output, txObj.raw + '\n');
+    fs.appendFileSync(output, txObj.raw + "\n");
     nonceCounter++;
   }
 
-  console.log('Next nonce:', startingNonce + nonceCounter);
+  console.log("Next nonce:", startingNonce + nonceCounter);
 };

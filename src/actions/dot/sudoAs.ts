@@ -32,7 +32,7 @@ export const sudoAs = async (cmd: Command) => {
       if (!line) return;
 
       const [method, rest] = line.split(/,(.+)/);
-      const [ source, args ] = rest.split(/,(.+)/);
+      const [source, args] = rest.split(/,(.+)/);
 
       return {
         method,
@@ -76,7 +76,7 @@ export const sudoAs = async (cmd: Command) => {
       if (!entry) continue;
 
       const { method, source, args } = entry;
-      const [s,m] = method.split('.');
+      const [s, m] = method.split(".");
 
       const proposal = api.tx[s][m](...args);
       const nonce = Number(startingNonce) + index;

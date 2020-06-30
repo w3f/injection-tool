@@ -31,8 +31,10 @@ export const batchVestedTransfer = async (opts: Options) => {
     perBlock,
   } = opts;
 
-  if (perBlock !== 'auto' && perBlock !== 'all') {
-    throw new Error(`--perBlock must be set to either auto or all | Set: ${perBlock}`);
+  if (perBlock !== "auto" && perBlock !== "all") {
+    throw new Error(
+      `--perBlock must be set to either auto or all | Set: ${perBlock}`
+    );
   }
 
   const input = parseCsv(csv);
@@ -49,7 +51,10 @@ export const batchVestedTransfer = async (opts: Options) => {
 
     const vestedTransfer = api.tx.vesting.forceVestedTransfer(source, dest, {
       locked: amount,
-      perBlock: perBlock === 'auto' ? w3Util.toBN(amount).divRound(VestingLength) : amount,
+      perBlock:
+        perBlock === "auto"
+          ? w3Util.toBN(amount).divRound(VestingLength)
+          : amount,
       startingBlock: Number(startingBlock) || 0,
     });
     const sudoCall = api.tx.sudo.sudo(vestedTransfer);
@@ -65,17 +70,16 @@ export const batchVestedTransfer = async (opts: Options) => {
     const callHex = api.tx.utility.batch(calls).toHex();
     const cost = await api.rpc.payment.queryInfo(callHex);
 
-    console.log("Cost:", cost.toString())
+    console.log("Cost:", cost.toString());
     return;
   }
 
   console.log(
     `${nonceStr}Sending transaction Utility::batch from ${signer.address}.`
   );
-  const unsub = await api.tx.utility.batch(calls).signAndSend(
-    signer,
-    { nonce: startingNonce },
-    (result: any) => {
+  const unsub = await api.tx.utility
+    .batch(calls)
+    .signAndSend(signer, { nonce: startingNonce }, (result: any) => {
       const { status } = result;
 
       console.log(`${nonceStr}Current status is ${status.type}`);
@@ -85,9 +89,7 @@ export const batchVestedTransfer = async (opts: Options) => {
         );
         unsub();
       }
-    }
-  );
+    });
 
-  await sleep(20000)
-
-}
+  await sleep(20000);
+};

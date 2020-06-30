@@ -8,13 +8,13 @@ const splitCsvs = (csv: string): string[] => {
   } else {
     return csv.split(",");
   }
-}
+};
 
 type BroadcastOptions = {
   batch: string;
   csv: string;
   providerUrl: string;
-}
+};
 
 const broadcast = async (opts: BroadcastOptions) => {
   const { batch, csv, providerUrl } = opts;
@@ -30,21 +30,30 @@ const broadcast = async (opts: BroadcastOptions) => {
     const rawTxs = file.split("\n").filter((entry: string) => entry !== "");
 
     for (const rawTx of rawTxs) {
-      console.log(`Broadcasting ${submissionCount} - ${rawTx.slice(0, 12)}...${rawTx.slice(-10)}`);
+      console.log(
+        `Broadcasting ${submissionCount} - ${rawTx.slice(
+          0,
+          12
+        )}...${rawTx.slice(-10)}`
+      );
 
       try {
-        const promise = w3.eth.sendSignedTransaction(rawTx)
-        .on('receipt', (receipt: any) => {
-          fs.appendFileSync('receipts', `${rawTx} :: ${JSON.stringify(receipt)}`)
-        });
+        const promise = w3.eth
+          .sendSignedTransaction(rawTx)
+          .on("receipt", (receipt: any) => {
+            fs.appendFileSync(
+              "receipts",
+              `${rawTx} :: ${JSON.stringify(receipt)}`
+            );
+          });
 
-        if (Number(batch) <=1) {
+        if (Number(batch) <= 1) {
           await promise;
         } else if (submissionCount % Number(batch) === 0) {
-          console.log("Waiting for batch to complete.")
+          console.log("Waiting for batch to complete.");
           await promise;
         } else if (submissionCount === rawTxs.length - 1) {
-          console.log("Waiting for final broadcast to complete.")
+          console.log("Waiting for final broadcast to complete.");
           await promise;
         }
       } catch (err) {
@@ -54,6 +63,6 @@ const broadcast = async (opts: BroadcastOptions) => {
       submissionCount++;
     }
   }
-}
+};
 
 export default broadcast;

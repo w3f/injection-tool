@@ -19,7 +19,7 @@ export const assignIndices = async (cmd: Command) => {
     providerUrl,
     start,
     nonce,
-    output
+    output,
   } = cmd;
 
   const txParams = {
@@ -66,10 +66,10 @@ export const assignIndices = async (cmd: Command) => {
 
     const txObj = await w3.eth.personal.signTransaction(tx, password);
 
-    fs.appendFileSync(output, txObj.raw + '\n');
+    fs.appendFileSync(output, txObj.raw + "\n");
 
     nonceCounter++;
   }
 
-  console.log('Next nonce:', startingNonce + nonceCounter);
+  console.log("Next nonce:", startingNonce + nonceCounter);
 };
