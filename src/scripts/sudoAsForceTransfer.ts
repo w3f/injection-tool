@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import pdKeyring from "@polkadot/keyring";
 /* eslint-disable */
-import { Command } from 'commander';
+import { Command } from "commander";
 /* eslint-enable */
 import * as fs from "fs";
 
